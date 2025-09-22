@@ -5,7 +5,7 @@ from alembic import context
 from os import path
 from models import *
 
-BASE_DIR = path.abspath(path.join(path.dirname(path.abspath(__file__)), "../../../../../storage"))
+BASE_DIR = path.abspath(path.join(path.dirname(path.abspath(__file__)), "../../../../../storage/.databases"))
 URL = f"sqlite:///{BASE_DIR}/production.db"
 config = context.config
 
