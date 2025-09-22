@@ -24,7 +24,7 @@ class UsersContainer {
     
     element!: HTMLElement
     titleBar!: TitleBar
-    table!: Table
+    tableContainer!: TableContainer
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -39,7 +39,7 @@ class UsersContainer {
     
     private createComponents() {
         this.titleBar = new TitleBar(this.element);
-        this.table = new Table(this.element);
+        this.tableContainer = new TableContainer(this.element);
     }
     
 }
@@ -152,22 +152,48 @@ class Icon {
     
 }
 
-class Table {
+class TableContainer {
     
     element!: HTMLElement
+    table!: Table
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
+        this.createComponets();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-auto h-auto flex-1 overflow-y-auto custom-scroll";
+    }
+    
+    private createComponets() {
+        this.table = new Table(this.element);   
+    }
+    
+}
+
+class Table {
+    
+    element!: HTMLElement
+    tableHead!: TableHead
+    tableBody!: TableBody
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponets();
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("table");
-        this.element.className = "h-auto w-full flex flex-1 bg-blue-300";
+        this.element.className = "h-auto w-full whitespace-nowrap cursor-default border-collapse text-center text-black dark:text-white transition-colors duration-300";
     }
     
     private createComponets() {
-
+        this.tableHead = new TableHead(this.element);
+        this.tableBody = new TableBody(this.element);   
     }
     
 }
@@ -175,19 +201,21 @@ class Table {
 class TableHead {
     
     element!: HTMLElement
+    row!: TableHeadRow
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
+        this.createComponets();
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("thead");
-        this.element.className = "h-auto w-full bg-green-300";
+        this.element.className = "h-auto w-auto";
     }
     
     private createComponets() {
-
+        this.row = new TableHeadRow(this.element);
     }
     
 }
@@ -198,36 +226,115 @@ class TableHeadRow {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
+        this.createComponets();
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("tr");
-        this.element.className = "p-2 h-auto w-full";
+        this.element.className = "h-auto w-auto bg-gray-300 dark:bg-gray-900 transition-colors duration-300 sticky top-0";
     }
     
     private createComponets() {
-
+        new TableHeadRowCell(this.element, "Usuário");
+        new TableHeadRowCell(this.element, "E-mail");
     }
     
 }
 
-class TableColumn {
+class TableHeadRowCell {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, text: string) {
+        this.createSelf(text);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(text: string) {
+        this.element = document.createElement("th");
+        this.element.className = "p-2 h-auto w-auto";
+        this.element.innerText = text;
+    }
+    
+}
+
+class TableBody {
     
     element!: HTMLElement
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("tbody");
+        this.element.className = "h-auto w-auto";
+    }
+    
+    private createComponents() {
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+        new TableBodyRow(this.element);
+    }
+    
+}
+
+class TableBodyRow {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponets();
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("tr");
-        this.element.className = "p-2 h-auto w-full";
+        this.element.className = "h-auto w-auto";
     }
     
     private createComponets() {
+        new TableBodyRowCell(this.element, "72767");
+        new TableBodyRowCell(this.element, "avicel@email.com");
+    }
+    
+}
 
+class TableBodyRowCell {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, text: string) {
+        this.createSelf(text);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(text: string) {
+        this.element = document.createElement("td");
+        this.element.className = "p-2 h-auto w-auto";
+        this.element.innerText = text;
     }
     
 }
