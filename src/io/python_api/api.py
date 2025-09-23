@@ -17,6 +17,7 @@ class Api:
         self.main_route = Main(self.app)
         self.modules_allowed_route = ModulesAllowed(self.app)
         self.modules_route = Modules(self.app)
+        self.users_route = Users(self.app)
         self.app.run(debug=True)
 
 Api()

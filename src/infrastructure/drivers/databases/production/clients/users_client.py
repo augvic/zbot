@@ -25,9 +25,12 @@ class UsersClient:
         session.refresh(to_create)
         session.close()
     
-    def read(self, user: str) -> User:
+    def read(self, user: str) -> User | list[User]:
         session = self.session_construct()
-        return session.query(User).filter(User.user == user).first()
+        if user == "all":
+            return session.query(User).all()
+        else:
+            return session.query(User).filter(User.user == user).first()
     
     def update(self, user: str, name: str = None, email: str = None, password: str = None) -> None:
         session = self.session_construct()
@@ -47,11 +50,3 @@ class UsersClient:
         to_delete = session.query(User).filter(User.user == user).first()
         session.delete(to_delete)
         session.commit()
-    
-    def get_all(self) -> list[User]:
-        session = self.session_construct()
-        return session.query(User).all()
-
-if __name__ == "__main__":
-    database = UsersClient()
-    database.create("72776", "Augusto Viceli", "augustoh@positivo.com.br", "AHVH#72776")

@@ -237,7 +237,9 @@ class TableHeadRow {
     
     private createComponets() {
         new TableHeadRowCell(this.element, "Usuário");
+        new TableHeadRowCell(this.element, "Nome");
         new TableHeadRowCell(this.element, "E-mail");
+        new TableHeadRowCell(this.element, "Senha");
     }
     
 }
@@ -262,6 +264,7 @@ class TableHeadRowCell {
 class TableBody {
     
     element!: HTMLElement
+    usersGetter!: UsersGetter
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -275,27 +278,13 @@ class TableBody {
     }
     
     private createComponents() {
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
-        new TableBodyRow(this.element);
+        (async () => {
+            this.usersGetter = new UsersGetter();
+            const users: [{[key: string]: string}] = await this.usersGetter.getUsers()
+            users.forEach((user) => {
+                new TableBodyRow(this.element, user);
+            });
+        })();
     }
     
 }
@@ -304,9 +293,9 @@ class TableBodyRow {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
-        this.createComponets();
+        this.createComponets(user);
         appendTo.appendChild(this.element);
     }
     
@@ -315,9 +304,11 @@ class TableBodyRow {
         this.element.className = "h-auto w-auto";
     }
     
-    private createComponets() {
-        new TableBodyRowCell(this.element, "72767");
-        new TableBodyRowCell(this.element, "avicel@email.com");
+    private createComponets(user: {[key: string]: string}) {
+        new TableBodyRowCell(this.element, user.user);
+        new TableBodyRowCell(this.element, user.name);
+        new TableBodyRowCell(this.element, user.email);
+        new TableBodyRowCell(this.element, user.password);
     }
     
 }
@@ -335,6 +326,16 @@ class TableBodyRowCell {
         this.element = document.createElement("td");
         this.element.className = "p-2 h-auto w-auto";
         this.element.innerText = text;
+    }
+    
+}
+
+class UsersGetter {
+    
+    async getUsers() {
+        const response = await fetch(`${window.location.origin}/users/all`);
+        const data = await response.json();
+        return data;
     }
     
 }

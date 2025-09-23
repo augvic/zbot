@@ -23,9 +23,12 @@ class ModulesClient:
         session.refresh(to_create)
         session.close()
     
-    def read(self, module: str) -> list[Module]:
+    def read(self, module: str) -> Module | list[Module]:
         session = self.session_construct()
-        return session.query(Module).filter(Module.module == module).first()
+        if module == "all":
+            return session.query(Module).all()
+        else:
+            return session.query(Module).filter(Module.module == module).first()
     
     def update(self, module: str, description: str = None) -> None:
         session = self.session_construct()
@@ -45,7 +48,3 @@ class ModulesClient:
     def get_all(self) -> list[Module]:
         session = self.session_construct()
         return session.query(Module).all()
-
-if __name__ == "__main__":
-    database = ModulesClient()
-    database.create("zUsers", "Crie, edite e exclua usuários.")

@@ -40,10 +40,6 @@ class PermissionsClient:
         to_delete = session.query(Permission).filter(Permission.user == user).filter(Permission.module == module).first()
         session.delete(to_delete)
         session.commit()
-    
-    def get_all(self) -> list[Permission]:
-        session = self.session_construct()
-        return session.query(Permission).all()
 
 if __name__ == "__main__":
     database = PermissionsClient()

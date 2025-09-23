@@ -4,3 +4,4 @@ from .render_template import RenderTemplate
 from .verify_if_logged_in import VerifyIfLoggedIn
 from .send_index import SendIndex
 from .get_modules_allowed import GetModulesAllowed
+from .get_all_users import GetAllUsers
