@@ -13,7 +13,7 @@ class CreateUser:
             return "Sem autorização.", 401
         if user_data["user"] == "":
             return {"success": False, "message": "Preencha o usuário."}
-        if user_data["user"] == self.users_client.read(user_data["user"]).user:
+        if self.users_client.read(user_data["user"]):
             return {"success": False, "message": "Usuário já existe."}
         if user_data["name"] == "":
             return {"success": False, "message": "Preencha o nome."}

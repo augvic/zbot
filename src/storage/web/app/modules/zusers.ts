@@ -5,17 +5,18 @@ export default class Zusers {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents(appendTo);
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("div");
+        this.element.id = "zUsers";
         this.element.className = "w-full h-full opacity-fade-in bg-gray-300 dark:bg-gray-900 transition-colors duration-300 flex items-center justify-center";
     }
     
-    private createComponents(moduleContainer: HTMLElement) {
-        this.usersContainer = new UsersContainer(this.element, moduleContainer);
+    private createComponents() {
+        this.usersContainer = new UsersContainer(this.element);
     }
     
 }
@@ -26,9 +27,9 @@ class UsersContainer {
     titleBar!: TitleBar
     tableContainer!: TableContainer
     
-    constructor(appendTo: HTMLElement, moduleContainer: HTMLElement) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents(moduleContainer);
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
@@ -37,10 +38,9 @@ class UsersContainer {
         this.element.className = "w-[95%] h-[95%] flex flex-col bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg p-5 gap-3";
     }
     
-    private createComponents(moduleContainer: HTMLElement) {
-        this.tableContainer = new TableContainer();
-        this.titleBar = new TitleBar(this.element, moduleContainer, this.tableContainer.table.tableBody.element);
-        this.element.appendChild(this.tableContainer.element);
+    private createComponents() {
+        this.titleBar = new TitleBar(this.element);
+        this.tableContainer = new TableContainer(this.element);
     }
     
 }
@@ -52,9 +52,9 @@ class TitleBar {
     searchButton!: SearchButton
     addUserButton!: AddUserButton
     
-    constructor(appendTo: HTMLElement, moduleContainer: HTMLElement, tableBody: HTMLElement) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents(moduleContainer, tableBody);
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
@@ -63,10 +63,10 @@ class TitleBar {
         this.element.className = "w-full h-auto flex items-center gap-2";
     }
     
-    private createComponents(moduleContainer: HTMLElement, tableBody: HTMLElement) {
+    private createComponents() {
         this.searchInput = new SearchInput(this.element);
         this.searchButton = new SearchButton(this.element);
-        this.addUserButton = new AddUserButton(this.element, moduleContainer, tableBody);
+        this.addUserButton = new AddUserButton(this.element);
     }
     
 }
@@ -116,20 +116,20 @@ class AddUserButton {
     button!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement, moduleContainer: HTMLElement, tableBody: HTMLElement) {
-        this.createSelf(moduleContainer, tableBody);
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
         this.createComponents();
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(moduleContainer: HTMLElement, tableBody: HTMLElement) {
+    private createSelf() {
         this.element = document.createElement("div");
         this.element.className = "w-auto h-auto flex flex-1 items-center justify-end";
         this.button = document.createElement("button");
         this.button.className = "h-auto w-auto p-1 bg-green-700 text-white hover:bg-green-900 hover:text-black cursor-pointer rounded-md transition-colors duration-300";
         this.element.appendChild(this.button);
         this.button.addEventListener("click", () => {
-            new CreateUserModal(moduleContainer, tableBody);
+            new CreateUserModal(document.getElementById("zUsers")!);
         });
     }
     
@@ -161,9 +161,10 @@ class TableContainer {
     element!: HTMLElement
     table!: Table
     
-    constructor() {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
         this.createComponets();
+        appendTo.appendChild(this.element);
     }
     
     private createSelf() {
@@ -278,6 +279,7 @@ class TableBody {
     
     private createSelf() {
         this.element = document.createElement("tbody");
+        this.element.id = "table-body";
         this.element.className = "h-auto w-auto";
     }
     
@@ -423,18 +425,19 @@ class CreateUserModal {
     element!: HTMLElement
     modal!: CreateUserModalForm
     
-    constructor(appendTo: HTMLElement, tableBody: HTMLElement) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents(tableBody);
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("div");
+        this.element.id = "create-user-modal";
         this.element.className = "w-full h-full fixed flex items-center justify-center z-50 bg-black/80 opacity-fade-in";
     }
-    private createComponents(tableBody: HTMLElement) {
-        this.modal = new CreateUserModalForm(this.element, tableBody);
+    private createComponents() {
+        this.modal = new CreateUserModalForm(this.element);
     }
     
 }
@@ -449,9 +452,9 @@ class CreateUserModalForm {
     passwordInput!: CreateUserModalFormInput
     createButton!: CreateUserModalFormButton
     
-    constructor(appendTo: HTMLElement, tableBody: HTMLElement) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents(appendTo, tableBody);
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
@@ -459,13 +462,13 @@ class CreateUserModalForm {
         this.element = document.createElement("div");
         this.element.className = "w-auto h-auto flex flex-col items-center justify-center p-3 bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg gap-y-2";
     }
-    private createComponents(modal: HTMLElement, tableBody: HTMLElement) {
-        this.closeButtonContainer = new CreateUserModalFormCloseContainer(this.element, modal);
-        this.userInput = new CreateUserModalFormInput(this.element, "Usuário");
-        this.nameInput = new CreateUserModalFormInput(this.element, "Nome");
-        this.emailInput = new CreateUserModalFormInput(this.element, "E-mail");
-        this.passwordInput = new CreateUserModalFormInput(this.element, "Senha");
-        this.createButton = new CreateUserModalFormButton(this.element, tableBody, modal, this.userInput.element, this.nameInput.element, this.emailInput.element, this.passwordInput.element);
+    private createComponents() {
+        this.closeButtonContainer = new CreateUserModalFormCloseContainer(this.element);
+        this.userInput = new CreateUserModalFormInput(this.element, "Usuário", "create-user-modal-user");
+        this.nameInput = new CreateUserModalFormInput(this.element, "Nome", "create-user-modal-name");
+        this.emailInput = new CreateUserModalFormInput(this.element, "E-mail", "create-user-modal-email");
+        this.passwordInput = new CreateUserModalFormInput(this.element, "Senha", "create-user-modal-password");
+        this.createButton = new CreateUserModalFormButton(this.element);
     }
     
 }
@@ -475,9 +478,9 @@ class CreateUserModalFormCloseContainer {
     element!: HTMLElement
     closeButton!: CreateUserModalFormCloseButton
     
-    constructor(appendTo: HTMLElement, modal: HTMLElement) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents(modal);
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
@@ -486,8 +489,8 @@ class CreateUserModalFormCloseContainer {
         this.element.className = "w-full h-auto flex justify-end";
     }
     
-    private createComponents(modal: HTMLElement) {
-        this.closeButton = new CreateUserModalFormCloseButton(this.element, modal);
+    private createComponents() {
+        this.closeButton = new CreateUserModalFormCloseButton(this.element);
     }
     
 }
@@ -496,16 +499,21 @@ class CreateUserModalFormCloseButton {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, modal: HTMLElement) {
-        this.createSelf(modal);
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(modal: HTMLElement) {
+    private createSelf() {
         this.element = document.createElement("button");
         this.element.className = "w-auto h-auto rounded-full px-2 bg-red-700 hover:bg-red-900 cursor-pointer text-white transition-colors duration-300";
         this.element.innerText = "x";
+    }
+    
+    private startListeners() {
         this.element.addEventListener("click", () => {
+            const modal = document.getElementById("create-user-modal")!;
             modal.classList.remove("opacity-fade-in");
             modal.classList.add("opacity-fade-out");
             modal.addEventListener("animationend", () => {
@@ -520,13 +528,14 @@ class CreateUserModalFormInput {
     
     element!: HTMLInputElement
     
-    constructor(appendTo: HTMLElement, placeholder: string) {
-        this.createSelf(placeholder);
+    constructor(appendTo: HTMLElement, placeholder: string, id: string) {
+        this.createSelf(placeholder, id);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(placeholder: string) {
+    private createSelf(placeholder: string, id: string) {
         this.element = document.createElement("input");
+        this.element.id = id;
         this.element.type = "text";
         this.element.className = "w-[300px] h-[30px] p-2 bg-white border border-gray-300 outline-none rounded-md";
         this.element.placeholder = placeholder;
@@ -538,20 +547,25 @@ class CreateUserModalFormButton {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, tableBody: HTMLElement, modal: HTMLElement, userInput: HTMLInputElement, nameInput: HTMLInputElement, emailInput: HTMLInputElement, passwordInput: HTMLInputElement) {
-        this.createSelf(tableBody, modal, userInput, nameInput, emailInput, passwordInput);
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(tableBody: HTMLElement, modal: HTMLElement, userInput: HTMLInputElement, nameInput: HTMLInputElement, emailInput: HTMLInputElement, passwordInput: HTMLInputElement) {
+    private createSelf() {
         this.element = document.createElement("button");
         this.element.className = "w-auto h-auto p-2 bg-green-700 hover:bg-green-900 transition-colors duration-300 rounded-md cursor-pointer text-white";
         this.element.innerText = "Criar";
+    }
+    
+    private startListeners() {
         this.element.addEventListener("click", async () => {
-            const user = userInput.value;
-            const name = nameInput.value;
-            const email = emailInput.value;
-            const password = passwordInput.value;
+            const tableBody = document.getElementById("table-body")!;
+            const user = (document.getElementById("create-user-modal-user") as HTMLInputElement).value!;
+            const name = (document.getElementById("create-user-modal-name") as HTMLInputElement).value!;
+            const email = (document.getElementById("create-user-modal-email") as HTMLInputElement).value!;
+            const password = (document.getElementById("create-user-modal-password") as HTMLInputElement).value!;
             const response = await fetch(`${window.location.origin}/users`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -562,6 +576,7 @@ class CreateUserModalFormButton {
                 new NotificationPopUp(data.message, "red");
             } else {
                 new NotificationPopUp(data.message, "green");
+                const modal = document.getElementById("create-user-modal")!;
                 modal.classList.remove("opacity-fade-in");
                 modal.classList.add("opacity-fade-out");
                 modal.addEventListener("animationend", () => {
