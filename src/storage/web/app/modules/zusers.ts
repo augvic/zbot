@@ -5,7 +5,7 @@ export default class Zusers {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
+        this.createComponents(appendTo);
         appendTo.appendChild(this.element);
     }
     
@@ -14,8 +14,8 @@ export default class Zusers {
         this.element.className = "w-full h-full opacity-fade-in bg-gray-300 dark:bg-gray-900 transition-colors duration-300 flex items-center justify-center";
     }
     
-    private createComponents() {
-        this.usersContainer = new UsersContainer(this.element);
+    private createComponents(moduleContainer: HTMLElement) {
+        this.usersContainer = new UsersContainer(this.element, moduleContainer);
     }
     
 }
@@ -26,9 +26,9 @@ class UsersContainer {
     titleBar!: TitleBar
     tableContainer!: TableContainer
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, moduleContainer: HTMLElement) {
         this.createSelf();
-        this.createComponents();
+        this.createComponents(moduleContainer);
         appendTo.appendChild(this.element);
     }
     
@@ -37,9 +37,10 @@ class UsersContainer {
         this.element.className = "w-[95%] h-[95%] flex flex-col bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg p-5 gap-3";
     }
     
-    private createComponents() {
-        this.titleBar = new TitleBar(this.element);
-        this.tableContainer = new TableContainer(this.element);
+    private createComponents(moduleContainer: HTMLElement) {
+        this.tableContainer = new TableContainer();
+        this.titleBar = new TitleBar(this.element, moduleContainer, this.tableContainer.table.tableBody.element);
+        this.element.appendChild(this.tableContainer.element);
     }
     
 }
@@ -51,9 +52,9 @@ class TitleBar {
     searchButton!: SearchButton
     addUserButton!: AddUserButton
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, moduleContainer: HTMLElement, tableBody: HTMLElement) {
         this.createSelf();
-        this.createComponents();
+        this.createComponents(moduleContainer, tableBody);
         appendTo.appendChild(this.element);
     }
     
@@ -62,10 +63,10 @@ class TitleBar {
         this.element.className = "w-full h-auto flex items-center gap-2";
     }
     
-    private createComponents() {
+    private createComponents(moduleContainer: HTMLElement, tableBody: HTMLElement) {
         this.searchInput = new SearchInput(this.element);
         this.searchButton = new SearchButton(this.element);
-        this.addUserButton = new AddUserButton(this.element);
+        this.addUserButton = new AddUserButton(this.element, moduleContainer, tableBody);
     }
     
 }
@@ -115,18 +116,21 @@ class AddUserButton {
     button!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
+    constructor(appendTo: HTMLElement, moduleContainer: HTMLElement, tableBody: HTMLElement) {
+        this.createSelf(moduleContainer, tableBody);
         this.createComponents();
         appendTo.appendChild(this.element);
     }
     
-    private createSelf() {
+    private createSelf(moduleContainer: HTMLElement, tableBody: HTMLElement) {
         this.element = document.createElement("div");
         this.element.className = "w-auto h-auto flex flex-1 items-center justify-end";
         this.button = document.createElement("button");
         this.button.className = "h-auto w-auto p-1 bg-green-700 text-white hover:bg-green-900 hover:text-black cursor-pointer rounded-md transition-colors duration-300";
         this.element.appendChild(this.button);
+        this.button.addEventListener("click", () => {
+            new CreateUserModal(moduleContainer, tableBody);
+        });
     }
     
     private createComponents() {
@@ -157,10 +161,9 @@ class TableContainer {
     element!: HTMLElement
     table!: Table
     
-    constructor(appendTo: HTMLElement) {
+    constructor() {
         this.createSelf();
         this.createComponets();
-        appendTo.appendChild(this.element);
     }
     
     private createSelf() {
@@ -240,6 +243,7 @@ class TableHeadRow {
         new TableHeadRowCell(this.element, "Nome");
         new TableHeadRowCell(this.element, "E-mail");
         new TableHeadRowCell(this.element, "Senha");
+        new TableHeadRowCell(this.element, "");
     }
     
 }
@@ -301,7 +305,7 @@ class TableBodyRow {
     
     private createSelf() {
         this.element = document.createElement("tr");
-        this.element.className = "h-auto w-auto";
+        this.element.className = "h-auto w-auto border-b-2 border-b-gray-300 dark:border-b-gray-900 transition-colors duration-300 opacity-fade-in";
     }
     
     private createComponets(user: {[key: string]: string}) {
@@ -309,6 +313,7 @@ class TableBodyRow {
         new TableBodyRowCell(this.element, user.name);
         new TableBodyRowCell(this.element, user.email);
         new TableBodyRowCell(this.element, user.password);
+        new TableBodyRowButtonsCell(this.element);
     }
     
 }
@@ -326,6 +331,276 @@ class TableBodyRowCell {
         this.element = document.createElement("td");
         this.element.className = "p-2 h-auto w-auto";
         this.element.innerText = text;
+    }
+    
+}
+
+class TableBodyRowButtonsCell {
+    
+    element!: HTMLElement
+    editButton!: EditButton
+    deleteButton!: DeleteButton
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("td");
+        this.element.className = "p-2 h-auto w-auto flex gap-x-2 justify-center";
+    }
+    
+    private createComponents() {
+        this.editButton = new EditButton(this.element);
+        this.deleteButton = new DeleteButton(this.element);
+    }
+    
+}
+
+class EditButton {
+    
+    element!: HTMLElement
+    icon!: ZusersIcon
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.className = "p-1 h-auto w-auto h-auto bg-blue-700 rounded-md hover:bg-blue-900 transition-colors duration-300 cursor-pointer";
+    }
+    private createComponents() {
+        this.icon = new ZusersIcon("static/images/edit.png", this.element);
+    }
+    
+}
+
+class DeleteButton {
+    
+    element!: HTMLElement
+    icon!: ZusersIcon
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
+    }
+    private createComponents() {
+        this.icon = new ZusersIcon("static/images/delete.png", this.element);
+    }
+    
+}
+
+class ZusersIcon {
+    
+    element!: HTMLImageElement
+    
+    constructor(src: string, appendTo: HTMLElement) {
+        this.createSelf(src);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(src: string) {
+        this.element = document.createElement("img");
+        this.element.src = src;
+        this.element.className = "size-5 opacity-fade-in";
+    }
+    
+}
+
+class CreateUserModal {
+    
+    element!: HTMLElement
+    modal!: CreateUserModalForm
+    
+    constructor(appendTo: HTMLElement, tableBody: HTMLElement) {
+        this.createSelf();
+        this.createComponents(tableBody);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-full h-full fixed flex items-center justify-center z-50 bg-black/80 opacity-fade-in";
+    }
+    private createComponents(tableBody: HTMLElement) {
+        this.modal = new CreateUserModalForm(this.element, tableBody);
+    }
+    
+}
+
+class CreateUserModalForm {
+    
+    element!: HTMLElement
+    closeButtonContainer!: CreateUserModalFormCloseContainer
+    userInput!: CreateUserModalFormInput
+    nameInput!: CreateUserModalFormInput
+    emailInput!: CreateUserModalFormInput
+    passwordInput!: CreateUserModalFormInput
+    createButton!: CreateUserModalFormButton
+    
+    constructor(appendTo: HTMLElement, tableBody: HTMLElement) {
+        this.createSelf();
+        this.createComponents(appendTo, tableBody);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-auto h-auto flex flex-col items-center justify-center p-3 bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg gap-y-2";
+    }
+    private createComponents(modal: HTMLElement, tableBody: HTMLElement) {
+        this.closeButtonContainer = new CreateUserModalFormCloseContainer(this.element, modal);
+        this.userInput = new CreateUserModalFormInput(this.element, "Usuário");
+        this.nameInput = new CreateUserModalFormInput(this.element, "Nome");
+        this.emailInput = new CreateUserModalFormInput(this.element, "E-mail");
+        this.passwordInput = new CreateUserModalFormInput(this.element, "Senha");
+        this.createButton = new CreateUserModalFormButton(this.element, tableBody, modal, this.userInput.element, this.nameInput.element, this.emailInput.element, this.passwordInput.element);
+    }
+    
+}
+
+class CreateUserModalFormCloseContainer {
+    
+    element!: HTMLElement
+    closeButton!: CreateUserModalFormCloseButton
+    
+    constructor(appendTo: HTMLElement, modal: HTMLElement) {
+        this.createSelf();
+        this.createComponents(modal);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-full h-auto flex justify-end";
+    }
+    
+    private createComponents(modal: HTMLElement) {
+        this.closeButton = new CreateUserModalFormCloseButton(this.element, modal);
+    }
+    
+}
+
+class CreateUserModalFormCloseButton {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, modal: HTMLElement) {
+        this.createSelf(modal);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(modal: HTMLElement) {
+        this.element = document.createElement("button");
+        this.element.className = "w-auto h-auto rounded-full px-2 bg-red-700 hover:bg-red-900 cursor-pointer text-white transition-colors duration-300";
+        this.element.innerText = "x";
+        this.element.addEventListener("click", () => {
+            modal.classList.remove("opacity-fade-in");
+            modal.classList.add("opacity-fade-out");
+            modal.addEventListener("animationend", () => {
+                modal.remove();
+            }, { once: true });
+        });
+    }
+    
+}
+
+class CreateUserModalFormInput {
+    
+    element!: HTMLInputElement
+    
+    constructor(appendTo: HTMLElement, placeholder: string) {
+        this.createSelf(placeholder);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(placeholder: string) {
+        this.element = document.createElement("input");
+        this.element.type = "text";
+        this.element.className = "w-[300px] h-[30px] p-2 bg-white border border-gray-300 outline-none rounded-md";
+        this.element.placeholder = placeholder;
+    }
+    
+}
+
+class CreateUserModalFormButton {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, tableBody: HTMLElement, modal: HTMLElement, userInput: HTMLInputElement, nameInput: HTMLInputElement, emailInput: HTMLInputElement, passwordInput: HTMLInputElement) {
+        this.createSelf(tableBody, modal, userInput, nameInput, emailInput, passwordInput);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(tableBody: HTMLElement, modal: HTMLElement, userInput: HTMLInputElement, nameInput: HTMLInputElement, emailInput: HTMLInputElement, passwordInput: HTMLInputElement) {
+        this.element = document.createElement("button");
+        this.element.className = "w-auto h-auto p-2 bg-green-700 hover:bg-green-900 transition-colors duration-300 rounded-md cursor-pointer text-white";
+        this.element.innerText = "Criar";
+        this.element.addEventListener("click", async () => {
+            const user = userInput.value;
+            const name = nameInput.value;
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            const response = await fetch(`${window.location.origin}/users`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user, name, email, password })
+            });
+            const data = await response.json();
+            if (!data.success) {
+                new NotificationPopUp(data.message, "red");
+            } else {
+                new NotificationPopUp(data.message, "green");
+                modal.classList.remove("opacity-fade-in");
+                modal.classList.add("opacity-fade-out");
+                modal.addEventListener("animationend", () => {
+                    modal.remove();
+                    new TableBodyRow(tableBody, { user: user, name: name, email: email, password: password });
+                }, { once: true });
+            }
+        });
+    }
+    
+}
+
+class NotificationPopUp {
+    
+    element!: HTMLElement
+    
+    constructor(message: string, color: string) {
+        this.createSelf(message, color);
+        document.body.appendChild(this.element);
+        setTimeout(() => {
+            this.element.classList.remove("fade-in-right");
+            this.element.classList.add("fade-out-right");
+            this.element.addEventListener("animationend", () => {
+                this.element.remove()
+            }, { once: true });
+        }, 3000);
+    }
+    
+    private createSelf(message: string, color: string) {
+        this.element = document.createElement("div");
+        this.element.className = "fixed z-50 bottom-4 right-5 py-3 px-6 text-white rounded-md cursor-default fade-in-right";
+        if (color == "green") {
+            this.element.classList.add("bg-green-400");
+        } else if (color == "orange") {
+            this.element.classList.add("bg-amber-400");
+        } else if (color == "red") {
+            this.element.classList.add("bg-red-400");
+        }
+        this.element.innerText = message;
     }
     
 }

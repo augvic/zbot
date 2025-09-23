@@ -7,7 +7,7 @@ class Main:
         self.app = app
         self.routes()
     
-    def routes(self) -> None:
+    def routes(self) -> str:
         @self.app.route("/", methods=["GET"])
         def get_main() -> str:
             task = RenderTemplate()
