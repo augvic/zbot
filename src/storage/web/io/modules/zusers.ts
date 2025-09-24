@@ -105,7 +105,7 @@ class SearchButton {
     }
     
     private createComponents() {
-        this.icon = new Icon("/static/images/magnifying_glass.png", this.element);
+        this.icon = new Icon("/storage/images/magnifying_glass.png", this.element);
     }
     
 }
@@ -134,7 +134,7 @@ class AddUserButton {
     }
     
     private createComponents() {
-        this.icon = new Icon("/static/images/plus.png", this.button);
+        this.icon = new Icon("/storage/images/plus.png", this.button);
     }
     
 }
@@ -269,7 +269,6 @@ class TableHeadRowCell {
 class TableBody {
     
     element!: HTMLElement
-    usersGetter!: UsersGetter
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -283,14 +282,11 @@ class TableBody {
         this.element.className = "h-auto w-auto";
     }
     
-    private createComponents() {
-        (async () => {
-            this.usersGetter = new UsersGetter();
-            const users: [{[key: string]: string}] = await this.usersGetter.getUsers()
-            users.forEach((user) => {
-                new TableBodyRow(this.element, user);
-            });
-        })();
+    private async createComponents() {
+        const users: [{[key: string]: string}] = await ZusersTasks.getAllUsers();
+        users.forEach((user) => {
+            new TableBodyRow(this.element, user);
+        });
     }
     
 }
@@ -377,7 +373,7 @@ class EditButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-blue-700 rounded-md hover:bg-blue-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new ZusersIcon("static/images/edit.png", this.element);
+        this.icon = new ZusersIcon("/storage/images/edit.png", this.element);
     }
     
 }
@@ -398,7 +394,7 @@ class DeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new ZusersIcon("static/images/delete.png", this.element);
+        this.icon = new ZusersIcon("/storage/images/delete.png", this.element);
     }
     
 }
@@ -620,9 +616,9 @@ class NotificationPopUp {
     
 }
 
-class UsersGetter {
+class ZusersTasks {
     
-    async getUsers() {
+    static async getAllUsers() {
         const response = await fetch(`${window.location.origin}/users/all`);
         const data = await response.json();
         return data;

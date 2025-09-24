@@ -9,7 +9,7 @@ class CreateUser:
     
     def execute(self, user_data: dict) -> dict | str:
         self._setup()
-        if not self.session_manager.have_user_module_access("zUsers"):
+        if not self.session_manager.have_user_module_access("zusers"):
             return "Sem autorização.", 401
         if user_data["user"] == "":
             return {"success": False, "message": "Preencha o usuário."}

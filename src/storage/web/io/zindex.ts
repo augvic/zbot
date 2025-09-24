@@ -69,9 +69,9 @@ class MenuButton {
     
     private createComponents() {
         if (document.documentElement.classList.contains("light")) {
-            this.icon = new Icon(this.element, "menu-icon", "static/images/menu_light.png");
+            this.icon = new Icon(this.element, "menu-icon", "/storage/images/menu_light.png");
         } else {
-            this.icon = new Icon(this.element, "menu-icon", "static/images/menu_dark.png");
+            this.icon = new Icon(this.element, "menu-icon", "/storage/images/menu_dark.png");
         }
     }
     
@@ -291,9 +291,9 @@ class DarkLightButton {
     private createComponents() {
         let iconSrc = "";
         if (window.localStorage.getItem("theme") == "light") {
-            iconSrc = "static/images/moon.png";
+            iconSrc = "/storage/images/moon.png";
         } else {
-            iconSrc = "static/images/sun.png";
+            iconSrc = "/storage/images/sun.png";
         }
         this.icon = new Icon(this.element, "theme-button", iconSrc);
     }
@@ -305,11 +305,11 @@ class DarkLightButton {
                 document.documentElement.classList.remove("light");
                 document.documentElement.classList.add("dark");
                 window.localStorage.setItem("theme", "dark");
-                this.icon.element.src = "static/images/sun.png";
+                this.icon.element.src = "/storage/images/sun.png";
                 this.icon.element.classList.remove("opacity-fade-in");
                 void this.icon.element.offsetWidth;
                 this.icon.element.classList.add("opacity-fade-in");
-                menuIcon.src = "static/images/menu_dark.png";
+                menuIcon.src = "/storage/images/menu_dark.png";
                 menuIcon.classList.remove("opacity-fade-in");
                 void menuIcon.offsetWidth;
                 menuIcon.classList.add("opacity-fade-in");
@@ -317,11 +317,11 @@ class DarkLightButton {
                 document.documentElement.classList.remove("dark");
                 document.documentElement.classList.add("light");
                 window.localStorage.setItem("theme", "light");
-                this.icon.element.src = "static/images/moon.png";
+                this.icon.element.src = "/storage/images/moon.png";
                 this.icon.element.classList.remove("opacity-fade-in");
                 void this.icon.element.offsetWidth;
                 this.icon.element.classList.add("opacity-fade-in");
-                menuIcon.src = "static/images/menu_light.png";
+                menuIcon.src = "/storage/images/menu_light.png";
                 menuIcon.classList.remove("opacity-fade-in");
                 void menuIcon.offsetWidth;
                 menuIcon.classList.add("opacity-fade-in");

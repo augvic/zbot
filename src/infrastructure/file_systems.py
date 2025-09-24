@@ -5,13 +5,13 @@ class BundleSender:
     
     def send_module(self, module: str):
         BASE_DIR = path.dirname(path.abspath(__file__))
-        MODULES_DIR = path.abspath(path.join(BASE_DIR, "../storage/web/.javascript/app/modules"))
+        MODULES_DIR = path.abspath(path.join(BASE_DIR, "../storage/web/.javascript/io/modules"))
         return send_from_directory(MODULES_DIR, f"{module}.js")
     
     def send_index(self,):
         BASE_DIR = path.dirname(path.abspath(__file__))
-        APP_DIR = path.abspath(path.join(BASE_DIR, "../storage/web/.javascript/app"))
-        return send_from_directory(APP_DIR, "zindex.js")
+        IO_DIR = path.abspath(path.join(BASE_DIR, "../storage/web/.javascript/io"))
+        return send_from_directory(IO_DIR, "zindex.js")
     
 class TemplateRenderer:
     

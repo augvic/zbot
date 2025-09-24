@@ -5,8 +5,8 @@
   "main": "",
   "scripts": {
     "make-dist": "tsc && npm run tailwindcss && npm run copy-static",
-    "tailwindcss": "npx @tailwindcss/cli -i ./src/storage/web/static/css/input.css -o ./src/storage/web/static/css/output.css",
-    "copy-static": "xcopy .\\src\\storage\\web\\static\\css .\\src\\storage\\web\\.javascript\\static\\css /E /I /Y && xcopy .\\src\\storage\\web\\static\\images .\\src\\storage\\web\\.javascript\\static\\images /E /I /Y"
+    "tailwindcss": "npx @tailwindcss/cli -i ./src/storage/web/storage/css/input.css -o ./src/storage/web/storage/css/output.css",
+    "copy-static": "xcopy .\\src\\storage\\web\\storage\\css .\\src\\storage\\web\\.javascript\\storage\\css /E /I /Y && xcopy .\\src\\storage\\web\\storage\\images .\\src\\storage\\web\\.javascript\\storage\\images /E /I /Y && copy .\\src\\storage\\web\\storage\\base.html .\\src\\storage\\web\\.javascript\\storage\\base.html /Y"
   },
   "repository": {
     "type": "git",
@@ -21,16 +21,5 @@
   "dependencies": {
     "tailwindcss": "^4.1.11",
     "typescript": "^5.9.2"
-  },
-  "build": {
-    "appId": "com.augvic.zbot",
-    "productName": "zbot",
-    "files": [
-      "**/*"
-    ],
-    "win": {
-      "target": "nsis",
-      "icon": "icon.png"
-    }
   }
 }
