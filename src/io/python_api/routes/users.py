@@ -1,5 +1,5 @@
 from flask import Flask, request
-from src.tasks import GetAllUsers, CreateUser
+from src.tasks import GetAllUsers, CreateUser, DeleteUser
 
 class Users:
     
@@ -18,3 +18,8 @@ class Users:
             data = request.json
             task = CreateUser()
             return task.execute(data)
+        
+        @self.app.route("/users/<user>", methods=["DELETE"])
+        def delete_users(user: str) -> dict | str:
+            task = DeleteUser()
+            return task.execute(user)

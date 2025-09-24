@@ -296,13 +296,14 @@ class TableBodyRow {
     element!: HTMLElement
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
-        this.createSelf();
+        this.createSelf(user.user);
         this.createComponets(user);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf() {
+    private createSelf(user: string) {
         this.element = document.createElement("tr");
+        this.element.id = user;
         this.element.className = "h-auto w-auto border-b-2 border-b-gray-300 dark:border-b-gray-900 transition-colors duration-300 opacity-fade-in";
     }
     
@@ -311,7 +312,7 @@ class TableBodyRow {
         new TableBodyRowCell(this.element, user.name);
         new TableBodyRowCell(this.element, user.email);
         new TableBodyRowCell(this.element, user.password);
-        new TableBodyRowButtonsCell(this.element);
+        new TableBodyRowButtonsCell(this.element, user.user);
     }
     
 }
@@ -339,9 +340,9 @@ class TableBodyRowButtonsCell {
     editButton!: EditButton
     deleteButton!: DeleteButton
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, user: string) {
         this.createSelf();
-        this.createComponents();
+        this.createComponents(user);
         appendTo.appendChild(this.element);
     }
     
@@ -350,9 +351,9 @@ class TableBodyRowButtonsCell {
         this.element.className = "p-2 h-auto w-auto flex gap-x-2 justify-center";
     }
     
-    private createComponents() {
+    private createComponents(user: string) {
         this.editButton = new EditButton(this.element);
-        this.deleteButton = new DeleteButton(this.element);
+        this.deleteButton = new DeleteButton(this.element, user);
     }
     
 }
@@ -383,9 +384,10 @@ class DeleteButton {
     element!: HTMLElement
     icon!: ZusersIcon
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, user: string) {
         this.createSelf();
         this.createComponents();
+        this.startListeners(user);
         appendTo.appendChild(this.element);
     }
     
@@ -395,6 +397,25 @@ class DeleteButton {
     }
     private createComponents() {
         this.icon = new ZusersIcon("/storage/images/delete.png", this.element);
+    }
+    
+    private startListeners(user: string) {
+        this.element.addEventListener("click", async () => {
+            const response = await fetch(`${window.location.origin}/users/${user}`, {
+                method: "DELETE",
+            });
+            const data = await response.json();
+            if (!data.success) {
+                new NotificationPopUp(data.message, "red");
+            } else {
+                new NotificationPopUp(data.message, "green");
+                const userRow = document.getElementById(user)!;
+                userRow.classList.add("opacity-fade-out");
+                userRow.addEventListener("animationend", () => {
+                    userRow.remove();
+                }, { once: true });
+            }
+        });
     }
     
 }
