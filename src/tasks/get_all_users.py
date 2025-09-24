@@ -11,7 +11,7 @@ class GetAllUsers:
     
     def execute(self, user: str) -> dict | str:
         self._setup()
-        if self.session_manager.have_user_module_access("zUsers"):
+        if self.session_manager.have_user_module_access("zusers"):
             users = self.users_client.read(user)
             users_dict = self.serializer.serialize_list(users)
             return users_dict

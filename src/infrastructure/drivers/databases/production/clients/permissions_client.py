@@ -27,10 +27,10 @@ class PermissionsClient:
         session = self.session_construct()
         return session.query(Permission).filter(Permission.user == user).all()
     
-    def update(self, user: str, module: str) -> None:
+    def update(self, user: str, module: str, new_module: str) -> None:
         session = self.session_construct()
         to_update = session.query(Permission).filter(Permission.user == user).filter(Permission.module == module).first()
-        to_update.module = module
+        to_update.module = new_module
         session.commit()
         session.refresh(to_update)
         session.close()
@@ -43,4 +43,4 @@ class PermissionsClient:
 
 if __name__ == "__main__":
     database = PermissionsClient()
-    database.create("72776", "zUsers")
+    database.update("72776", "zUsers", "zusers")

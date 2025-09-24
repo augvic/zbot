@@ -8,7 +8,7 @@ class Index:
         self.routes()
     
     def routes(self) -> None:
-        @self.app.route("/index", methods=["GET"])
+        @self.app.route("/zindex", methods=["GET"])
         def get_index() -> Response:
             task = SendIndex()
             return task.execute()

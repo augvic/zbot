@@ -5,19 +5,9 @@ class Index {
     titleBar!: TitleBar
     module!: Module
     
-    constructor(modulesAllowed: Array<{[key: string]: string}>) {
-        if (window.localStorage.getItem("theme") == null) {
-            window.localStorage.setItem("theme", "light");
-        }
-        if (window.localStorage.getItem("theme") == "light") {
-            document.documentElement.classList.remove("dark");
-            document.documentElement.classList.add("light");
-        } else {
-            document.documentElement.classList.remove("light");
-            document.documentElement.classList.add("dark");
-        }
+    constructor() {
         this.createSelf();
-        this.createComponents(modulesAllowed);
+        this.createComponents();
         document.body.appendChild(this.element);
     }
     
@@ -26,10 +16,10 @@ class Index {
         this.element.className = "h-full w-full overflow-hidden flex flex-col bg-gray-300 dark:bg-gray-900 transition-colors duration-300 opacity-fade-in";
     }
     
-    private createComponents(modulesAllowed: Array<{[key: string]: string}>) {
+    private createComponents() {
         this.module = new Module(this.element);
-        this.menu = new Menu(this.element, modulesAllowed, this.module.element);
-        this.titleBar = new TitleBar(this.element, this.menu.element);
+        this.menu = new Menu(this.element);
+        this.titleBar = new TitleBar(this.element);
     }
     
 }
@@ -40,9 +30,9 @@ class TitleBar {
     menuButton!: MenuButton
     themeButton!: DarkLightButton
     
-    constructor(appendTo: HTMLElement, menu: HTMLElement) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents(menu);
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
@@ -52,9 +42,9 @@ class TitleBar {
         this.element.className = "w-full bg-white dark:bg-gray-700 fixed z-50 h-[50px] flex items-center pl-3 transition-colors duration-300";
     }
     
-    private createComponents(menu: HTMLElement) {
-        this.menuButton = new MenuButton(this.element, menu);
-        this.themeButton = new DarkLightButton(this.element, this.menuButton.icon.element);
+    private createComponents() {
+        this.menuButton = new MenuButton(this.element);
+        this.themeButton = new DarkLightButton(this.element);
     }
     
 }
@@ -64,17 +54,30 @@ class MenuButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement, menu: HTMLElement) {
-        this.createSelf(menu);
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
         this.createComponents();
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(menu: HTMLElement) {
+    private createSelf() {
         this.element = document.createElement("button");
         this.element.id = "menu_button";
         this.element.className = "cursor-pointer w-auto h-auto rounded-md transition-colors duration-300 hover:bg-gray-300 dark:hover:bg-gray-900";
+    }
+    
+    private createComponents() {
+        if (document.documentElement.classList.contains("light")) {
+            this.icon = new Icon(this.element, "menu-icon", "static/images/menu_light.png");
+        } else {
+            this.icon = new Icon(this.element, "menu-icon", "static/images/menu_dark.png");
+        }
+    }
+    
+    private startListeners() {
         this.element.addEventListener("click", () => {
+            const menu = document.getElementById("menu")!;
             if (menu.style.display == "none") {
                 menu.classList.add("fade-in-left");
                 menu.style.display = "flex";
@@ -91,28 +94,21 @@ class MenuButton {
         });
     }
     
-    private createComponents() {
-        if (document.documentElement.classList.contains("light")) {
-            this.icon = new Icon("static/images/menu_light.png", this.element);
-        } else {
-            this.icon = new Icon("static/images/menu_dark.png", this.element);
-        }
-    }
-    
 }
 
 class Icon {
     
     element!: HTMLImageElement
     
-    constructor(src: string, appendTo: HTMLElement) {
-        this.createSelf(src);
+    constructor(appendTo: HTMLElement, id: string, src: string) {
+        this.createSelf(src, id);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(src: string) {
+    private createSelf(src: string, id: string) {
         this.element = document.createElement("img");
         this.element.src = src;
+        this.element.id = id;
         this.element.className = "size-7 opacity-fade-in";
     }
     
@@ -122,9 +118,9 @@ class Menu {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, modulesAllowed: Array<{[key: string]: string}>, modulesContainer: HTMLElement) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents(modulesAllowed, modulesContainer);
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
@@ -137,23 +133,14 @@ class Menu {
         this.element.style.display = "none";
     }
     
-    private createComponents(modulesAllowed: Array<{[key: string]: string}>, moduleContainer: HTMLElement) {
+    private async createComponents() {
+        const modulesAllowed: [{[key: string]: string}] = await ZindexTasks.getAllowedModules();
         if (modulesAllowed == null) {
             return
         }
-        modulesAllowed.forEach((element) => {
-            new ModuleButton(this.element, element, moduleContainer, this.element);
+        modulesAllowed.forEach((module) => {
+            new ModuleButton(this.element, module);
         });   
-    }
-    
-}
-
-class ModulesAllowedGetter {
-    
-    async get() {
-        const response = await fetch(`${window.location.origin}/modules-allowed`);
-        const modulesAllowed = await response.json();
-        return modulesAllowed;
     }
     
 }
@@ -164,20 +151,29 @@ class ModuleButton {
     button!: HTMLElement
     hoverSpan!: HoverSpan
     
-    constructor(appendTo: HTMLElement, module: {[key: string]: string}, moduleContainer: HTMLElement, menu: HTMLElement) {
-        this.createSelf(module.module, moduleContainer, menu);
-        this.createComponents(module.description);
+    constructor(appendTo: HTMLElement, module: {[key: string]: string}) {
+        this.createSelf(module.module);
+        this.startListeners(module.module, module.description);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(moduleName: string, moduleContainer: HTMLElement, menu: HTMLElement) {
+    private createSelf(moduleName: string) {
         this.element = document.createElement("div");
         this.element.className = "flex w-auto h-auto items-center justify-center";
         this.button = document.createElement("button");
         this.button.className = "w-full h-auto p-2 bg-blue-700 hover:bg-blue-900 cursor-pointer rounded-md text-white transition-colors duration-300";
-        this.button.innerText = moduleName;
+        const first = moduleName[0].toLowerCase();
+        const second = moduleName[1].toUpperCase();
+        const rest = moduleName.slice(2).toLowerCase();
+        const fullModuleName = first + second + rest;
+        this.button.innerText = fullModuleName;
         this.element.appendChild(this.button);
+    }
+    
+    private startListeners(moduleName:string, moduleDescription: string) {
         this.button.addEventListener("click", () => {
+            const moduleContainer = document.getElementById("module")!;
+            const menu = document.getElementById("menu")!;
             this.button.dispatchEvent(new Event("mouseleave"));
             moduleContainer.classList.add("opacity-fade-out");
             moduleContainer.addEventListener("animationend", async () => {
@@ -193,9 +189,6 @@ class ModuleButton {
                 }, { once: true });
             }, { once: true });
         });
-    }
-    
-    private createComponents(moduleDescription: string) {
         this.button.addEventListener("mouseenter", () => {
             let hoverSpan = new HoverSpan(this.element, moduleDescription);
             this.button.addEventListener("mouseleave", () => {
@@ -283,16 +276,31 @@ class DarkLightButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement, menuIcon: HTMLImageElement) {
-        this.createSelf(menuIcon);
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
         this.createComponents();
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(menuIcon: HTMLImageElement) {
+    private createSelf() {
         this.element = document.createElement("button");
         this.element.className = "cursor-pointer w-auto h-auto rounded-md transition-colors duration-300 hover:bg-gray-300 dark:hover:bg-gray-900 absolute right-3";
+    }
+    
+    private createComponents() {
+        let iconSrc = "";
+        if (window.localStorage.getItem("theme") == "light") {
+            iconSrc = "static/images/moon.png";
+        } else {
+            iconSrc = "static/images/sun.png";
+        }
+        this.icon = new Icon(this.element, "theme-button", iconSrc);
+    }
+    
+    private startListeners() {
         this.element.addEventListener("click", () => {
+            const menuIcon = document.getElementById("menu-icon")! as HTMLImageElement;
             if (document.documentElement.classList.contains("light")) {
                 document.documentElement.classList.remove("light");
                 document.documentElement.classList.add("dark");
@@ -321,20 +329,29 @@ class DarkLightButton {
         });
     }
     
-    private createComponents() {
-        let iconSrc = "";
-        if (window.localStorage.getItem("theme") == "light") {
-            iconSrc = "static/images/moon.png";
-        } else {
-            iconSrc = "static/images/sun.png";
+}
+
+class ZindexTasks {
+    
+    static setTheme() {
+        if (window.localStorage.getItem("theme") == null) {
+            window.localStorage.setItem("theme", "light");
         }
-        this.icon = new Icon(iconSrc, this.element);
+        if (window.localStorage.getItem("theme") == "light") {
+            document.documentElement.classList.remove("dark");
+            document.documentElement.classList.add("light");
+        } else {
+            document.documentElement.classList.remove("light");
+            document.documentElement.classList.add("dark");
+        }
+    }
+    
+    static async getAllowedModules() {
+        const response = await fetch(`${window.location.origin}/modules-allowed`);
+        const modulesAllowed = await response.json();
+        return modulesAllowed;
     }
     
 }
 
-(async () => {
-    const modulesAllowedGetter = new ModulesAllowedGetter();
-    const modulesAllowed = await modulesAllowedGetter.get();
-    new Index(modulesAllowed);
-})();
+new Index();

@@ -48,3 +48,8 @@ class ModulesClient:
     def get_all(self) -> list[Module]:
         session = self.session_construct()
         return session.query(Module).all()
+
+if __name__ == "__main__":
+    database = ModulesClient()
+    database.delete("zUsers")
+    database.create("zusers", "Crie, edite e exclua usuários.")

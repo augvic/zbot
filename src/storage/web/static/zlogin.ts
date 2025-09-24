@@ -134,7 +134,7 @@ class LoginButton {
         this.element.addEventListener("click", async () => {
             const user = (document.getElementById("user") as HTMLInputElement).value!;
             const password = (document.getElementById("password") as HTMLInputElement).value!;
-            const response = await fetch(`${window.location.origin}/login`, {
+            const response = await fetch(`${window.location.origin}/zlogin`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ user, password })
@@ -147,7 +147,7 @@ class LoginButton {
                 loginPage.classList.add("opacity-fade-out");
                 loginPage.addEventListener("animationend", async () => {
                     document.body.innerHTML = "";
-                    await import(`${window.location.origin}/index`);
+                    await import(`${window.location.origin}/zindex`);
                     new LoginNotificationPopUp("Logado com sucesso.", "green");
                 });
             }
@@ -254,7 +254,7 @@ class LoginIcon {
     }
 }
 
-class Tasks {
+class ZloginTasks {
     
     static setTheme() {
         if (window.localStorage.getItem("theme") == null) {
@@ -281,3 +281,6 @@ class Tasks {
     }
     
 }
+
+ZloginTasks.setTheme();
+ZloginTasks.loadLoginOrIndex();

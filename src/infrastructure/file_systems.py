@@ -11,7 +11,7 @@ class BundleSender:
     def send_index(self,):
         BASE_DIR = path.dirname(path.abspath(__file__))
         APP_DIR = path.abspath(path.join(BASE_DIR, "../storage/web/.javascript/app"))
-        return send_from_directory(APP_DIR, "index.js")
+        return send_from_directory(APP_DIR, "zindex.js")
     
 class TemplateRenderer:
     

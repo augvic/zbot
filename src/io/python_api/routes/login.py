@@ -8,13 +8,13 @@ class Login:
         self.routes()
     
     def routes(self) -> None:
-        @self.app.route("/login", methods=["POST"])
+        @self.app.route("/zlogin", methods=["POST"])
         def post_login() -> dict:
             data = request.json
             task = ValidateLogin()
             return task.execute(data)
         
-        @self.app.route("/login", methods=["GET"])
+        @self.app.route("/zlogin", methods=["GET"])
         def get_login() -> dict:
             task = VerifyIfLoggedIn()
             return task.execute()
