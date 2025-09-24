@@ -4,16 +4,6 @@ class Login {
     loginContainer!: LoginContainer
     
     constructor() {
-        if (window.localStorage.getItem("theme") == null) {
-            window.localStorage.setItem("theme", "light");
-        }
-        if (window.localStorage.getItem("theme") == "light") {
-            document.documentElement.classList.remove("dark");
-            document.documentElement.classList.add("light");
-        } else {
-            document.documentElement.classList.remove("light");
-            document.documentElement.classList.add("dark");
-        }
         this.createSelf();
         this.createComponents();
         document.body.appendChild(this.element);
@@ -21,6 +11,7 @@ class Login {
     
     private createSelf() {
         this.element = document.createElement("div");
+        this.element.id = "zlogin";
         this.element.className = "w-full h-full flex justify-center items-center bg-gray-300 dark:bg-gray-900 transition-colors duration-300";
     }
     
@@ -40,7 +31,7 @@ class LoginContainer {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents(appendTo);
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
@@ -54,11 +45,11 @@ class LoginContainer {
         });
     }
     
-    private createComponents(loginPage: HTMLElement) {
+    private createComponents() {
         this.title = new TitleContainer(this.element);
-        this.userInput = new Inputs(this.element, "Matrícula", "text");
-        this.passwordInput = new Inputs(this.element, "Senha", "password");
-        this.loginButton = new LoginButton(this.element, this.userInput.element, this.passwordInput.element, loginPage);
+        this.userInput = new Inputs(this.element, "user", "Matrícula", "text");
+        this.passwordInput = new Inputs(this.element, "password", "Senha", "password");
+        this.loginButton = new LoginButton(this.element);
     }
     
 }
@@ -91,15 +82,16 @@ class Inputs {
     
     element!: HTMLInputElement
     
-    constructor(appendTo: HTMLElement, placeholder: string, type: string) {
-        this.createSelf(placeholder, type);
+    constructor(appendTo: HTMLElement, id: string, placeholder: string, type: string) {
+        this.createSelf(placeholder, type, id);
         appendTo.appendChild(this.element); 
     }
     
-    private createSelf(placeholder: string, type: string) {
+    private createSelf(placeholder: string, type: string, id: string) {
         this.element = document.createElement("input");
         this.element.className = "h-[30px] w-[70%] bg-white rounded-md border border-gray-300 outline-none p-3";
         this.element.type = type;
+        this.element.id = id;
         this.element.placeholder = placeholder;
     }    
     
@@ -126,18 +118,22 @@ class LoginButton {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, userInput: HTMLInputElement, passwordInput: HTMLInputElement, loginPage: HTMLElement) {
-        this.createSelf(userInput, passwordInput, loginPage);
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(userInput: HTMLInputElement, passwordInput: HTMLInputElement, loginPage: HTMLElement) {
+    private createSelf() {
         this.element = document.createElement("button");
         this.element.className = "h-[30px] w-[30%] rounded-md my-2 bg-blue-700 text-white hover:bg-blue-900 cursor-pointer transition-colors duration-300";
         this.element.innerText = "Acessar";
+    }
+    
+    private startListeners() {
         this.element.addEventListener("click", async () => {
-            const user = userInput.value;
-            const password = passwordInput.value;
+            const user = (document.getElementById("user") as HTMLInputElement).value!;
+            const password = (document.getElementById("password") as HTMLInputElement).value!;
             const response = await fetch(`${window.location.origin}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -147,6 +143,7 @@ class LoginButton {
             if (!responseDict.success) {
                 new LoginNotificationPopUp("Login inválido.", "red");
             } else {
+                const loginPage = document.getElementById("zlogin")!;
                 loginPage.classList.add("opacity-fade-out");
                 loginPage.addEventListener("animationend", async () => {
                     document.body.innerHTML = "";
@@ -198,12 +195,26 @@ class LoginDarkLightButton {
     constructor(appendTo: HTMLElement) {
         this.createSelf();
         this.createComponents();
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("button");
         this.element.className = "cursor-pointer w-auto h-auto rounded-md transition-colors duration-300 hover:bg-gray-300 dark:hover:bg-gray-900 absolute ml-25 transition-colors duration-300";
+    }
+    
+    private createComponents() {
+        let iconSrc = "";
+        if (window.localStorage.getItem("theme") == "light") {
+            iconSrc = "static/images/moon.png";
+        } else {
+            iconSrc = "static/images/sun.png";
+        }
+        this.icon = new LoginIcon(this.element, iconSrc);
+    }
+    
+    private startListeners() {
         this.element.addEventListener("click", () => {
             if (document.documentElement.classList.contains("light")) {
                 document.documentElement.classList.remove("light");
@@ -225,23 +236,13 @@ class LoginDarkLightButton {
         });
     }
     
-    private createComponents() {
-        let iconSrc = "";
-        if (window.localStorage.getItem("theme") == "light") {
-            iconSrc = "static/images/moon.png";
-        } else {
-            iconSrc = "static/images/sun.png";
-        }
-        this.icon = new LoginIcon(iconSrc, this.element);
-    }
-    
 }
 
 class LoginIcon {
     
     element!: HTMLImageElement
     
-    constructor(src: string, appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, src: string) {
         this.createSelf(src);
         appendTo.appendChild(this.element);
     }
@@ -253,13 +254,30 @@ class LoginIcon {
     }
 }
 
-(async () => {
-    const response = await fetch(`${window.location.origin}/login`);
-    const data = await response.json();
-    if (data.logged_in) {
-        document.body.innerHTML = "";
-        await import(`${window.location.origin}/index`);
-    } else {
-        new Login();
+class Tasks {
+    
+    static setTheme() {
+        if (window.localStorage.getItem("theme") == null) {
+            window.localStorage.setItem("theme", "light");
+        }
+        if (window.localStorage.getItem("theme") == "light") {
+            document.documentElement.classList.remove("dark");
+            document.documentElement.classList.add("light");
+        } else {
+            document.documentElement.classList.remove("light");
+            document.documentElement.classList.add("dark");
+        }
     }
-})();
+    
+    static async loadLoginOrIndex() {
+        const response = await fetch(`${window.location.origin}/zlogin`);
+        const data = await response.json();
+        if (data.logged_in) {
+            document.body.innerHTML = "";
+            await import(`${window.location.origin}/zindex`);
+        } else {
+            new Login();
+        }
+    }
+    
+}
