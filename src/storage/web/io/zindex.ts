@@ -228,6 +228,7 @@ class NotificationPopUp {
     
     constructor(message: string, color: string) {
         this.createSelf(message, color);
+        this.pushUpExistingNotifications();
         document.body.appendChild(this.element);
         setTimeout(() => {
             this.element.classList.remove("fade-in-right");
@@ -240,7 +241,7 @@ class NotificationPopUp {
     
     private createSelf(message: string, color: string) {
         this.element = document.createElement("div");
-        this.element.className = "fixed z-50 bottom-4 right-5 py-3 px-6 text-white rounded-md cursor-default fade-in-right";
+        this.element.className = "notification fixed z-50 bottom-4 right-5 py-3 px-6 text-white rounded-md cursor-default fade-in-right transition-[bottom] duration-300 ease";
         if (color == "green") {
             this.element.classList.add("bg-green-400");
         } else if (color == "orange") {
@@ -249,6 +250,18 @@ class NotificationPopUp {
             this.element.classList.add("bg-red-400");
         }
         this.element.innerText = message;
+    }
+    
+    private pushUpExistingNotifications() {
+        const notifications = document.querySelectorAll<HTMLElement>(".notification");
+        notifications.forEach(notification => {
+            if (notification != this.element) {
+                const currentBottom = parseInt(
+                    getComputedStyle(notification).bottom.replace("px", "")
+                );
+                notification.style.bottom = (currentBottom + 60) + "px";
+            }
+        });
     }
     
 }
