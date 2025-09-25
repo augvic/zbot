@@ -159,11 +159,11 @@ class Icon {
 class TableContainer {
     
     element!: HTMLElement
-    table!: Table
+    tableWrapper!: Table
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponets();
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
@@ -172,8 +172,8 @@ class TableContainer {
         this.element.className = "w-auto h-auto flex-1 overflow-y-auto custom-scroll";
     }
     
-    private createComponets() {
-        this.table = new Table(this.element);   
+    private createComponents() {
+        this.tableWrapper = new Table(this.element);   
     }
     
 }
@@ -186,18 +186,18 @@ class Table {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponets();
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
-        this.element = document.createElement("table");
-        this.element.className = "h-auto w-full whitespace-nowrap cursor-default border-collapse text-center text-black dark:text-white transition-colors duration-300";
+        this.element = document.createElement("div");
+        this.element.className = "h-auto w-full flex flex-col whitespace-nowrap cursor-default border-collapse text-center text-black dark:text-white transition-colors duration-300";
     }
     
-    private createComponets() {
+    private createComponents() {
         this.tableHead = new TableHead(this.element);
-        this.tableBody = new TableBody(this.element);   
+        this.tableBody = new TableBody(this.element);
     }
     
 }
@@ -205,41 +205,19 @@ class Table {
 class TableHead {
     
     element!: HTMLElement
-    row!: TableHeadRow
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponets();
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
-        this.element = document.createElement("thead");
-        this.element.className = "h-auto w-auto";
+        this.element = document.createElement("div");
+        this.element.className = "font-bold h-[46px] w-full flex bg-gray-300 dark:bg-gray-900 transition-colors duration-300 sticky top-0 rounded-tl-lg rounded-tr-lg";
     }
     
-    private createComponets() {
-        this.row = new TableHeadRow(this.element);
-    }
-    
-}
-
-class TableHeadRow {
-    
-    element!: HTMLElement
-    
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
-        this.createComponets();
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf() {
-        this.element = document.createElement("tr");
-        this.element.className = "h-auto w-auto bg-gray-300 dark:bg-gray-900 transition-colors duration-300 sticky top-0";
-    }
-    
-    private createComponets() {
+    private createComponents() {
         new TableHeadRowCell(this.element, "Usuário");
         new TableHeadRowCell(this.element, "Nome");
         new TableHeadRowCell(this.element, "E-mail");
@@ -259,8 +237,8 @@ class TableHeadRowCell {
     }
     
     private createSelf(text: string) {
-        this.element = document.createElement("th");
-        this.element.className = "p-2 h-auto w-auto";
+        this.element = document.createElement("div");
+        this.element.className = "p-2 flex h-auto w-[20%] items-center justify-center";
         this.element.innerText = text;
     }
     
@@ -277,9 +255,9 @@ class TableBody {
     }
     
     private createSelf() {
-        this.element = document.createElement("tbody");
+        this.element = document.createElement("div");
         this.element.id = "table-body";
-        this.element.className = "h-auto w-auto";
+        this.element.className = "w-auto h-auto flex flex-col";
     }
     
     private async createComponents() {
@@ -297,17 +275,17 @@ class TableBodyRow {
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf(user.user);
-        this.createComponets(user);
+        this.createComponents(user);
         appendTo.appendChild(this.element);
     }
     
     private createSelf(user: string) {
-        this.element = document.createElement("tr");
+        this.element = document.createElement("div");
         this.element.id = user;
-        this.element.className = "h-auto w-auto border-b-2 border-b-gray-300 dark:border-b-gray-900 transition-colors duration-300 opacity-fade-in";
+        this.element.className = "w-full h-[46px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 opacity-fade-in table-row-transitions";
     }
     
-    private createComponets(user: {[key: string]: string}) {
+    private createComponents(user: {[key: string]: string}) {
         new TableBodyRowCell(this.element, user.user);
         new TableBodyRowCell(this.element, user.name);
         new TableBodyRowCell(this.element, user.email);
@@ -327,8 +305,8 @@ class TableBodyRowCell {
     }
     
     private createSelf(text: string) {
-        this.element = document.createElement("td");
-        this.element.className = "p-2 h-auto w-auto";
+        this.element = document.createElement("div");
+        this.element.className = "p-2 h-auto w-[20%] flex items-center justify-center overflow-x-auto custom-scroll";
         this.element.innerText = text;
     }
     
@@ -347,8 +325,8 @@ class TableBodyRowButtonsCell {
     }
     
     private createSelf() {
-        this.element = document.createElement("td");
-        this.element.className = "p-2 h-auto w-auto flex gap-x-2 justify-center";
+        this.element = document.createElement("div");
+        this.element.className = "p-2 h-auto w-[20%] flex gap-x-2 items-center justify-center";
     }
     
     private createComponents(user: string) {
@@ -412,7 +390,11 @@ class DeleteButton {
                 const userRow = document.getElementById(user)!;
                 userRow.classList.add("opacity-fade-out");
                 userRow.addEventListener("animationend", () => {
-                    userRow.remove();
+                    userRow.style.opacity = "0";
+                    userRow.style.height = "0px";
+                    userRow.addEventListener("transitionend", () => {
+                        userRow.remove();
+                    }, { once: true });
                 }, { once: true });
             }
         });
