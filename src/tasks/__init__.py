@@ -3,7 +3,9 @@ from .validate_login import ValidateLogin
 from .render_template import RenderTemplate
 from .verify_if_logged_in import VerifyIfLoggedIn
 from .send_index import SendIndex
-from .get_modules_allowed import GetModulesAllowed
+from .get_session_modules import GetSessionModules
 from .get_all_users import GetAllUsers
 from .create_user import CreateUser
 from .delete_user import DeleteUser
+from .get_modules_list import GetModulesList
+from .get_permissions_list import GetPermissionsList

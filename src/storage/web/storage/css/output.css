@@ -257,6 +257,9 @@
   .h-\[200px\] {
     height: 200px;
   }
+  .h-\[300px\] {
+    height: 300px;
+  }
   .h-auto {
     height: auto;
   }
@@ -272,8 +275,14 @@
   .w-\[70\%\] {
     width: 70%;
   }
+  .w-\[80\%\] {
+    width: 80%;
+  }
   .w-\[95\%\] {
     width: 95%;
+  }
+  .w-\[100\%\] {
+    width: 100%;
   }
   .w-\[300px\] {
     width: 300px;
@@ -510,6 +519,11 @@
       @media (hover: hover) {
         color: var(--color-black);
       }
+    }
+  }
+  .dark\:border-gray-900 {
+    &:where(.dark, .dark *) {
+      border-color: var(--color-gray-900);
     }
   }
   .dark\:border-b-gray-900 {

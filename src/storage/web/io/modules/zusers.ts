@@ -129,7 +129,7 @@ class AddUserButton {
         this.button.className = "h-auto w-auto p-1 bg-green-700 text-white hover:bg-green-900 hover:text-black cursor-pointer rounded-md transition-colors duration-300";
         this.element.appendChild(this.button);
         this.button.addEventListener("click", () => {
-            new CreateUserModal(document.getElementById("zUsers")!);
+            new Modal(document.getElementById("zUsers")!, true, null);
         });
     }
     
@@ -159,7 +159,7 @@ class Icon {
 class TableContainer {
     
     element!: HTMLElement
-    tableWrapper!: Table
+    table!: Table
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -173,7 +173,7 @@ class TableContainer {
     }
     
     private createComponents() {
-        this.tableWrapper = new Table(this.element);   
+        this.table = new Table(this.element);   
     }
     
 }
@@ -290,7 +290,7 @@ class TableBodyRow {
         new TableBodyRowCell(this.element, user.name);
         new TableBodyRowCell(this.element, user.email);
         new TableBodyRowCell(this.element, user.password);
-        new TableBodyRowButtonsCell(this.element, user.user);
+        new TableBodyRowButtonsCell(this.element, user);
     }
     
 }
@@ -318,7 +318,7 @@ class TableBodyRowButtonsCell {
     editButton!: EditButton
     deleteButton!: DeleteButton
     
-    constructor(appendTo: HTMLElement, user: string) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
         this.createComponents(user);
         appendTo.appendChild(this.element);
@@ -329,9 +329,9 @@ class TableBodyRowButtonsCell {
         this.element.className = "p-2 h-auto w-[20%] flex gap-x-2 items-center justify-center";
     }
     
-    private createComponents(user: string) {
-        this.editButton = new EditButton(this.element);
-        this.deleteButton = new DeleteButton(this.element, user);
+    private createComponents(user: {[key: string]: string}) {
+        this.editButton = new EditButton(this.element, user);
+        this.deleteButton = new DeleteButton(this.element, user.user);
     }
     
 }
@@ -341,9 +341,10 @@ class EditButton {
     element!: HTMLElement
     icon!: ZusersIcon
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
         this.createComponents();
+        this.startListeners(user);
         appendTo.appendChild(this.element);
     }
     
@@ -353,6 +354,12 @@ class EditButton {
     }
     private createComponents() {
         this.icon = new ZusersIcon("/storage/images/edit.png", this.element);
+    }
+    
+    private startListeners(user: {[key: string]: string}) {
+        this.element.addEventListener("click", () => {
+            new Modal(document.getElementById("zUsers")!, false, user);
+        });
     }
     
 }
@@ -419,175 +426,6 @@ class ZusersIcon {
     
 }
 
-class CreateUserModal {
-    
-    element!: HTMLElement
-    modal!: CreateUserModalForm
-    
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
-        this.createComponents();
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf() {
-        this.element = document.createElement("div");
-        this.element.id = "create-user-modal";
-        this.element.className = "w-full h-full fixed flex items-center justify-center z-50 bg-black/80 opacity-fade-in";
-    }
-    private createComponents() {
-        this.modal = new CreateUserModalForm(this.element);
-    }
-    
-}
-
-class CreateUserModalForm {
-    
-    element!: HTMLElement
-    closeButtonContainer!: CreateUserModalFormCloseContainer
-    userInput!: CreateUserModalFormInput
-    nameInput!: CreateUserModalFormInput
-    emailInput!: CreateUserModalFormInput
-    passwordInput!: CreateUserModalFormInput
-    createButton!: CreateUserModalFormButton
-    
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
-        this.createComponents();
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf() {
-        this.element = document.createElement("div");
-        this.element.className = "w-auto h-auto flex flex-col items-center justify-center p-3 bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg gap-y-2";
-    }
-    private createComponents() {
-        this.closeButtonContainer = new CreateUserModalFormCloseContainer(this.element);
-        this.userInput = new CreateUserModalFormInput(this.element, "text", "Usuário", "create-user-modal-user");
-        this.nameInput = new CreateUserModalFormInput(this.element, "text", "Nome", "create-user-modal-name");
-        this.emailInput = new CreateUserModalFormInput(this.element, "text", "E-mail", "create-user-modal-email");
-        this.passwordInput = new CreateUserModalFormInput(this.element, "text", "Senha", "create-user-modal-password");
-        this.createButton = new CreateUserModalFormButton(this.element);
-    }
-    
-}
-
-class CreateUserModalFormCloseContainer {
-    
-    element!: HTMLElement
-    closeButton!: CreateUserModalFormCloseButton
-    
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
-        this.createComponents();
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf() {
-        this.element = document.createElement("div");
-        this.element.className = "w-full h-auto flex justify-end";
-    }
-    
-    private createComponents() {
-        this.closeButton = new CreateUserModalFormCloseButton(this.element);
-    }
-    
-}
-
-class CreateUserModalFormCloseButton {
-    
-    element!: HTMLElement
-    
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
-        this.startListeners();
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf() {
-        this.element = document.createElement("button");
-        this.element.className = "w-auto h-auto rounded-full px-2 bg-red-700 hover:bg-red-900 cursor-pointer text-white transition-colors duration-300";
-        this.element.innerText = "x";
-    }
-    
-    private startListeners() {
-        this.element.addEventListener("click", () => {
-            const modal = document.getElementById("create-user-modal")!;
-            modal.classList.remove("opacity-fade-in");
-            modal.classList.add("opacity-fade-out");
-            modal.addEventListener("animationend", () => {
-                modal.remove();
-            }, { once: true });
-        });
-    }
-    
-}
-
-class CreateUserModalFormInput {
-    
-    element!: HTMLInputElement
-    
-    constructor(appendTo: HTMLElement, type: string, placeholder: string, id: string) {
-        this.createSelf(placeholder, id, type);
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf(placeholder: string, id: string, type: string) {
-        this.element = document.createElement("input");
-        this.element.id = id;
-        this.element.type = type;
-        this.element.className = "w-[300px] h-[30px] p-2 bg-white border border-gray-300 outline-none rounded-md";
-        this.element.placeholder = placeholder;
-    }
-    
-}
-
-class CreateUserModalFormButton {
-    
-    element!: HTMLElement
-    
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
-        this.startListeners();
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf() {
-        this.element = document.createElement("button");
-        this.element.className = "w-auto h-auto p-2 bg-green-700 hover:bg-green-900 transition-colors duration-300 rounded-md cursor-pointer text-white";
-        this.element.innerText = "Criar";
-    }
-    
-    private startListeners() {
-        this.element.addEventListener("click", async () => {
-            const tableBody = document.getElementById("table-body")!;
-            const user = (document.getElementById("create-user-modal-user") as HTMLInputElement).value!;
-            const name = (document.getElementById("create-user-modal-name") as HTMLInputElement).value!;
-            const email = (document.getElementById("create-user-modal-email") as HTMLInputElement).value!;
-            const password = (document.getElementById("create-user-modal-password") as HTMLInputElement).value!;
-            const response = await fetch(`${window.location.origin}/users`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user, name, email, password })
-            });
-            const data = await response.json();
-            if (!data.success) {
-                new NotificationPopUp(data.message, "red");
-            } else {
-                new NotificationPopUp(data.message, "green");
-                const modal = document.getElementById("create-user-modal")!;
-                modal.classList.remove("opacity-fade-in");
-                modal.classList.add("opacity-fade-out");
-                modal.addEventListener("animationend", () => {
-                    modal.remove();
-                    new TableBodyRow(tableBody, { user: user, name: name, email: email, password: password });
-                }, { once: true });
-            }
-        });
-    }
-    
-}
-
 class NotificationPopUp {
     
     element!: HTMLElement
@@ -632,10 +470,468 @@ class NotificationPopUp {
     
 }
 
+class Modal {
+    
+    element!: HTMLElement
+    modal!: ModalContainer
+    
+    constructor(appendTo: HTMLElement, create: boolean, user: {[key: string]: string} | null) {
+        this.createSelf();
+        this.createComponents(create, user);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.id = "modal";
+        this.element.className = "w-full h-full fixed flex items-center justify-center z-50 bg-black/80 opacity-fade-in";
+    }
+    private createComponents(create: boolean, user: {[key: string]: string} | null) {
+        this.modal = new ModalContainer(this.element, create, user);
+    }
+    
+}
+
+class ModalContainer {
+    
+    element!: HTMLElement
+    closeButtonContainer!: ModalCloseButtonContainer
+    elementsContainer!: ModalElements
+    button!: ModalSaveButton | ModalCreateButton
+    
+    constructor(appendTo: HTMLElement, create: boolean, user: {[key: string]: string} | null) {
+        this.createSelf();
+        this.createComponents(create, user);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-auto h-auto flex flex-col items-center p-3 bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg gap-y-2";
+    }
+    
+    private createComponents(create: boolean, user: {[key: string]: string} | null) {
+        this.closeButtonContainer = new ModalCloseButtonContainer(this.element);
+        this.elementsContainer = new ModalElements(this.element, user);
+        if (create) {
+            this.button = new ModalCreateButton(this.element);    
+        } else {
+            this.button = new ModalSaveButton(this.element);
+        }
+    }
+    
+}
+
+class ModalElements {
+    
+    element!: HTMLElement
+    inputsContainer!: ModalInputsContainer
+    tableContainer!: ModalTableContainer
+    
+    constructor(appendTo: HTMLElement, user: {[key: string]: string} | null) {
+        this.createSelf();
+        this.createComponents(user);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-full h-auto flex flex-1 gap-x-2";
+    }
+    
+    private createComponents(user: {[key: string]: string} | null) {
+        this.inputsContainer = new ModalInputsContainer(this.element, user);
+        this.tableContainer = new ModalTableContainer(this.element, user);
+    }
+    
+}
+
+class ModalInputsContainer {
+    
+    element!: HTMLElement
+    userInput!: ModalInput
+    nameInput!: ModalInput
+    emailInput!: ModalInput
+    passwordInput!: ModalInput
+    
+    constructor(appendTo: HTMLElement, user: {[key: string]: string} | null) {
+        this.createSelf();
+        this.createComponents(user);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-auto h-auto flex flex-col p-3 items-center justify-center gap-y-2 border border-gray-300 dark:border-gray-900 transition-colors duration-300 rounded-lg";
+    }
+    
+    private createComponents(user: {[key: string]: string} | null) {
+        this.userInput = new ModalInput(this.element, "text", "Usuário", "modal-user", user);
+        this.nameInput = new ModalInput(this.element, "text", "Nome", "modal-name", user);
+        this.emailInput = new ModalInput(this.element, "text", "E-mail", "modal-email", user);
+        this.passwordInput = new ModalInput(this.element, "text", "Senha", "modal-password", user);
+    }
+    
+}
+
+class ModalTableContainer {
+    
+    element!: HTMLElement
+    modulesTableContainer!: ModulesTableContainer
+    
+    constructor(appendTo: HTMLElement, user: {[key: string]: string} | null) {
+        this.createSelf();
+        this.createComponents(user);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-[300px] h-[300px] flex flex-col p-3 items-center justify-center border border-gray-300 dark:border-gray-900 transition-colors duration-300 rounded-lg";
+    }
+    
+    private createComponents(user: {[key: string]: string} | null) {
+        this.modulesTableContainer = new ModulesTableContainer(this.element, user);
+    }
+    
+}
+
+class ModalCloseButtonContainer {
+    
+    element!: HTMLElement
+    closeButton!: ModalCloseButton
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-full h-auto flex justify-end";
+    }
+    
+    private createComponents() {
+        this.closeButton = new ModalCloseButton(this.element);
+    }
+    
+}
+
+class ModalCloseButton {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.startListeners();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.className = "w-auto h-auto rounded-full px-2 bg-red-700 hover:bg-red-900 cursor-pointer text-white transition-colors duration-300";
+        this.element.innerText = "x";
+    }
+    
+    private startListeners() {
+        this.element.addEventListener("click", () => {
+            const modal = document.getElementById("modal")!;
+            modal.classList.remove("opacity-fade-in");
+            modal.classList.add("opacity-fade-out");
+            modal.addEventListener("animationend", () => {
+                modal.remove();
+            }, { once: true });
+        });
+    }
+    
+}
+
+class ModalInput {
+    
+    element!: HTMLInputElement
+    
+    constructor(appendTo: HTMLElement, type: string, placeholder: string, id: string, user: {[key: string]: string} | null) {
+        this.createSelf(placeholder, id, type, user);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(placeholder: string, id: string, type: string, user: {[key: string]: string} | null) {
+        this.element = document.createElement("input");
+        this.element.id = id;
+        this.element.type = type;
+        this.element.className = "w-[300px] h-[30px] p-2 bg-white border border-gray-300 outline-none rounded-md";
+        this.element.placeholder = placeholder;
+        if (user != null) {
+            if (id == "modal-user") {
+                this.element.value = user.user;
+            }
+            if (id == "modal-name") {
+                this.element.value = user.name;
+            }
+            if (id == "modal-email") {
+                this.element.value = user.email;
+            }
+            if (id == "modal-password") {
+                this.element.value = user.password;
+            }
+        }
+    }
+    
+}
+
+class ModalCreateButton {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.startListeners();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.className = "w-auto h-auto p-2 bg-green-700 hover:bg-green-900 transition-colors duration-300 rounded-md cursor-pointer text-white";
+        this.element.innerText = "Criar";
+    }
+    
+    private startListeners() {
+        this.element.addEventListener("click", async () => {
+            const tableBody = document.getElementById("table-body")!;
+            const user = (document.getElementById("modal-user") as HTMLInputElement).value!;
+            const name = (document.getElementById("modal-name") as HTMLInputElement).value!;
+            const email = (document.getElementById("modal-email") as HTMLInputElement).value!;
+            const password = (document.getElementById("modal-password") as HTMLInputElement).value!;
+            const response = await fetch(`${window.location.origin}/users`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user, name, email, password })
+            });
+            const data = await response.json();
+            if (!data.success) {
+                new NotificationPopUp(data.message, "red");
+            } else {
+                new NotificationPopUp(data.message, "green");
+                const modal = document.getElementById("modal")!;
+                modal.classList.remove("opacity-fade-in");
+                modal.classList.add("opacity-fade-out");
+                modal.addEventListener("animationend", () => {
+                    modal.remove();
+                    new TableBodyRow(tableBody, { user: user, name: name, email: email, password: password });
+                }, { once: true });
+            }
+        });
+    }
+    
+}
+
+class ModalSaveButton {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.startListeners();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.className = "w-auto h-auto p-2 bg-green-700 hover:bg-green-900 transition-colors duration-300 rounded-md cursor-pointer text-white";
+        this.element.innerText = "Salvar";
+    }
+    
+    private startListeners() {
+        this.element.addEventListener("click", async () => {
+
+        });
+    }
+    
+}
+
+class ModulesTableContainer {
+    
+    element!: HTMLElement
+    modulesTable!: ModulesTable
+    
+    constructor(appendTo: HTMLElement, user: {[key: string]: string} | null) {
+        this.createSelf();
+        this.createComponents(user);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-full h-full flex-1 overflow-y-auto custom-scroll";
+    }
+    
+    private createComponents(user: {[key: string]: string} | null) {
+        this.modulesTable = new ModulesTable(this.element, user);   
+    }
+    
+}
+
+class ModulesTable {
+    
+    element!: HTMLElement
+    tableHead!: ModulesTableHead
+    tableBody!: ModulesTableBody
+    
+    constructor(appendTo: HTMLElement, user: {[key: string]: string} | null) {
+        this.createSelf();
+        this.createComponents(user);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "h-auto w-full flex flex-col whitespace-nowrap cursor-default border-collapse text-center text-black dark:text-white transition-colors duration-300";
+    }
+    
+    private createComponents(user: {[key: string]: string} | null) {
+        this.tableHead = new ModulesTableHead(this.element);
+        this.tableBody = new ModulesTableBody(this.element, user);
+    }
+    
+}
+
+class ModulesTableHead {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "font-bold h-[46px] w-full flex bg-gray-300 dark:bg-gray-900 transition-colors duration-300 sticky top-0 rounded-tl-lg rounded-tr-lg";
+    }
+    
+    private createComponents() {
+        new ModulesTableHeadRowCell(this.element, "Módulos Liberados");
+    }
+    
+}
+
+class ModulesTableHeadRowCell {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, text: string) {
+        this.createSelf(text);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(text: string) {
+        this.element = document.createElement("div");
+        this.element.className = "p-2 flex h-auto w-[100%] items-center justify-center";
+        this.element.innerText = text;
+    }
+    
+}
+
+class ModulesTableBody {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, user: {[key: string]: string} | null) {
+        this.createSelf();
+        this.createComponents(user);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.id = "modules-table-body";
+        this.element.className = "w-auto h-auto flex flex-col";
+    }
+    
+    private async createComponents(user: {[key: string]: string} | null) {
+        const permissions: [{[key: string]: string}] = await ZusersTasks.getUserPermissions(user);
+        permissions.forEach((permission) => {
+            new ModulesTableBodyRow(this.element, permission);
+        });
+    }
+    
+}
+
+class ModulesTableBodyRow {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
+        this.createSelf(user.user);
+        this.createComponents(user);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(user: string) {
+        this.element = document.createElement("div");
+        this.element.id = user;
+        this.element.className = "w-full h-[46px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 opacity-fade-in table-row-transitions";
+    }
+    
+    private createComponents(user: {[key: string]: string}) {
+        new ModulesTableBodyRowCell(this.element, user.user);
+        new ModulesTableBodyRowButtonsCell(this.element, user.user);
+    }
+    
+}
+
+class ModulesTableBodyRowCell {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, text: string) {
+        this.createSelf(text);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(text: string) {
+        this.element = document.createElement("div");
+        this.element.className = "p-2 h-auto w-[80%] flex items-center justify-center overflow-x-auto custom-scroll";
+        this.element.innerText = text;
+    }
+    
+}
+
+class ModulesTableBodyRowButtonsCell {
+    
+    element!: HTMLElement
+    editButton!: EditButton
+    deleteButton!: DeleteButton
+    
+    constructor(appendTo: HTMLElement, user: string) {
+        this.createSelf();
+        this.createComponents(user);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "p-2 h-auto w-[20%] flex gap-x-2 items-center justify-center";
+    }
+    
+    private createComponents(user: string) {
+        this.deleteButton = new DeleteButton(this.element, user);
+    }
+    
+}
+
 class ZusersTasks {
     
     static async getAllUsers() {
         const response = await fetch(`${window.location.origin}/users/all`);
+        const data = await response.json();
+        return data;
+    }
+    
+    static async getUserPermissions(user: {[key: string]: string} | null) {
+        const response = await fetch(`${window.location.origin}/permissions-list/${user.user}`);
         const data = await response.json();
         return data;
     }

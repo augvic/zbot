@@ -1,11 +1,11 @@
-from src.infrastructure.drivers.databases.production.clients import UsersClient
+from src.infrastructure.drivers.databases.production.clients import PermissionsClient
 from src.infrastructure.drivers.databases import Serializer
 from src.infrastructure.file_systems import SessionManager
 
-class GetAllUsers:
+class GetPermissionsList:
     
     def _setup(self) -> None:
-        self.users_client = UsersClient()
+        self.permissions_client = PermissionsClient()
         self.session_manager = SessionManager()
         self.serializer = Serializer()
     
@@ -13,6 +13,6 @@ class GetAllUsers:
         self._setup()
         if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zusers"):
             return "Sem autorização.", 401
-        users = self.users_client.read(user)
-        users_serialized = self.serializer.serialize_list(users)
-        return users_serialized
+        permissions = self.permissions_client.read(user)
+        permissions_serialized = self.serializer.serialize_list(permissions)
+        return permissions_serialized

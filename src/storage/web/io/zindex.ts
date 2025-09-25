@@ -179,7 +179,7 @@ class ModuleButton {
             moduleContainer.addEventListener("animationend", async () => {
                 moduleContainer.classList.remove("opacity-fade-out");
                 moduleContainer.innerHTML = "";
-                let bundle = await import(`${window.location.origin}/modules/${moduleName}`);
+                let bundle = await import(`${window.location.origin}/module-bundle/${moduleName}`);
                 let bundleClass = bundle.default;
                 new bundleClass(moduleContainer);
                 menu.classList.add("fade-out-left");
@@ -360,7 +360,7 @@ class ZindexTasks {
     }
     
     static async getAllowedModules() {
-        const response = await fetch(`${window.location.origin}/modules-allowed`);
+        const response = await fetch(`${window.location.origin}/session-modules`);
         const modulesAllowed = await response.json();
         return modulesAllowed;
     }

@@ -33,7 +33,7 @@ class SessionManager:
         return False
     
     def have_user_module_access(self, module: str) -> bool:
-        for module_allowed in session["modules_allowed"]:
+        for module_allowed in session["session_modules"]:
             if module_allowed["module"] == module:
                 return True
         return False

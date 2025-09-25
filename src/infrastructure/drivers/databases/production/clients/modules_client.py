@@ -44,10 +44,6 @@ class ModulesClient:
         to_delete = session.query(Module).filter(Module.module == module).first()
         session.delete(to_delete)
         session.commit()
-    
-    def get_all(self) -> list[Module]:
-        session = self.session_construct()
-        return session.query(Module).all()
 
 if __name__ == "__main__":
     database = ModulesClient()

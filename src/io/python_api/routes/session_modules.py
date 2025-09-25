@@ -1,5 +1,5 @@
 from flask import Flask
-from src.tasks import GetModulesAllowed
+from src.tasks import GetSessionModules
 
 class ModulesAllowed:
     
@@ -8,7 +8,7 @@ class ModulesAllowed:
         self.routes()
     
     def routes(self) -> None:
-        @self.app.route("/modules-allowed", methods=["GET"])
-        def get_modules_allowed() -> dict:
-            task = GetModulesAllowed()
+        @self.app.route("/session-modules", methods=["GET"])
+        def get_session_modules() -> dict:
+            task = GetSessionModules()
             return task.execute()
