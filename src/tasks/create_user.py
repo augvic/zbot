@@ -13,13 +13,15 @@ class CreateUser:
             return "Sem autorização.", 401
         if user_data["user"] == "":
             return {"success": False, "message": "Preencha o usuário."}
+        if not str(user_data["user"]).isdigit():
+            return {"success": False, "message": "Usuário deve ser somente números."}
         if self.users_client.read(user_data["user"]):
             return {"success": False, "message": "Usuário já existe."}
         if user_data["name"] == "":
             return {"success": False, "message": "Preencha o nome."}
         if user_data["email"] == "":
             return {"success": False, "message": "Preencha o e-mail."}
-        if not "@" in user_data["email"]:
+        if not "@" in user_data["email"] or not "." in user_data["email"]:
             return {"success": False, "message": "Preencha um e-mail válido."}
         if user_data["password"] == "":
             return {"success": False, "message": "Preencha a senha."}

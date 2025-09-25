@@ -463,10 +463,10 @@ class CreateUserModalForm {
     }
     private createComponents() {
         this.closeButtonContainer = new CreateUserModalFormCloseContainer(this.element);
-        this.userInput = new CreateUserModalFormInput(this.element, "Usuário", "create-user-modal-user");
-        this.nameInput = new CreateUserModalFormInput(this.element, "Nome", "create-user-modal-name");
-        this.emailInput = new CreateUserModalFormInput(this.element, "E-mail", "create-user-modal-email");
-        this.passwordInput = new CreateUserModalFormInput(this.element, "Senha", "create-user-modal-password");
+        this.userInput = new CreateUserModalFormInput(this.element, "text", "Usuário", "create-user-modal-user");
+        this.nameInput = new CreateUserModalFormInput(this.element, "text", "Nome", "create-user-modal-name");
+        this.emailInput = new CreateUserModalFormInput(this.element, "text", "E-mail", "create-user-modal-email");
+        this.passwordInput = new CreateUserModalFormInput(this.element, "text", "Senha", "create-user-modal-password");
         this.createButton = new CreateUserModalFormButton(this.element);
     }
     
@@ -527,15 +527,15 @@ class CreateUserModalFormInput {
     
     element!: HTMLInputElement
     
-    constructor(appendTo: HTMLElement, placeholder: string, id: string) {
-        this.createSelf(placeholder, id);
+    constructor(appendTo: HTMLElement, type: string, placeholder: string, id: string) {
+        this.createSelf(placeholder, id, type);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(placeholder: string, id: string) {
+    private createSelf(placeholder: string, id: string, type: string) {
         this.element = document.createElement("input");
         this.element.id = id;
-        this.element.type = "text";
+        this.element.type = type;
         this.element.className = "w-[300px] h-[30px] p-2 bg-white border border-gray-300 outline-none rounded-md";
         this.element.placeholder = placeholder;
     }
@@ -594,6 +594,7 @@ class NotificationPopUp {
     
     constructor(message: string, color: string) {
         this.createSelf(message, color);
+        this.pushUpExistingNotifications();
         document.body.appendChild(this.element);
         setTimeout(() => {
             this.element.classList.remove("fade-in-right");
@@ -606,7 +607,7 @@ class NotificationPopUp {
     
     private createSelf(message: string, color: string) {
         this.element = document.createElement("div");
-        this.element.className = "fixed z-50 bottom-4 right-5 py-3 px-6 text-white rounded-md cursor-default fade-in-right";
+        this.element.className = "notification fixed z-50 bottom-4 right-5 py-3 px-6 text-white rounded-md cursor-default fade-in-right transition-[bottom] duration-300 ease";
         if (color == "green") {
             this.element.classList.add("bg-green-400");
         } else if (color == "orange") {
@@ -615,6 +616,18 @@ class NotificationPopUp {
             this.element.classList.add("bg-red-400");
         }
         this.element.innerText = message;
+    }
+    
+    private pushUpExistingNotifications() {
+        const notifications = document.querySelectorAll<HTMLElement>(".notification");
+        notifications.forEach(notification => {
+            if (notification != this.element) {
+                const currentBottom = parseInt(
+                    getComputedStyle(notification).bottom.replace("px", "")
+                );
+                notification.style.bottom = (currentBottom + 60) + "px";
+            }
+        });
     }
     
 }
