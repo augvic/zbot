@@ -1,5 +1,5 @@
 class Index {
-
+    
     element!: HTMLElement
     menu!: Menu
     titleBar!: TitleBar
@@ -179,9 +179,7 @@ class ModuleButton {
             moduleContainer.addEventListener("animationend", async () => {
                 moduleContainer.classList.remove("opacity-fade-out");
                 moduleContainer.innerHTML = "";
-                let bundle = await import(`${window.location.origin}/module-bundle/${moduleName}`);
-                let bundleClass = bundle.default;
-                new bundleClass(moduleContainer);
+                await import(`${window.location.origin}/module-bundle/${moduleName}`);
                 menu.classList.add("fade-out-left");
                 menu.addEventListener("animationend", () => {
                     menu.classList.remove("fade-out-left");
@@ -365,6 +363,11 @@ class ZindexTasks {
         return modulesAllowed;
     }
     
+    static loadIndex() {
+        new Index();
+    }
+    
 }
 
-new Index();
+ZindexTasks.setTheme();
+ZindexTasks.loadIndex();

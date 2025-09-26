@@ -1,12 +1,12 @@
-export default class Zusers {
+class Zusers {
     
     element!: HTMLElement
     usersContainer!: UsersContainer
     
-    constructor(appendTo: HTMLElement) {
+    constructor() {
         this.createSelf();
         this.createComponents();
-        appendTo.appendChild(this.element);
+        document.getElementById("module")!.appendChild(this.element);
     }
     
     private createSelf() {
@@ -24,8 +24,8 @@ export default class Zusers {
 class UsersContainer {
     
     element!: HTMLElement
-    titleBar!: TitleBar
-    tableContainer!: TableContainer
+    titleBar!: ContainerTitleBar
+    tableContainer!: UsersTableContainer
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -39,17 +39,17 @@ class UsersContainer {
     }
     
     private createComponents() {
-        this.titleBar = new TitleBar(this.element);
-        this.tableContainer = new TableContainer(this.element);
+        this.titleBar = new ContainerTitleBar(this.element);
+        this.tableContainer = new UsersTableContainer(this.element);
     }
     
 }
 
-class TitleBar {
+class ContainerTitleBar {
     
     element!: HTMLElement
-    searchInput!: SearchInput
-    searchButton!: SearchButton
+    searchInput!: SearchUserInput
+    searchButton!: SearchUserButton
     addUserButton!: AddUserButton
     
     constructor(appendTo: HTMLElement) {
@@ -64,14 +64,14 @@ class TitleBar {
     }
     
     private createComponents() {
-        this.searchInput = new SearchInput(this.element);
-        this.searchButton = new SearchButton(this.element);
+        this.searchInput = new SearchUserInput(this.element);
+        this.searchButton = new SearchUserButton(this.element);
         this.addUserButton = new AddUserButton(this.element);
     }
     
 }
 
-class SearchInput {
+class SearchUserInput {
     
     element!: HTMLInputElement
     
@@ -88,10 +88,10 @@ class SearchInput {
     
 }
 
-class SearchButton {
+class SearchUserButton {
     
     element!: HTMLElement
-    icon!: Icon
+    icon!: ZusersIcon
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -105,7 +105,7 @@ class SearchButton {
     }
     
     private createComponents() {
-        this.icon = new Icon("/storage/images/magnifying_glass.png", this.element);
+        this.icon = new ZusersIcon("/storage/images/magnifying_glass.png", this.element);
     }
     
 }
@@ -114,7 +114,7 @@ class AddUserButton {
     
     element!: HTMLElement
     button!: HTMLElement
-    icon!: Icon
+    icon!: ZusersIcon
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -129,37 +129,20 @@ class AddUserButton {
         this.button.className = "h-auto w-auto p-1 bg-green-700 text-white hover:bg-green-900 hover:text-black cursor-pointer rounded-md transition-colors duration-300";
         this.element.appendChild(this.button);
         this.button.addEventListener("click", () => {
-            new Modal(document.getElementById("zUsers")!, true, null);
+            
         });
     }
     
     private createComponents() {
-        this.icon = new Icon("/storage/images/plus.png", this.button);
+        this.icon = new ZusersIcon("/storage/images/plus.png", this.button);
     }
     
 }
 
-class Icon {
-    
-    element!: HTMLImageElement
-    
-    constructor(src: string, appendTo: HTMLElement) {
-        this.createSelf(src);
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf(src: string) {
-        this.element = document.createElement("img");
-        this.element.src = src;
-        this.element.className = "size-6 opacity-fade-in";
-    }
-    
-}
-
-class TableContainer {
+class UsersTableContainer {
     
     element!: HTMLElement
-    table!: Table
+    table!: UsersTable
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -173,16 +156,16 @@ class TableContainer {
     }
     
     private createComponents() {
-        this.table = new Table(this.element);   
+        this.table = new UsersTable(this.element);   
     }
     
 }
 
-class Table {
+class UsersTable {
     
     element!: HTMLElement
-    tableHead!: TableHead
-    tableBody!: TableBody
+    tableHead!: UsersTableHead
+    tableBody!: UsersTableBody
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -196,13 +179,13 @@ class Table {
     }
     
     private createComponents() {
-        this.tableHead = new TableHead(this.element);
-        this.tableBody = new TableBody(this.element);
+        this.tableHead = new UsersTableHead(this.element);
+        this.tableBody = new UsersTableBody(this.element);
     }
     
 }
 
-class TableHead {
+class UsersTableHead {
     
     element!: HTMLElement
     
@@ -218,16 +201,16 @@ class TableHead {
     }
     
     private createComponents() {
-        new TableHeadRowCell(this.element, "Usuário");
-        new TableHeadRowCell(this.element, "Nome");
-        new TableHeadRowCell(this.element, "E-mail");
-        new TableHeadRowCell(this.element, "Senha");
-        new TableHeadRowCell(this.element, "");
+        new UsersTableHeadRowCell(this.element, "Usuário");
+        new UsersTableHeadRowCell(this.element, "Nome");
+        new UsersTableHeadRowCell(this.element, "E-mail");
+        new UsersTableHeadRowCell(this.element, "Senha");
+        new UsersTableHeadRowCell(this.element, "");
     }
     
 }
 
-class TableHeadRowCell {
+class UsersTableHeadRowCell {
     
     element!: HTMLElement
     
@@ -244,7 +227,7 @@ class TableHeadRowCell {
     
 }
 
-class TableBody {
+class UsersTableBody {
     
     element!: HTMLElement
     
@@ -263,13 +246,13 @@ class TableBody {
     private async createComponents() {
         const users: [{[key: string]: string}] = await ZusersTasks.getAllUsers();
         users.forEach((user) => {
-            new TableBodyRow(this.element, user);
+            new UsersTableBodyRow(this.element, user);
         });
     }
     
 }
 
-class TableBodyRow {
+class UsersTableBodyRow {
     
     element!: HTMLElement
     
@@ -286,16 +269,16 @@ class TableBodyRow {
     }
     
     private createComponents(user: {[key: string]: string}) {
-        new TableBodyRowCell(this.element, user.user);
-        new TableBodyRowCell(this.element, user.name);
-        new TableBodyRowCell(this.element, user.email);
-        new TableBodyRowCell(this.element, user.password);
-        new TableBodyRowButtonsCell(this.element, user);
+        new UsersTableBodyRowCell(this.element, user.user);
+        new UsersTableBodyRowCell(this.element, user.name);
+        new UsersTableBodyRowCell(this.element, user.email);
+        new UsersTableBodyRowCell(this.element, user.password);
+        new UsersTableBodyRowButtonsCell(this.element, user);
     }
     
 }
 
-class TableBodyRowCell {
+class UsersTableBodyRowCell {
     
     element!: HTMLElement
     
@@ -312,11 +295,11 @@ class TableBodyRowCell {
     
 }
 
-class TableBodyRowButtonsCell {
+class UsersTableBodyRowButtonsCell {
     
     element!: HTMLElement
-    editButton!: EditButton
-    deleteButton!: DeleteButton
+    editButton!: UsersTableEditButton
+    deleteButton!: UsersTableDeleteButton
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
@@ -330,13 +313,13 @@ class TableBodyRowButtonsCell {
     }
     
     private createComponents(user: {[key: string]: string}) {
-        this.editButton = new EditButton(this.element, user);
-        this.deleteButton = new DeleteButton(this.element, user.user);
+        this.editButton = new UsersTableEditButton(this.element, user);
+        this.deleteButton = new UsersTableDeleteButton(this.element, user.user);
     }
     
 }
 
-class EditButton {
+class UsersTableEditButton {
     
     element!: HTMLElement
     icon!: ZusersIcon
@@ -358,13 +341,13 @@ class EditButton {
     
     private startListeners(user: {[key: string]: string}) {
         this.element.addEventListener("click", () => {
-            new Modal(document.getElementById("zUsers")!, false, user);
+            new EditUserModal(document.getElementById("zUsers")!, user);
         });
     }
     
 }
 
-class DeleteButton {
+class UsersTableDeleteButton {
     
     element!: HTMLElement
     icon!: ZusersIcon
@@ -391,9 +374,9 @@ class DeleteButton {
             });
             const data = await response.json();
             if (!data.success) {
-                new NotificationPopUp(data.message, "red");
+                new ZusersNotificationPopUp(data.message, "red");
             } else {
-                new NotificationPopUp(data.message, "green");
+                new ZusersNotificationPopUp(data.message, "green");
                 const userRow = document.getElementById(user)!;
                 userRow.classList.add("opacity-fade-out");
                 userRow.addEventListener("animationend", () => {
@@ -426,7 +409,7 @@ class ZusersIcon {
     
 }
 
-class NotificationPopUp {
+class ZusersNotificationPopUp {
     
     element!: HTMLElement
     
@@ -470,38 +453,38 @@ class NotificationPopUp {
     
 }
 
-class Modal {
+class EditUserModal {
     
     element!: HTMLElement
-    modal!: ModalContainer
+    modal!: EditUserModalContainer
     
-    constructor(appendTo: HTMLElement, create: boolean, user: {[key: string]: string} | null) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
-        this.createComponents(create, user);
+        this.createComponents(user);
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("div");
-        this.element.id = "modal";
+        this.element.id = "edit-user-modal";
         this.element.className = "w-full h-full fixed flex items-center justify-center z-50 bg-black/80 opacity-fade-in";
     }
-    private createComponents(create: boolean, user: {[key: string]: string} | null) {
-        this.modal = new ModalContainer(this.element, create, user);
+    private createComponents(user: {[key: string]: string}) {
+        this.modal = new EditUserModalContainer(this.element, user);
     }
     
 }
 
-class ModalContainer {
+class EditUserModalContainer {
     
     element!: HTMLElement
-    closeButtonContainer!: ModalCloseButtonContainer
-    elementsContainer!: ModalElements
-    button!: ModalSaveButton | ModalCreateButton
+    closeButtonContainer!: EditUserModalCloseButtonContainer
+    elementsContainer!: EditUserModalElements
+    button!: EditUserModalSaveButton
     
-    constructor(appendTo: HTMLElement, create: boolean, user: {[key: string]: string} | null) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
-        this.createComponents(create, user);
+        this.createComponents(user);
         appendTo.appendChild(this.element);
     }
     
@@ -510,25 +493,21 @@ class ModalContainer {
         this.element.className = "w-auto h-auto flex flex-col items-center p-3 bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg gap-y-2";
     }
     
-    private createComponents(create: boolean, user: {[key: string]: string} | null) {
-        this.closeButtonContainer = new ModalCloseButtonContainer(this.element);
-        this.elementsContainer = new ModalElements(this.element, user);
-        if (create) {
-            this.button = new ModalCreateButton(this.element);    
-        } else {
-            this.button = new ModalSaveButton(this.element);
-        }
+    private createComponents(user: {[key: string]: string}) {
+        this.closeButtonContainer = new EditUserModalCloseButtonContainer(this.element);
+        this.elementsContainer = new EditUserModalElements(this.element, user);
+        this.button = new EditUserModalSaveButton(this.element);
     }
     
 }
 
-class ModalElements {
+class EditUserModalElements {
     
     element!: HTMLElement
-    inputsContainer!: ModalInputsContainer
-    tableContainer!: ModalTableContainer
+    inputsContainer!: EditUserModalInputsContainer
+    tableContainer!: EditUserModalTableContainer
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string} | null) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
         this.createComponents(user);
         appendTo.appendChild(this.element);
@@ -539,22 +518,22 @@ class ModalElements {
         this.element.className = "w-full h-auto flex flex-1 gap-x-2";
     }
     
-    private createComponents(user: {[key: string]: string} | null) {
-        this.inputsContainer = new ModalInputsContainer(this.element, user);
-        this.tableContainer = new ModalTableContainer(this.element, user);
+    private createComponents(user: {[key: string]: string}) {
+        this.inputsContainer = new EditUserModalInputsContainer(this.element, user);
+        this.tableContainer = new EditUserModalTableContainer(this.element, user);
     }
     
 }
 
-class ModalInputsContainer {
+class EditUserModalInputsContainer {
     
     element!: HTMLElement
-    userInput!: ModalInput
-    nameInput!: ModalInput
-    emailInput!: ModalInput
-    passwordInput!: ModalInput
+    userInput!: EditUserModalInput
+    nameInput!: EditUserModalInput
+    emailInput!: EditUserModalInput
+    passwordInput!: EditUserModalInput
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string} | null) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
         this.createComponents(user);
         appendTo.appendChild(this.element);
@@ -565,21 +544,21 @@ class ModalInputsContainer {
         this.element.className = "w-auto h-auto flex flex-col p-3 items-center justify-center gap-y-2 border border-gray-300 dark:border-gray-900 transition-colors duration-300 rounded-lg";
     }
     
-    private createComponents(user: {[key: string]: string} | null) {
-        this.userInput = new ModalInput(this.element, "text", "Usuário", "modal-user", user);
-        this.nameInput = new ModalInput(this.element, "text", "Nome", "modal-name", user);
-        this.emailInput = new ModalInput(this.element, "text", "E-mail", "modal-email", user);
-        this.passwordInput = new ModalInput(this.element, "text", "Senha", "modal-password", user);
+    private createComponents(user: {[key: string]: string}) {
+        this.userInput = new EditUserModalInput(this.element, "text", "Usuário", "edit-user-modal-user", user);
+        this.nameInput = new EditUserModalInput(this.element, "text", "Nome", "edit-user-modal-name", user);
+        this.emailInput = new EditUserModalInput(this.element, "text", "E-mail", "edit-user-modal-email", user);
+        this.passwordInput = new EditUserModalInput(this.element, "text", "Senha", "edit-user-modal-password", user);
     }
     
 }
 
-class ModalTableContainer {
+class EditUserModalTableContainer {
     
     element!: HTMLElement
-    modulesTableContainer!: ModulesTableContainer
+    modulesTableContainer!: PermissionsTableContainer
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string} | null) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
         this.createComponents(user);
         appendTo.appendChild(this.element);
@@ -590,13 +569,13 @@ class ModalTableContainer {
         this.element.className = "w-[300px] h-[300px] flex flex-col p-3 items-center justify-center border border-gray-300 dark:border-gray-900 transition-colors duration-300 rounded-lg";
     }
     
-    private createComponents(user: {[key: string]: string} | null) {
-        this.modulesTableContainer = new ModulesTableContainer(this.element, user);
+    private createComponents(user: {[key: string]: string}) {
+        this.modulesTableContainer = new PermissionsTableContainer(this.element, user);
     }
     
 }
 
-class ModalCloseButtonContainer {
+class EditUserModalCloseButtonContainer {
     
     element!: HTMLElement
     closeButton!: ModalCloseButton
@@ -636,7 +615,7 @@ class ModalCloseButton {
     
     private startListeners() {
         this.element.addEventListener("click", () => {
-            const modal = document.getElementById("modal")!;
+            const modal = document.getElementById("edit-user-modal")!;
             modal.classList.remove("opacity-fade-in");
             modal.classList.add("opacity-fade-out");
             modal.addEventListener("animationend", () => {
@@ -647,40 +626,38 @@ class ModalCloseButton {
     
 }
 
-class ModalInput {
+class EditUserModalInput {
     
     element!: HTMLInputElement
     
-    constructor(appendTo: HTMLElement, type: string, placeholder: string, id: string, user: {[key: string]: string} | null) {
+    constructor(appendTo: HTMLElement, type: string, placeholder: string, id: string, user: {[key: string]: string}) {
         this.createSelf(placeholder, id, type, user);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(placeholder: string, id: string, type: string, user: {[key: string]: string} | null) {
+    private createSelf(placeholder: string, id: string, type: string, user: {[key: string]: string}) {
         this.element = document.createElement("input");
         this.element.id = id;
         this.element.type = type;
         this.element.className = "w-[300px] h-[30px] p-2 bg-white border border-gray-300 outline-none rounded-md";
         this.element.placeholder = placeholder;
-        if (user != null) {
-            if (id == "modal-user") {
-                this.element.value = user.user;
-            }
-            if (id == "modal-name") {
-                this.element.value = user.name;
-            }
-            if (id == "modal-email") {
-                this.element.value = user.email;
-            }
-            if (id == "modal-password") {
-                this.element.value = user.password;
-            }
+        if (id == "edit-user-modal-user") {
+            this.element.value = user.user;
+        }
+        if (id == "edit-user-modal-name") {
+            this.element.value = user.name;
+        }
+        if (id == "edit-user-modal-email") {
+            this.element.value = user.email;
+        }
+        if (id == "edit-user-modal-password") {
+            this.element.value = user.password;
         }
     }
     
 }
 
-class ModalCreateButton {
+class CreateUserModalCreateButton {
     
     element!: HTMLElement
     
@@ -710,15 +687,15 @@ class ModalCreateButton {
             });
             const data = await response.json();
             if (!data.success) {
-                new NotificationPopUp(data.message, "red");
+                new ZusersNotificationPopUp(data.message, "red");
             } else {
-                new NotificationPopUp(data.message, "green");
+                new ZusersNotificationPopUp(data.message, "green");
                 const modal = document.getElementById("modal")!;
                 modal.classList.remove("opacity-fade-in");
                 modal.classList.add("opacity-fade-out");
                 modal.addEventListener("animationend", () => {
                     modal.remove();
-                    new TableBodyRow(tableBody, { user: user, name: name, email: email, password: password });
+                    new UsersTableBodyRow(tableBody, { user: user, name: name, email: email, password: password });
                 }, { once: true });
             }
         });
@@ -726,7 +703,7 @@ class ModalCreateButton {
     
 }
 
-class ModalSaveButton {
+class EditUserModalSaveButton {
     
     element!: HTMLElement
     
@@ -750,12 +727,12 @@ class ModalSaveButton {
     
 }
 
-class ModulesTableContainer {
+class PermissionsTableContainer {
     
     element!: HTMLElement
-    modulesTable!: ModulesTable
+    modulesTable!: PermissionsTable
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string} | null) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
         this.createComponents(user);
         appendTo.appendChild(this.element);
@@ -766,19 +743,19 @@ class ModulesTableContainer {
         this.element.className = "w-full h-full flex-1 overflow-y-auto custom-scroll";
     }
     
-    private createComponents(user: {[key: string]: string} | null) {
-        this.modulesTable = new ModulesTable(this.element, user);   
+    private createComponents(user: {[key: string]: string}) {
+        this.modulesTable = new PermissionsTable(this.element, user);   
     }
     
 }
 
-class ModulesTable {
+class PermissionsTable {
     
     element!: HTMLElement
-    tableHead!: ModulesTableHead
-    tableBody!: ModulesTableBody
+    tableHead!: PermissionsTableHead
+    tableBody!: PermissionsTableBody
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string} | null) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
         this.createComponents(user);
         appendTo.appendChild(this.element);
@@ -789,14 +766,14 @@ class ModulesTable {
         this.element.className = "h-auto w-full flex flex-col whitespace-nowrap cursor-default border-collapse text-center text-black dark:text-white transition-colors duration-300";
     }
     
-    private createComponents(user: {[key: string]: string} | null) {
-        this.tableHead = new ModulesTableHead(this.element);
-        this.tableBody = new ModulesTableBody(this.element, user);
+    private createComponents(user: {[key: string]: string}) {
+        this.tableHead = new PermissionsTableHead(this.element);
+        this.tableBody = new PermissionsTableBody(this.element, user);
     }
     
 }
 
-class ModulesTableHead {
+class PermissionsTableHead {
     
     element!: HTMLElement
     
@@ -812,12 +789,12 @@ class ModulesTableHead {
     }
     
     private createComponents() {
-        new ModulesTableHeadRowCell(this.element, "Módulos Liberados");
+        new PermissionsTableHeadRowCell(this.element, "Módulos Liberados");
     }
     
 }
 
-class ModulesTableHeadRowCell {
+class PermissionsTableHeadRowCell {
     
     element!: HTMLElement
     
@@ -834,11 +811,11 @@ class ModulesTableHeadRowCell {
     
 }
 
-class ModulesTableBody {
+class PermissionsTableBody {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string} | null) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
         this.createComponents(user);
         appendTo.appendChild(this.element);
@@ -850,39 +827,39 @@ class ModulesTableBody {
         this.element.className = "w-auto h-auto flex flex-col";
     }
     
-    private async createComponents(user: {[key: string]: string} | null) {
+    private async createComponents(user: {[key: string]: string}) {
         const permissions: [{[key: string]: string}] = await ZusersTasks.getUserPermissions(user);
         permissions.forEach((permission) => {
-            new ModulesTableBodyRow(this.element, permission);
+            new PermissionsTableBodyRow(this.element, permission);
         });
     }
     
 }
 
-class ModulesTableBodyRow {
+class PermissionsTableBodyRow {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
-        this.createSelf(user.user);
-        this.createComponents(user);
+    constructor(appendTo: HTMLElement, permission: {[key: string]: string}) {
+        this.createSelf(permission);
+        this.createComponents(permission);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(user: string) {
+    private createSelf(permission: {[key: string]: string}) {
         this.element = document.createElement("div");
-        this.element.id = user;
+        this.element.id = permission.module
         this.element.className = "w-full h-[46px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 opacity-fade-in table-row-transitions";
     }
     
-    private createComponents(user: {[key: string]: string}) {
-        new ModulesTableBodyRowCell(this.element, user.user);
-        new ModulesTableBodyRowButtonsCell(this.element, user.user);
+    private createComponents(permission: {[key: string]: string}) {
+        new PermissionsTableBodyRowCell(this.element, permission.module);
+        new PermissionsTableBodyRowButtonsCell(this.element, permission);
     }
     
 }
 
-class ModulesTableBodyRowCell {
+class PermissionsTableBodyRowCell {
     
     element!: HTMLElement
     
@@ -899,15 +876,14 @@ class ModulesTableBodyRowCell {
     
 }
 
-class ModulesTableBodyRowButtonsCell {
+class PermissionsTableBodyRowButtonsCell {
     
     element!: HTMLElement
-    editButton!: EditButton
-    deleteButton!: DeleteButton
+    deleteButton!: PermissionsTableDeleteButton
     
-    constructor(appendTo: HTMLElement, user: string) {
+    constructor(appendTo: HTMLElement, permission: {[key: string]: string}) {
         this.createSelf();
-        this.createComponents(user);
+        this.createComponents(permission);
         appendTo.appendChild(this.element);
     }
     
@@ -916,8 +892,53 @@ class ModulesTableBodyRowButtonsCell {
         this.element.className = "p-2 h-auto w-[20%] flex gap-x-2 items-center justify-center";
     }
     
-    private createComponents(user: string) {
-        this.deleteButton = new DeleteButton(this.element, user);
+    private createComponents(permission: {[key: string]: string}) {
+        this.deleteButton = new PermissionsTableDeleteButton(this.element, permission);
+    }
+    
+}
+
+class PermissionsTableDeleteButton {
+    
+    element!: HTMLElement
+    icon!: ZusersIcon
+    
+    constructor(appendTo: HTMLElement, permission: {[key: string]: string}) {
+        this.createSelf();
+        this.createComponents();
+        this.startListeners(permission);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
+    }
+    private createComponents() {
+        this.icon = new ZusersIcon("/storage/images/delete.png", this.element);
+    }
+    
+    private startListeners(permission: {[key: string]: string}) {
+        this.element.addEventListener("click", async () => {
+            const response = await fetch(`${window.location.origin}/permissions/${permission.user}/${permission.module}`, {
+                method: "DELETE",
+            });
+            const data = await response.json();
+            if (!data.success) {
+                new ZusersNotificationPopUp(data.message, "red");
+            } else {
+                new ZusersNotificationPopUp(data.message, "green");
+                const permissionRow = document.getElementById(permission.module)!;
+                permissionRow.classList.add("opacity-fade-out");
+                permissionRow.addEventListener("animationend", () => {
+                    permissionRow.style.opacity = "0";
+                    permissionRow.style.height = "0px";
+                    permissionRow.addEventListener("transitionend", () => {
+                        permissionRow.remove();
+                    }, { once: true });
+                }, { once: true });
+            }
+        });
     }
     
 }
@@ -930,10 +951,16 @@ class ZusersTasks {
         return data;
     }
     
-    static async getUserPermissions(user: {[key: string]: string} | null) {
+    static async getUserPermissions(user: {[key: string]: string}) {
         const response = await fetch(`${window.location.origin}/permissions-list/${user.user}`);
         const data = await response.json();
         return data;
     }
     
+    static loadZusers() {
+        new Zusers();
+    }
+    
 }
+
+ZusersTasks.loadZusers();
