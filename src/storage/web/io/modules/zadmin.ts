@@ -558,7 +558,8 @@ class EditUserModalInputsContainer {
 class EditUserModalTableContainer {
     
     element!: HTMLElement
-    modulesTableContainer!: PermissionsTableContainer
+    permissionsTableContainer!: PermissionsTableContainer
+    selectContainer!: ModalModulesListContainer
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
@@ -568,11 +569,101 @@ class EditUserModalTableContainer {
     
     private createSelf() {
         this.element = document.createElement("div");
-        this.element.className = "w-[300px] h-[300px] flex flex-col p-3 items-center justify-center border border-gray-300 dark:border-gray-900 transition-colors duration-300 rounded-lg";
+        this.element.className = "w-[300px] h-[300px] flex flex-col p-3 gap-y-2 items-center justify-center border border-gray-300 dark:border-gray-900 transition-colors duration-300 rounded-lg";
     }
     
     private createComponents(user: {[key: string]: string}) {
-        this.modulesTableContainer = new PermissionsTableContainer(this.element, user);
+        this.selectContainer = new ModalModulesListContainer(this.element);
+        this.permissionsTableContainer = new PermissionsTableContainer(this.element, user);
+    }
+    
+}
+
+class ModalModulesListContainer {
+    
+    element!: HTMLElement
+    select!: ModalModulesList
+    button!: AddModuleButton
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-auto h-auto flex gap-x-2";
+    }
+    
+    private createComponents() {
+        this.select = new ModalModulesList(this.element);
+        this.button = new AddModuleButton(this.element);
+    }
+    
+}
+
+class ModalModulesList {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("select");
+        this.element.className = "h-auto w-auto bg-white border border-gray-300 rounded-md p-1";
+    }
+    
+    private async createComponents() {
+        const modules: [{[key: string]: string}] = await ZadminTasks.getModulesList();
+        modules.forEach(module => {
+            new Option(this.element, module.module)
+        });
+    }
+    
+}
+
+class Option {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, text: string) {
+        this.createSelf(text);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(text: string) {
+        this.element = document.createElement("option");
+        this.element.innerText = text;
+    }
+    
+}
+
+class AddModuleButton {
+    
+    element!: HTMLElement
+    icon!: ZadminIcon
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.className = "h-auto w-auto p-1 bg-green-700 text-white hover:bg-green-900 hover:text-black cursor-pointer rounded-md transition-colors duration-300";
+        this.element.addEventListener("click", () => {
+            
+        });
+    }
+    
+    private createComponents() {
+        this.icon = new ZadminIcon("/storage/images/plus.png", this.element);
     }
     
 }
@@ -866,7 +957,7 @@ class PermissionsTableBody {
     
     private createSelf() {
         this.element = document.createElement("div");
-        this.element.id = "modules-table-body";
+        this.element.id = "permissions-table-body";
         this.element.className = "w-auto h-auto flex flex-col";
     }
     
@@ -1008,7 +1099,7 @@ class ZadminTasks {
     }
     
     static async deleteUserPermission(permission: {[key: string]: string}) {
-        const response = await fetch(`${window.location.origin}/permissions/${permission.user}/${permission.module}`, {
+        const response = await fetch(`${window.location.origin}/permissions/${permission.user}/${permission.module.toLowerCase()}`, {
             method: "DELETE",
         });
         const data = await response.json();
@@ -1021,6 +1112,12 @@ class ZadminTasks {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ user, name, email, password })
         });
+        const data = await response.json();
+        return data;
+    }
+    
+    static async getModulesList() {
+        const response = await fetch(`${window.location.origin}/modules-list`);
         const data = await response.json();
         return data;
     }

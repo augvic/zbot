@@ -15,5 +15,6 @@ class DeletePermission:
         user_exists = self.users_client.read(user)
         if not user_exists:
             return {"success": False, "message": "Usuário não existe."}
-        self.permissions_client.delete(user, module)
+        module_upper = module[0] + module[1].upper() + module[2:]
+        self.permissions_client.delete(user, module_upper)
         return {"success": True, "message": "Permissão removida."}

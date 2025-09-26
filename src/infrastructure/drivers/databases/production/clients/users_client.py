@@ -50,3 +50,7 @@ class UsersClient:
         to_delete = session.query(User).filter(User.user == user).first()
         session.delete(to_delete)
         session.commit()
+
+if __name__ == "__main__":
+    database = UsersClient()
+    database.delete("ac\zc")
