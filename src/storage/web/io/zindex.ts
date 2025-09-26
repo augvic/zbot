@@ -162,11 +162,7 @@ class ModuleButton {
         this.element.className = "flex w-auto h-auto items-center justify-center";
         this.button = document.createElement("button");
         this.button.className = "w-full h-auto p-2 bg-blue-700 hover:bg-blue-900 cursor-pointer rounded-md text-white transition-colors duration-300";
-        const first = moduleName[0].toLowerCase();
-        const second = moduleName[1].toUpperCase();
-        const rest = moduleName.slice(2).toLowerCase();
-        const fullModuleName = first + second + rest;
-        this.button.innerText = fullModuleName;
+        this.button.innerText = moduleName;
         this.element.appendChild(this.button);
     }
     
@@ -179,7 +175,9 @@ class ModuleButton {
             moduleContainer.addEventListener("animationend", async () => {
                 moduleContainer.classList.remove("opacity-fade-out");
                 moduleContainer.innerHTML = "";
-                await import(`${window.location.origin}/module-bundle/${moduleName}`);
+                const bundle = await import(`${window.location.origin}/module-bundle/${moduleName.toLowerCase()}`);
+                const bundleClass = bundle.default;
+                new bundleClass(moduleContainer);
                 menu.classList.add("fade-out-left");
                 menu.addEventListener("animationend", () => {
                     menu.classList.remove("fade-out-left");

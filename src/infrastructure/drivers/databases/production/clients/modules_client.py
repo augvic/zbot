@@ -47,5 +47,5 @@ class ModulesClient:
 
 if __name__ == "__main__":
     database = ModulesClient()
-    database.delete("zUsers")
-    database.create("zusers", "Crie, edite e exclua usuários.")
+    database.delete("zadmin")
+    database.create("zAdmin", "Gerencie a aplicação.")

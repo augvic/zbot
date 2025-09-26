@@ -17,7 +17,7 @@ class Api:
         self.modules_allowed_route = ModulesAllowed(self.app)
         self.modules_route = ModuleBundle(self.app)
         self.modules_list_route = ModulesList(self.app)
-        self.permissions_list_route = PermissionsList(self.app)
+        self.permissions_route = Permissions(self.app)
         self.users_route = Users(self.app)
         self.app.run(debug=True)
 

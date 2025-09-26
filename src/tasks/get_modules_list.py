@@ -11,7 +11,7 @@ class GetModulesList:
     
     def execute(self) -> dict | str:
         self._setup()
-        if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zusers"):
+        if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zAdmin"):
             return "Sem autorização.", 401
         modules = self.modules_client.read("all")
         modules_serialized = self.serializer.serialize_list(modules)

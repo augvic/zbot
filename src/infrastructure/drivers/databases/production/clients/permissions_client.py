@@ -43,4 +43,4 @@ class PermissionsClient:
 
 if __name__ == "__main__":
     database = PermissionsClient()
-    database.update("72776", "zUsers", "zusers")
+    database.update("72776", "zadmin", "zAdmin")

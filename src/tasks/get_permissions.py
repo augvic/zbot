@@ -2,7 +2,7 @@ from src.infrastructure.drivers.databases.production.clients import PermissionsC
 from src.infrastructure.drivers.databases import Serializer
 from src.infrastructure.file_systems import SessionManager
 
-class GetPermissionsList:
+class GetPermissions:
     
     def _setup(self) -> None:
         self.permissions_client = PermissionsClient()
@@ -11,7 +11,7 @@ class GetPermissionsList:
     
     def execute(self, user: str) -> dict | str:
         self._setup()
-        if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zusers"):
+        if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zAdmin"):
             return "Sem autorização.", 401
         permissions = self.permissions_client.read(user)
         permissions_serialized = self.serializer.serialize_list(permissions)

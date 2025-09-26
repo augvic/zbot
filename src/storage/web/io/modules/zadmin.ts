@@ -1,17 +1,17 @@
-class Zusers {
+export default class Zadmin {
     
     element!: HTMLElement
     usersContainer!: UsersContainer
     
-    constructor() {
+    constructor(moduleContainer: HTMLElement) {
         this.createSelf();
         this.createComponents();
-        document.getElementById("module")!.appendChild(this.element);
+        moduleContainer.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("div");
-        this.element.id = "zUsers";
+        this.element.id = "zAdmin";
         this.element.className = "w-full h-full opacity-fade-in bg-gray-300 dark:bg-gray-900 transition-colors duration-300 flex items-center justify-center";
     }
     
@@ -91,7 +91,7 @@ class SearchUserInput {
 class SearchUserButton {
     
     element!: HTMLElement
-    icon!: ZusersIcon
+    icon!: ZadminIcon
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -105,7 +105,7 @@ class SearchUserButton {
     }
     
     private createComponents() {
-        this.icon = new ZusersIcon("/storage/images/magnifying_glass.png", this.element);
+        this.icon = new ZadminIcon("/storage/images/magnifying_glass.png", this.element);
     }
     
 }
@@ -114,7 +114,7 @@ class AddUserButton {
     
     element!: HTMLElement
     button!: HTMLElement
-    icon!: ZusersIcon
+    icon!: ZadminIcon
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -134,7 +134,7 @@ class AddUserButton {
     }
     
     private createComponents() {
-        this.icon = new ZusersIcon("/storage/images/plus.png", this.button);
+        this.icon = new ZadminIcon("/storage/images/plus.png", this.button);
     }
     
 }
@@ -239,12 +239,12 @@ class UsersTableBody {
     
     private createSelf() {
         this.element = document.createElement("div");
-        this.element.id = "table-body";
+        this.element.id = "users-table-body";
         this.element.className = "w-auto h-auto flex flex-col";
     }
     
     private async createComponents() {
-        const users: [{[key: string]: string}] = await ZusersTasks.getAllUsers();
+        const users: [{[key: string]: string}] = await ZadminTasks.getAllUsers();
         users.forEach((user) => {
             new UsersTableBodyRow(this.element, user);
         });
@@ -264,15 +264,15 @@ class UsersTableBodyRow {
     
     private createSelf(user: string) {
         this.element = document.createElement("div");
-        this.element.id = user;
+        this.element.id = `${user}-row`;
         this.element.className = "w-full h-[46px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 opacity-fade-in table-row-transitions";
     }
     
     private createComponents(user: {[key: string]: string}) {
-        new UsersTableBodyRowCell(this.element, user.user);
-        new UsersTableBodyRowCell(this.element, user.name);
-        new UsersTableBodyRowCell(this.element, user.email);
-        new UsersTableBodyRowCell(this.element, user.password);
+        new UsersTableBodyRowCell(this.element, user.user, user.user, "user");
+        new UsersTableBodyRowCell(this.element, user.name, user.user, "name");
+        new UsersTableBodyRowCell(this.element, user.email, user.user, "email");
+        new UsersTableBodyRowCell(this.element, user.password, user.user, "password");
         new UsersTableBodyRowButtonsCell(this.element, user);
     }
     
@@ -282,14 +282,15 @@ class UsersTableBodyRowCell {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, text: string) {
-        this.createSelf(text);
+    constructor(appendTo: HTMLElement, text: string, user: string, type: string) {
+        this.createSelf(text, user, type);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(text: string) {
+    private createSelf(text: string, user: string, type: string) {
         this.element = document.createElement("div");
         this.element.className = "p-2 h-auto w-[20%] flex items-center justify-center overflow-x-auto custom-scroll";
+        this.element.id = `${user}-${type}-cell`;
         this.element.innerText = text;
     }
     
@@ -322,7 +323,7 @@ class UsersTableBodyRowButtonsCell {
 class UsersTableEditButton {
     
     element!: HTMLElement
-    icon!: ZusersIcon
+    icon!: ZadminIcon
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
@@ -336,12 +337,12 @@ class UsersTableEditButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-blue-700 rounded-md hover:bg-blue-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new ZusersIcon("/storage/images/edit.png", this.element);
+        this.icon = new ZadminIcon("/storage/images/edit.png", this.element);
     }
     
     private startListeners(user: {[key: string]: string}) {
         this.element.addEventListener("click", () => {
-            new EditUserModal(document.getElementById("zUsers")!, user);
+            new EditUserModal(document.getElementById("zAdmin")!, user);
         });
     }
     
@@ -350,7 +351,7 @@ class UsersTableEditButton {
 class UsersTableDeleteButton {
     
     element!: HTMLElement
-    icon!: ZusersIcon
+    icon!: ZadminIcon
     
     constructor(appendTo: HTMLElement, user: string) {
         this.createSelf();
@@ -364,7 +365,7 @@ class UsersTableDeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new ZusersIcon("/storage/images/delete.png", this.element);
+        this.icon = new ZadminIcon("/storage/images/delete.png", this.element);
     }
     
     private startListeners(user: string) {
@@ -374,10 +375,10 @@ class UsersTableDeleteButton {
             });
             const data = await response.json();
             if (!data.success) {
-                new ZusersNotificationPopUp(data.message, "red");
+                new ZadminNotificationPopUp(data.message, "red");
             } else {
-                new ZusersNotificationPopUp(data.message, "green");
-                const userRow = document.getElementById(user)!;
+                new ZadminNotificationPopUp(data.message, "green");
+                const userRow = document.getElementById(`${user}-row`)!;
                 userRow.classList.add("opacity-fade-out");
                 userRow.addEventListener("animationend", () => {
                     userRow.style.opacity = "0";
@@ -392,7 +393,7 @@ class UsersTableDeleteButton {
     
 }
 
-class ZusersIcon {
+class ZadminIcon {
     
     element!: HTMLImageElement
     
@@ -409,7 +410,7 @@ class ZusersIcon {
     
 }
 
-class ZusersNotificationPopUp {
+class ZadminNotificationPopUp {
     
     element!: HTMLElement
     
@@ -578,7 +579,7 @@ class EditUserModalTableContainer {
 class EditUserModalCloseButtonContainer {
     
     element!: HTMLElement
-    closeButton!: ModalCloseButton
+    closeButton!: EditUserModalCloseButton
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -592,12 +593,12 @@ class EditUserModalCloseButtonContainer {
     }
     
     private createComponents() {
-        this.closeButton = new ModalCloseButton(this.element);
+        this.closeButton = new EditUserModalCloseButton(this.element);
     }
     
 }
 
-class ModalCloseButton {
+class EditUserModalCloseButton {
     
     element!: HTMLElement
     
@@ -675,11 +676,11 @@ class CreateUserModalCreateButton {
     
     private startListeners() {
         this.element.addEventListener("click", async () => {
-            const tableBody = document.getElementById("table-body")!;
-            const user = (document.getElementById("modal-user") as HTMLInputElement).value!;
-            const name = (document.getElementById("modal-name") as HTMLInputElement).value!;
-            const email = (document.getElementById("modal-email") as HTMLInputElement).value!;
-            const password = (document.getElementById("modal-password") as HTMLInputElement).value!;
+            const tableBody = document.getElementById("users-table-body")!;
+            const user = (document.getElementById("create-user-modal-user") as HTMLInputElement).value!;
+            const name = (document.getElementById("create-user-modal-name") as HTMLInputElement).value!;
+            const email = (document.getElementById("create-user-modal-email") as HTMLInputElement).value!;
+            const password = (document.getElementById("create-user-modal-password") as HTMLInputElement).value!;
             const response = await fetch(`${window.location.origin}/users`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -687,10 +688,10 @@ class CreateUserModalCreateButton {
             });
             const data = await response.json();
             if (!data.success) {
-                new ZusersNotificationPopUp(data.message, "red");
+                new ZadminNotificationPopUp(data.message, "red");
             } else {
-                new ZusersNotificationPopUp(data.message, "green");
-                const modal = document.getElementById("modal")!;
+                new ZadminNotificationPopUp(data.message, "green");
+                const modal = document.getElementById("crate-user-modal")!;
                 modal.classList.remove("opacity-fade-in");
                 modal.classList.add("opacity-fade-out");
                 modal.addEventListener("animationend", () => {
@@ -721,7 +722,42 @@ class EditUserModalSaveButton {
     
     private startListeners() {
         this.element.addEventListener("click", async () => {
-
+            const user = (document.getElementById("edit-user-modal-user") as HTMLInputElement).value!;
+            const name = (document.getElementById("edit-user-modal-name") as HTMLInputElement).value!;
+            const email = (document.getElementById("edit-user-modal-email") as HTMLInputElement).value!;
+            const password = (document.getElementById("edit-user-modal-password") as HTMLInputElement).value!;
+            const permissionsElements = document.querySelectorAll<HTMLElement>("permissions-cell");
+            const permissionsList: string[] = [];
+            permissionsElements.forEach(element => {
+                permissionsList.push(element.innerText.toLowerCase());
+            });
+            const data = await ZadminTasks.updateUser(user, name, email, password);
+            if (!data.success) {
+                new ZadminNotificationPopUp(data.message, "red");
+            } else {
+                const data = await ZadminTasks.updateUserPermissions(user, permissionsList);
+                if (!data.success) {
+                    new ZadminNotificationPopUp(data.message, "red");
+                } else {
+                    new ZadminNotificationPopUp(data.message, "green");
+                    const modal = document.getElementById("edit-user-modal")!;
+                    modal.classList.remove("opacity-fade-in");
+                    modal.classList.add("opacity-fade-out");
+                    modal.addEventListener("animationend", () => {
+                        modal.remove();
+                        const userRow = document.getElementById(`${user}-row`)!;
+                        userRow.classList.remove("opacity-fade-in");
+                        userRow.classList.add("opacity-fade-out");
+                        userRow.addEventListener("animationend", () => {
+                            (document.getElementById(`${user}-user-cell`)! as HTMLInputElement).value = user;
+                            (document.getElementById(`${user}-name-cell`)! as HTMLInputElement).value = name;
+                            (document.getElementById(`${user}-email-cell`)! as HTMLInputElement).value = email;
+                            (document.getElementById(`${user}-password-cell`)! as HTMLInputElement).value = password;
+                            userRow.classList.add("opacity-fade-in");
+                        }, { once: true });
+                    }, { once: true });
+                }
+            }
         });
     }
     
@@ -828,7 +864,7 @@ class PermissionsTableBody {
     }
     
     private async createComponents(user: {[key: string]: string}) {
-        const permissions: [{[key: string]: string}] = await ZusersTasks.getUserPermissions(user);
+        const permissions: [{[key: string]: string}] = await ZadminTasks.getUserPermissions(user);
         permissions.forEach((permission) => {
             new PermissionsTableBodyRow(this.element, permission);
         });
@@ -870,7 +906,7 @@ class PermissionsTableBodyRowCell {
     
     private createSelf(text: string) {
         this.element = document.createElement("div");
-        this.element.className = "p-2 h-auto w-[80%] flex items-center justify-center overflow-x-auto custom-scroll";
+        this.element.className = "permissions-cell p-2 h-auto w-[80%] flex items-center justify-center overflow-x-auto custom-scroll";
         this.element.innerText = text;
     }
     
@@ -901,7 +937,7 @@ class PermissionsTableBodyRowButtonsCell {
 class PermissionsTableDeleteButton {
     
     element!: HTMLElement
-    icon!: ZusersIcon
+    icon!: ZadminIcon
     
     constructor(appendTo: HTMLElement, permission: {[key: string]: string}) {
         this.createSelf();
@@ -915,19 +951,16 @@ class PermissionsTableDeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new ZusersIcon("/storage/images/delete.png", this.element);
+        this.icon = new ZadminIcon("/storage/images/delete.png", this.element);
     }
     
     private startListeners(permission: {[key: string]: string}) {
         this.element.addEventListener("click", async () => {
-            const response = await fetch(`${window.location.origin}/permissions/${permission.user}/${permission.module}`, {
-                method: "DELETE",
-            });
-            const data = await response.json();
+            const data = await ZadminTasks.deleteUserPermission(permission);
             if (!data.success) {
-                new ZusersNotificationPopUp(data.message, "red");
+                new ZadminNotificationPopUp(data.message, "red");
             } else {
-                new ZusersNotificationPopUp(data.message, "green");
+                new ZadminNotificationPopUp(data.message, "green");
                 const permissionRow = document.getElementById(permission.module)!;
                 permissionRow.classList.add("opacity-fade-out");
                 permissionRow.addEventListener("animationend", () => {
@@ -943,7 +976,7 @@ class PermissionsTableDeleteButton {
     
 }
 
-class ZusersTasks {
+class ZadminTasks {
     
     static async getAllUsers() {
         const response = await fetch(`${window.location.origin}/users/all`);
@@ -952,15 +985,37 @@ class ZusersTasks {
     }
     
     static async getUserPermissions(user: {[key: string]: string}) {
-        const response = await fetch(`${window.location.origin}/permissions-list/${user.user}`);
+        const response = await fetch(`${window.location.origin}/permissions/${user.user}`);
         const data = await response.json();
         return data;
     }
     
-    static loadZusers() {
-        new Zusers();
+    static async updateUserPermissions(user: string, permissionsList: string[]) {
+        const response = await fetch(`${window.location.origin}/permissions/${user}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ permissionsList })
+        });
+        const data = await response.json();
+        return data;
+    }
+    
+    static async deleteUserPermission(permission: {[key: string]: string}) {
+        const response = await fetch(`${window.location.origin}/permissions/${permission.user}/${permission.module.toLowerCase()}`, {
+            method: "DELETE",
+        });
+        const data = await response.json();
+        return data;
+    }
+    
+    static async updateUser(user: string, name: string, email: string, password: string) {
+        const response = await fetch(`${window.location.origin}/users/${user}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user, name, email, password })
+        });
+        const data = await response.json();
+        return data;
     }
     
 }
-
-ZusersTasks.loadZusers();
