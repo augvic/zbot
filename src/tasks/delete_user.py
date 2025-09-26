@@ -11,8 +11,8 @@ class DeleteUser:
         self._setup()
         if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zAdmin"):
             return "Sem autorização.", 401
-        user = self.users_client.read(user)
-        if not user:
+        user_exists = self.users_client.read(user)
+        if not user_exists:
             return {"success": False, "message": "Usuário não existe."}
         self.users_client.delete(user)
         return {"success": True, "message": "Usuário removido."}

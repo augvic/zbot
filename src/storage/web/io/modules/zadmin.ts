@@ -244,7 +244,7 @@ class UsersTableBody {
     }
     
     private async createComponents() {
-        const users: [{[key: string]: string}] = await ZadminTasks.getAllUsers();
+        const users: [{[key: string]: string}] = await ZadminTasks.getUser("all");
         users.forEach((user) => {
             new UsersTableBodyRow(this.element, user);
         });
@@ -545,11 +545,12 @@ class EditUserModalInputsContainer {
         this.element.className = "w-auto h-auto flex flex-col p-3 items-center justify-center gap-y-2 border border-gray-300 dark:border-gray-900 transition-colors duration-300 rounded-lg";
     }
     
-    private createComponents(user: {[key: string]: string}) {
-        this.userInput = new EditUserModalInput(this.element, "text", "Usuário", "edit-user-modal-user", user);
-        this.nameInput = new EditUserModalInput(this.element, "text", "Nome", "edit-user-modal-name", user);
-        this.emailInput = new EditUserModalInput(this.element, "text", "E-mail", "edit-user-modal-email", user);
-        this.passwordInput = new EditUserModalInput(this.element, "text", "Senha", "edit-user-modal-password", user);
+    private async createComponents(user: {[key: string]: string}) {
+        const userDataUpdated = await ZadminTasks.getUser(user.user)
+        this.userInput = new EditUserModalInput(this.element, "text", "Usuário", "edit-user-modal-user", userDataUpdated);
+        this.nameInput = new EditUserModalInput(this.element, "text", "Nome", "edit-user-modal-name", userDataUpdated);
+        this.emailInput = new EditUserModalInput(this.element, "text", "E-mail", "edit-user-modal-email", userDataUpdated);
+        this.passwordInput = new EditUserModalInput(this.element, "text", "Senha", "edit-user-modal-password", userDataUpdated);
     }
     
 }
@@ -734,30 +735,36 @@ class EditUserModalSaveButton {
             const data = await ZadminTasks.updateUser(user, name, email, password);
             if (!data.success) {
                 new ZadminNotificationPopUp(data.message, "red");
+                return;
             } else {
+                new ZadminNotificationPopUp(data.message, "green");
+            }
+            if (permissionsElements.length != 0) {
                 const data = await ZadminTasks.updateUserPermissions(user, permissionsList);
                 if (!data.success) {
                     new ZadminNotificationPopUp(data.message, "red");
+                    return;
                 } else {
                     new ZadminNotificationPopUp(data.message, "green");
-                    const modal = document.getElementById("edit-user-modal")!;
-                    modal.classList.remove("opacity-fade-in");
-                    modal.classList.add("opacity-fade-out");
-                    modal.addEventListener("animationend", () => {
-                        modal.remove();
-                        const userRow = document.getElementById(`${user}-row`)!;
-                        userRow.classList.remove("opacity-fade-in");
-                        userRow.classList.add("opacity-fade-out");
-                        userRow.addEventListener("animationend", () => {
-                            (document.getElementById(`${user}-user-cell`)! as HTMLInputElement).value = user;
-                            (document.getElementById(`${user}-name-cell`)! as HTMLInputElement).value = name;
-                            (document.getElementById(`${user}-email-cell`)! as HTMLInputElement).value = email;
-                            (document.getElementById(`${user}-password-cell`)! as HTMLInputElement).value = password;
-                            userRow.classList.add("opacity-fade-in");
-                        }, { once: true });
-                    }, { once: true });
                 }
             }
+            const modal = document.getElementById("edit-user-modal")!;
+            modal.classList.remove("opacity-fade-in");
+            modal.classList.add("opacity-fade-out");
+            modal.addEventListener("animationend", () => {
+                modal.remove();
+                let userRow = document.getElementById(`${user}-row`)!;
+                userRow.classList.remove("opacity-fade-in");
+                userRow.classList.add("opacity-fade-out");
+                userRow.addEventListener("animationend", () => {
+                    document.getElementById(`${user}-user-cell`)!.innerText = user;
+                    document.getElementById(`${user}-name-cell`)!.innerText = name;
+                    document.getElementById(`${user}-email-cell`)!.innerText = email;
+                    document.getElementById(`${user}-password-cell`)!.innerText = password;
+                    userRow.classList.remove("opacity-fade-out");
+                    userRow.classList.add("opacity-fade-in");
+                }, { once: true });
+            }, { once: true });
         });
     }
     
@@ -978,8 +985,8 @@ class PermissionsTableDeleteButton {
 
 class ZadminTasks {
     
-    static async getAllUsers() {
-        const response = await fetch(`${window.location.origin}/users/all`);
+    static async getUser(user: string) {
+        const response = await fetch(`${window.location.origin}/users/${user}`);
         const data = await response.json();
         return data;
     }
@@ -1001,7 +1008,7 @@ class ZadminTasks {
     }
     
     static async deleteUserPermission(permission: {[key: string]: string}) {
-        const response = await fetch(`${window.location.origin}/permissions/${permission.user}/${permission.module.toLowerCase()}`, {
+        const response = await fetch(`${window.location.origin}/permissions/${permission.user}/${permission.module}`, {
             method: "DELETE",
         });
         const data = await response.json();

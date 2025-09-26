@@ -14,5 +14,8 @@ class GetUsers:
         if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zAdmin"):
             return "Sem autorização.", 401
         users = self.users_client.read(user)
-        users_serialized = self.serializer.serialize_list(users)
+        if isinstance(users, list):
+            users_serialized = self.serializer.serialize_list(users)
+        else:
+            users_serialized = self.serializer.serialize(users)
         return users_serialized
