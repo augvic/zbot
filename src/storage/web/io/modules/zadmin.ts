@@ -1,7 +1,7 @@
 export default class Zadmin {
     
     element!: HTMLElement
-    usersContainer!: UsersContainer
+    usersContainer!: Container
     
     constructor(moduleContainer: HTMLElement) {
         this.createSelf();
@@ -16,15 +16,15 @@ export default class Zadmin {
     }
     
     private createComponents() {
-        this.usersContainer = new UsersContainer(this.element);
+        this.usersContainer = new Container(this.element);
     }
     
 }
 
-class UsersContainer {
+class Container {
     
     element!: HTMLElement
-    titleBar!: ContainerTitleBar
+    titleBar!: ContainerTopBar
     tableContainer!: UsersTableContainer
     
     constructor(appendTo: HTMLElement) {
@@ -39,13 +39,13 @@ class UsersContainer {
     }
     
     private createComponents() {
-        this.titleBar = new ContainerTitleBar(this.element);
+        this.titleBar = new ContainerTopBar(this.element);
         this.tableContainer = new UsersTableContainer(this.element);
     }
     
 }
 
-class ContainerTitleBar {
+class ContainerTopBar {
     
     element!: HTMLElement
     searchInput!: SearchUserInput
@@ -119,6 +119,7 @@ class AddUserButton {
     constructor(appendTo: HTMLElement) {
         this.createSelf();
         this.createComponents();
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
@@ -128,13 +129,16 @@ class AddUserButton {
         this.button = document.createElement("button");
         this.button.className = "h-auto w-auto p-1 bg-green-700 text-white hover:bg-green-900 hover:text-black cursor-pointer rounded-md transition-colors duration-300";
         this.element.appendChild(this.button);
-        this.button.addEventListener("click", () => {
-            
-        });
     }
     
     private createComponents() {
         this.icon = new ZadminIcon("/storage/images/plus.png", this.button);
+    }
+    
+    private startListeners() {
+        this.element.addEventListener("click", () => {
+            new UserModal(document.getElementById("zAdmin")!, {}, false);
+        });
     }
     
 }
@@ -342,7 +346,7 @@ class UsersTableEditButton {
     
     private startListeners(user: {[key: string]: string}) {
         this.element.addEventListener("click", () => {
-            new EditUserModal(document.getElementById("zAdmin")!, user);
+            new UserModal(document.getElementById("zAdmin")!, user, true);
         });
     }
     
@@ -454,38 +458,38 @@ class ZadminNotificationPopUp {
     
 }
 
-class EditUserModal {
+class UserModal {
     
     element!: HTMLElement
-    modal!: EditUserModalContainer
+    modal!: UserModalContainer
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user);
+        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("div");
-        this.element.id = "edit-user-modal";
+        this.element.id = "user-modal";
         this.element.className = "w-full h-full fixed flex items-center justify-center z-50 bg-black/80 opacity-fade-in";
     }
-    private createComponents(user: {[key: string]: string}) {
-        this.modal = new EditUserModalContainer(this.element, user);
+    private createComponents(user: {[key: string]: string}, editModal: boolean) {
+        this.modal = new UserModalContainer(this.element, user, editModal);
     }
     
 }
 
-class EditUserModalContainer {
+class UserModalContainer {
     
     element!: HTMLElement
-    closeButtonContainer!: EditUserModalCloseButtonContainer
-    elementsContainer!: EditUserModalElements
-    button!: EditUserModalSaveButton
+    closeButtonContainer!: UserModalCloseButtonContainer
+    elementsContainer!: UserModalElements
+    button!: UserModalSaveButton | UserModalCreateButton
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user);
+        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
     }
     
@@ -494,23 +498,27 @@ class EditUserModalContainer {
         this.element.className = "w-auto h-auto flex flex-col items-center p-3 bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg gap-y-2";
     }
     
-    private createComponents(user: {[key: string]: string}) {
-        this.closeButtonContainer = new EditUserModalCloseButtonContainer(this.element);
-        this.elementsContainer = new EditUserModalElements(this.element, user);
-        this.button = new EditUserModalSaveButton(this.element);
+    private createComponents(user: {[key: string]: string}, editModal: boolean) {
+        this.closeButtonContainer = new UserModalCloseButtonContainer(this.element);
+        this.elementsContainer = new UserModalElements(this.element, user, editModal);
+        if (editModal) {
+            this.button = new UserModalSaveButton(this.element);
+        } else {
+            this.button = new UserModalCreateButton(this.element);
+        }
     }
     
 }
 
-class EditUserModalElements {
+class UserModalElements {
     
     element!: HTMLElement
-    inputsContainer!: EditUserModalInputsContainer
-    tableContainer!: EditUserModalTableContainer
+    inputsContainer!: UserModalInputsContainer
+    tableContainer!: UserModalTableContainer
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user);
+        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
     }
     
@@ -519,24 +527,24 @@ class EditUserModalElements {
         this.element.className = "w-full h-auto flex flex-1 gap-x-2";
     }
     
-    private createComponents(user: {[key: string]: string}) {
-        this.inputsContainer = new EditUserModalInputsContainer(this.element, user);
-        this.tableContainer = new EditUserModalTableContainer(this.element, user);
+    private createComponents(user: {[key: string]: string}, editModal: boolean) {
+        this.inputsContainer = new UserModalInputsContainer(this.element, user, editModal);
+        this.tableContainer = new UserModalTableContainer(this.element, user);
     }
     
 }
 
-class EditUserModalInputsContainer {
+class UserModalInputsContainer {
     
     element!: HTMLElement
-    userInput!: EditUserModalInput
-    nameInput!: EditUserModalInput
-    emailInput!: EditUserModalInput
-    passwordInput!: EditUserModalInput
+    userInput!: UserModalInput
+    nameInput!: UserModalInput
+    emailInput!: UserModalInput
+    passwordInput!: UserModalInput
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user);
+        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
     }
     
@@ -545,21 +553,28 @@ class EditUserModalInputsContainer {
         this.element.className = "w-auto h-auto flex flex-col p-3 items-center justify-center gap-y-2 border border-gray-300 dark:border-gray-900 transition-colors duration-300 rounded-lg";
     }
     
-    private async createComponents(user: {[key: string]: string}) {
-        const userDataUpdated = await ZadminTasks.getUser(user.user)
-        this.userInput = new EditUserModalInput(this.element, "text", "Usuário", "edit-user-modal-user", userDataUpdated);
-        this.nameInput = new EditUserModalInput(this.element, "text", "Nome", "edit-user-modal-name", userDataUpdated);
-        this.emailInput = new EditUserModalInput(this.element, "text", "E-mail", "edit-user-modal-email", userDataUpdated);
-        this.passwordInput = new EditUserModalInput(this.element, "text", "Senha", "edit-user-modal-password", userDataUpdated);
+    private async createComponents(user: {[key: string]: string}, editModal: boolean) {
+        if (editModal) {
+            const userDataUpdated = await ZadminTasks.getUser(user.user)
+            this.userInput = new UserModalInput(this.element, "text", "Usuário", "user-modal-user", userDataUpdated.user);
+            this.nameInput = new UserModalInput(this.element, "text", "Nome", "user-modal-name", userDataUpdated.name);
+            this.emailInput = new UserModalInput(this.element, "text", "E-mail", "user-modal-email", userDataUpdated.email);
+            this.passwordInput = new UserModalInput(this.element, "text", "Senha", "user-modal-password", userDataUpdated.password);
+        } else {
+            this.userInput = new UserModalInput(this.element, "text", "Usuário", "user-modal-user", "");
+            this.nameInput = new UserModalInput(this.element, "text", "Nome", "user-modal-name", "");
+            this.emailInput = new UserModalInput(this.element, "text", "E-mail", "user-modal-email", "");
+            this.passwordInput = new UserModalInput(this.element, "text", "Senha", "user-modal-password", "");
+        }
     }
     
 }
 
-class EditUserModalTableContainer {
+class UserModalTableContainer {
     
     element!: HTMLElement
     permissionsTableContainer!: PermissionsTableContainer
-    selectContainer!: ModalModulesListContainer
+    selectContainer!: UserModalModulesListContainer
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
@@ -573,17 +588,17 @@ class EditUserModalTableContainer {
     }
     
     private createComponents(user: {[key: string]: string}) {
-        this.selectContainer = new ModalModulesListContainer(this.element);
+        this.selectContainer = new UserModalModulesListContainer(this.element);
         this.permissionsTableContainer = new PermissionsTableContainer(this.element, user);
     }
     
 }
 
-class ModalModulesListContainer {
+class UserModalModulesListContainer {
     
     element!: HTMLElement
-    select!: ModalModulesList
-    button!: AddModuleButton
+    select!: UserModalModulesList
+    button!: UserModalAddModuleButton
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -597,13 +612,13 @@ class ModalModulesListContainer {
     }
     
     private createComponents() {
-        this.select = new ModalModulesList(this.element);
-        this.button = new AddModuleButton(this.element);
+        this.select = new UserModalModulesList(this.element);
+        this.button = new UserModalAddModuleButton(this.element);
     }
     
 }
 
-class ModalModulesList {
+class UserModalModulesList {
     
     element!: HTMLElement
     
@@ -615,6 +630,7 @@ class ModalModulesList {
     
     private createSelf() {
         this.element = document.createElement("select");
+        this.element.id = "modules-list";
         this.element.className = "h-auto w-auto bg-white border border-gray-300 rounded-md p-1";
     }
     
@@ -643,7 +659,7 @@ class Option {
     
 }
 
-class AddModuleButton {
+class UserModalAddModuleButton {
     
     element!: HTMLElement
     icon!: ZadminIcon
@@ -651,27 +667,40 @@ class AddModuleButton {
     constructor(appendTo: HTMLElement) {
         this.createSelf();
         this.createComponents();
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("button");
         this.element.className = "h-auto w-auto p-1 bg-green-700 text-white hover:bg-green-900 hover:text-black cursor-pointer rounded-md transition-colors duration-300";
-        this.element.addEventListener("click", () => {
-            
-        });
     }
     
     private createComponents() {
         this.icon = new ZadminIcon("/storage/images/plus.png", this.element);
     }
     
+    private startListeners() {
+        this.element.addEventListener("click", () => {
+            const modulesList = document.getElementById("modules-list")! as HTMLSelectElement;
+            const index = modulesList.selectedIndex;
+            const selectedModule = modulesList.options[index].innerText;
+            const rowExists = document.getElementById(`${selectedModule}-row`);
+            if (rowExists != null) {
+                new ZadminNotificationPopUp("Módulo já adicionado.", "orange");
+            } else {
+                const permissionsTableBody = document.getElementById("permissions-table-body")!;
+                new PermissionsTableBodyRow(permissionsTableBody, { module: selectedModule });
+            }
+        });
+    }
+    
 }
 
-class EditUserModalCloseButtonContainer {
+class UserModalCloseButtonContainer {
     
     element!: HTMLElement
-    closeButton!: EditUserModalCloseButton
+    closeButton!: UserModalCloseButton
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -685,12 +714,12 @@ class EditUserModalCloseButtonContainer {
     }
     
     private createComponents() {
-        this.closeButton = new EditUserModalCloseButton(this.element);
+        this.closeButton = new UserModalCloseButton(this.element);
     }
     
 }
 
-class EditUserModalCloseButton {
+class UserModalCloseButton {
     
     element!: HTMLElement
     
@@ -708,7 +737,7 @@ class EditUserModalCloseButton {
     
     private startListeners() {
         this.element.addEventListener("click", () => {
-            const modal = document.getElementById("edit-user-modal")!;
+            const modal = document.getElementById("user-modal")!;
             modal.classList.remove("opacity-fade-in");
             modal.classList.add("opacity-fade-out");
             modal.addEventListener("animationend", () => {
@@ -719,38 +748,27 @@ class EditUserModalCloseButton {
     
 }
 
-class EditUserModalInput {
+class UserModalInput {
     
     element!: HTMLInputElement
     
-    constructor(appendTo: HTMLElement, type: string, placeholder: string, id: string, user: {[key: string]: string}) {
-        this.createSelf(placeholder, id, type, user);
+    constructor(appendTo: HTMLElement, type: string, placeholder: string, id: string, value: string) {
+        this.createSelf(placeholder, id, type, value);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(placeholder: string, id: string, type: string, user: {[key: string]: string}) {
+    private createSelf(placeholder: string, id: string, type: string, value: string) {
         this.element = document.createElement("input");
         this.element.id = id;
         this.element.type = type;
         this.element.className = "w-[300px] h-[30px] p-2 bg-white border border-gray-300 outline-none rounded-md";
         this.element.placeholder = placeholder;
-        if (id == "edit-user-modal-user") {
-            this.element.value = user.user;
-        }
-        if (id == "edit-user-modal-name") {
-            this.element.value = user.name;
-        }
-        if (id == "edit-user-modal-email") {
-            this.element.value = user.email;
-        }
-        if (id == "edit-user-modal-password") {
-            this.element.value = user.password;
-        }
+        this.element.value = value;
     }
     
 }
 
-class CreateUserModalCreateButton {
+class UserModalCreateButton {
     
     element!: HTMLElement
     
@@ -769,10 +787,10 @@ class CreateUserModalCreateButton {
     private startListeners() {
         this.element.addEventListener("click", async () => {
             const tableBody = document.getElementById("users-table-body")!;
-            const user = (document.getElementById("create-user-modal-user") as HTMLInputElement).value!;
-            const name = (document.getElementById("create-user-modal-name") as HTMLInputElement).value!;
-            const email = (document.getElementById("create-user-modal-email") as HTMLInputElement).value!;
-            const password = (document.getElementById("create-user-modal-password") as HTMLInputElement).value!;
+            const user = (document.getElementById("user-modal-user") as HTMLInputElement).value!;
+            const name = (document.getElementById("user-modal-name") as HTMLInputElement).value!;
+            const email = (document.getElementById("user-modal-email") as HTMLInputElement).value!;
+            const password = (document.getElementById("user-modal-password") as HTMLInputElement).value!;
             const response = await fetch(`${window.location.origin}/users`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -783,7 +801,7 @@ class CreateUserModalCreateButton {
                 new ZadminNotificationPopUp(data.message, "red");
             } else {
                 new ZadminNotificationPopUp(data.message, "green");
-                const modal = document.getElementById("crate-user-modal")!;
+                const modal = document.getElementById("user-modal")!;
                 modal.classList.remove("opacity-fade-in");
                 modal.classList.add("opacity-fade-out");
                 modal.addEventListener("animationend", () => {
@@ -796,7 +814,7 @@ class CreateUserModalCreateButton {
     
 }
 
-class EditUserModalSaveButton {
+class UserModalSaveButton {
     
     element!: HTMLElement
     
@@ -814,10 +832,10 @@ class EditUserModalSaveButton {
     
     private startListeners() {
         this.element.addEventListener("click", async () => {
-            const user = (document.getElementById("edit-user-modal-user") as HTMLInputElement).value!;
-            const name = (document.getElementById("edit-user-modal-name") as HTMLInputElement).value!;
-            const email = (document.getElementById("edit-user-modal-email") as HTMLInputElement).value!;
-            const password = (document.getElementById("edit-user-modal-password") as HTMLInputElement).value!;
+            const user = (document.getElementById("user-modal-user") as HTMLInputElement).value!;
+            const name = (document.getElementById("user-modal-name") as HTMLInputElement).value!;
+            const email = (document.getElementById("user-modal-email") as HTMLInputElement).value!;
+            const password = (document.getElementById("user-modal-password") as HTMLInputElement).value!;
             const permissionsElements = document.querySelectorAll<HTMLElement>("permissions-cell");
             const permissionsList: string[] = [];
             permissionsElements.forEach(element => {
@@ -839,7 +857,7 @@ class EditUserModalSaveButton {
                     new ZadminNotificationPopUp(data.message, "green");
                 }
             }
-            const modal = document.getElementById("edit-user-modal")!;
+            const modal = document.getElementById("user-modal")!;
             modal.classList.remove("opacity-fade-in");
             modal.classList.add("opacity-fade-out");
             modal.addEventListener("animationend", () => {
@@ -982,7 +1000,7 @@ class PermissionsTableBodyRow {
     
     private createSelf(permission: {[key: string]: string}) {
         this.element = document.createElement("div");
-        this.element.id = permission.module
+        this.element.id = `${permission.module}-row`;
         this.element.className = "w-full h-[46px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 opacity-fade-in table-row-transitions";
     }
     
@@ -1053,22 +1071,16 @@ class PermissionsTableDeleteButton {
     }
     
     private startListeners(permission: {[key: string]: string}) {
-        this.element.addEventListener("click", async () => {
-            const data = await ZadminTasks.deleteUserPermission(permission);
-            if (!data.success) {
-                new ZadminNotificationPopUp(data.message, "red");
-            } else {
-                new ZadminNotificationPopUp(data.message, "green");
-                const permissionRow = document.getElementById(permission.module)!;
-                permissionRow.classList.add("opacity-fade-out");
-                permissionRow.addEventListener("animationend", () => {
-                    permissionRow.style.opacity = "0";
-                    permissionRow.style.height = "0px";
-                    permissionRow.addEventListener("transitionend", () => {
-                        permissionRow.remove();
-                    }, { once: true });
+        this.element.addEventListener("click", () => {
+            const permissionRow = document.getElementById(`${permission.module}-row`)!;
+            permissionRow.classList.add("opacity-fade-out");
+            permissionRow.addEventListener("animationend", () => {
+                permissionRow.style.opacity = "0";
+                permissionRow.style.height = "0px";
+                permissionRow.addEventListener("transitionend", () => {
+                    permissionRow.remove();
                 }, { once: true });
-            }
+            }, { once: true });
         });
     }
     
