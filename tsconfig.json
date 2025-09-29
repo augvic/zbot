@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "ES2020",
         "module": "esnext",
-        "outDir": "./src/storage/web/.javascript",
+        "outDir": "./.javascript",
         "strict": true,
         "esModuleInterop": true,
         "moduleResolution": "bundler",
