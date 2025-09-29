@@ -4,9 +4,9 @@
   "description": "🤖 Automation software for enterprise.",
   "main": "",
   "scripts": {
-    "make-dist": "tsc && npm run tailwindcss && npm run copy-static",
+    "compile": "tsc && npm run tailwindcss && npm run copy-files",
     "tailwindcss": "npx @tailwindcss/cli -i ./src/web_client/io/static/css/input.css -o ./src/web_client/io/static/css/output.css",
-    "copy-static": "xcopy .\\src\\web_client\\io\\static\\css .\\.javascript\\io\\static\\css /E /I /Y && xcopy .\\src\\web_client\\io\\static\\images .\\.javascript\\io\\static\\images /E /I /Y && xcopy .\\src\\web_client\\io\\template .\\.javascript\\io\\template /E /I /Y"
+    "copy-files": "xcopy .\\src\\web_client\\io\\static\\css .\\.javascript\\io\\static\\css /E /I /Y && xcopy .\\src\\web_client\\io\\static\\images .\\.javascript\\io\\static\\images /E /I /Y && xcopy .\\src\\web_client\\io\\template .\\.javascript\\io\\template /E /I /Y"
   },
   "repository": {
     "type": "git",
