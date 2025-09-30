@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html lang="pt" class="h-full w-full">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>zBot</title>
+        <link rel="stylesheet" href="/static/css/output.css">
+        <link rel="icon" type="image/ico" href="/static/images/icon.ico">
+    </head>
+    
+    <body class="h-full w-full bg-gray-300 dark:bg-gray-900 overflow-hidden"></body>
+    
+    <script type="module">
+        if (window.localStorage.getItem("theme") == null) {
+            window.localStorage.setItem("theme", "light");
+        }
+        if (window.localStorage.getItem("theme") == "light") {
+            document.documentElement.classList.remove("dark");
+            document.documentElement.classList.add("light");
+        } else {
+            document.documentElement.classList.remove("light");
+            document.documentElement.classList.add("dark");
+        }
+        const response = await fetch(`${window.location.origin}/login`);
+        const data = await response.json();
+        let bundle = null;
+        let bundleClass = null;
+        if (data.logged_in) {
+            bundle = await import(`${window.location.origin}/page-bundle/zindex.js`);
+        } else {
+            bundle = await import(`${window.location.origin}/page-bundle/zlogin.js`);
+        }
+        bundleClass = bundle.default;
+        document.body.innerHTML = "";
+        new bundleClass();
+    </script>
+    
+</html>
