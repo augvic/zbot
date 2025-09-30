@@ -6,7 +6,10 @@
         "strict": true,
         "esModuleInterop": true,
         "moduleResolution": "bundler",
-        "sourceMap": false
+        "sourceMap": false,
+        "paths": {
+            "/component-bundle/*": ["./src/web_client/io/components/*"]
+        }
     },
     "include": ["**/*.ts"]
 }

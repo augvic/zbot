@@ -1,97 +1,23 @@
-class Index {
+import { Bar } from "/component-bundle/bar.js";
+import { Page } from "/component-bundle/page.js";
+
+export default class IndexPage extends Page {
     
     element!: HTMLElement
     menu!: Menu
-    titleBar!: TitleBar
+    titleBar!: IndexTitleBar
     module!: Module
     
     constructor() {
-        this.createSelf();
+        super("zIndex");
         this.createComponents();
         document.body.appendChild(this.element);
-    }
-    
-    private createSelf() {
-        this.element = document.createElement("div");
-        this.element.className = "h-full w-full overflow-hidden flex flex-col bg-gray-300 dark:bg-gray-900 transition-colors duration-300 opacity-fade-in";
     }
     
     private createComponents() {
         this.module = new Module(this.element);
         this.menu = new Menu(this.element);
-        this.titleBar = new TitleBar(this.element);
-    }
-    
-}
-
-class TitleBar {
-    
-    element!: HTMLElement
-    menuButton!: MenuButton
-    themeButton!: DarkLightButton
-    
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
-        this.createComponents();
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf() {
-        this.element = document.createElement("div");
-        this.element.id = "title_bar";
-        this.element.className = "w-full bg-white dark:bg-gray-700 fixed z-50 h-[50px] flex items-center pl-3 transition-colors duration-300";
-    }
-    
-    private createComponents() {
-        this.menuButton = new MenuButton(this.element);
-        this.themeButton = new DarkLightButton(this.element);
-    }
-    
-}
-
-class MenuButton {
-    
-    element!: HTMLElement
-    icon!: Icon
-    
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
-        this.createComponents();
-        this.startListeners();
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf() {
-        this.element = document.createElement("button");
-        this.element.id = "menu_button";
-        this.element.className = "cursor-pointer w-auto h-auto rounded-md transition-colors duration-300 hover:bg-gray-300 dark:hover:bg-gray-900";
-    }
-    
-    private createComponents() {
-        if (document.documentElement.classList.contains("light")) {
-            this.icon = new Icon(this.element, "menu-icon", "/storage/images/menu_light.png");
-        } else {
-            this.icon = new Icon(this.element, "menu-icon", "/storage/images/menu_dark.png");
-        }
-    }
-    
-    private startListeners() {
-        this.element.addEventListener("click", () => {
-            const menu = document.getElementById("menu")!;
-            if (menu.style.display == "none") {
-                menu.classList.add("fade-in-left");
-                menu.style.display = "flex";
-                menu.addEventListener("animationend", () => {
-                    menu.classList.remove("fade-in-left");
-                }, { once: true });
-            } else {
-                menu.classList.add("fade-out-left");
-                menu.addEventListener("animationend", () => {
-                    menu.classList.remove("fade-out-left");
-                    menu.style.display = "none";
-                }, { once: true });
-            }
-        });
+        this.titleBar = new IndexTitleBar(this.element);
     }
     
 }
@@ -300,9 +226,9 @@ class DarkLightButton {
     private createComponents() {
         let iconSrc = "";
         if (window.localStorage.getItem("theme") == "light") {
-            iconSrc = "/storage/images/moon.png";
+            iconSrc = "/static/images/moon.png";
         } else {
-            iconSrc = "/storage/images/sun.png";
+            iconSrc = "/static/images/sun.png";
         }
         this.icon = new Icon(this.element, "theme-button", iconSrc);
     }
@@ -314,11 +240,11 @@ class DarkLightButton {
                 document.documentElement.classList.remove("light");
                 document.documentElement.classList.add("dark");
                 window.localStorage.setItem("theme", "dark");
-                this.icon.element.src = "/storage/images/sun.png";
+                this.icon.element.src = "/static/images/sun.png";
                 this.icon.element.classList.remove("opacity-fade-in");
                 void this.icon.element.offsetWidth;
                 this.icon.element.classList.add("opacity-fade-in");
-                menuIcon.src = "/storage/images/menu_dark.png";
+                menuIcon.src = "/static/images/menu_dark.png";
                 menuIcon.classList.remove("opacity-fade-in");
                 void menuIcon.offsetWidth;
                 menuIcon.classList.add("opacity-fade-in");
@@ -326,11 +252,11 @@ class DarkLightButton {
                 document.documentElement.classList.remove("dark");
                 document.documentElement.classList.add("light");
                 window.localStorage.setItem("theme", "light");
-                this.icon.element.src = "/storage/images/moon.png";
+                this.icon.element.src = "/static/images/moon.png";
                 this.icon.element.classList.remove("opacity-fade-in");
                 void this.icon.element.offsetWidth;
                 this.icon.element.classList.add("opacity-fade-in");
-                menuIcon.src = "/storage/images/menu_light.png";
+                menuIcon.src = "/static/images/menu_light.png";
                 menuIcon.classList.remove("opacity-fade-in");
                 void menuIcon.offsetWidth;
                 menuIcon.classList.add("opacity-fade-in");

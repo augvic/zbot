@@ -105,7 +105,7 @@ class SearchUserButton {
     }
     
     private createComponents() {
-        this.icon = new ZadminIcon("/storage/images/magnifying_glass.png", this.element);
+        this.icon = new ZadminIcon("/static/images/magnifying_glass.png", this.element);
     }
     
 }
@@ -132,7 +132,7 @@ class AddUserButton {
     }
     
     private createComponents() {
-        this.icon = new ZadminIcon("/storage/images/plus.png", this.button);
+        this.icon = new ZadminIcon("/static/images/plus.png", this.button);
     }
     
     private startListeners() {
@@ -341,7 +341,7 @@ class UsersTableEditButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-blue-700 rounded-md hover:bg-blue-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new ZadminIcon("/storage/images/edit.png", this.element);
+        this.icon = new ZadminIcon("/static/images/edit.png", this.element);
     }
     
     private startListeners(user: {[key: string]: string}) {
@@ -369,7 +369,7 @@ class UsersTableDeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new ZadminIcon("/storage/images/delete.png", this.element);
+        this.icon = new ZadminIcon("/static/images/delete.png", this.element);
     }
     
     private startListeners(user: string) {
@@ -677,7 +677,7 @@ class UserModalAddModuleButton {
     }
     
     private createComponents() {
-        this.icon = new ZadminIcon("/storage/images/plus.png", this.element);
+        this.icon = new ZadminIcon("/static/images/plus.png", this.element);
     }
     
     private startListeners() {
@@ -1067,7 +1067,7 @@ class PermissionsTableDeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new ZadminIcon("/storage/images/delete.png", this.element);
+        this.icon = new ZadminIcon("/static/images/delete.png", this.element);
     }
     
     private startListeners(permission: {[key: string]: string}) {

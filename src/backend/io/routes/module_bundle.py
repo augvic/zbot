@@ -8,7 +8,7 @@ class ModuleBundle:
         self.routes()
     
     def routes(self) -> None:
-        @self.app.route("/module-bundle/<path:module>", methods=["GET"])
+        @self.app.route("/module-bundle/<module>", methods=["GET"])
         def get_module_bundle(module) -> Response:
             task = SendModule()
             return task.execute(module)
