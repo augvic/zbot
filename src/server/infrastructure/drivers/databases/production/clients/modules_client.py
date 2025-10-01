@@ -30,15 +30,6 @@ class ModulesClient:
         else:
             return session.query(Module).filter(Module.module == module).first()
     
-    def update(self, module: str, description: str = None) -> None:
-        session = self.session_construct()
-        to_update = session.query(Module).filter(Module.module == module).first()
-        if description:
-            to_update.description = description
-        session.commit()
-        session.refresh(to_update)
-        session.close()
-    
     def delete(self, module: str) -> None:
         session = self.session_construct()
         to_delete = session.query(Module).filter(Module.module == module).first()

@@ -23,9 +23,3 @@ class Permissions:
         def delete_permissions(user: str, module: str) -> dict | str:
             task = DeletePermission()
             return task.execute(user, module)
-        
-        @self.app.route("/permissions/<user>", methods=["PUT"])
-        def update_permissions(user: str) -> dict | str:
-            data = request.json
-            task = UpdatePermissions()
-            return task.execute(user, data)

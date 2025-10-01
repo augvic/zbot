@@ -27,20 +27,9 @@ class PermissionsClient:
         session = self.session_construct()
         return session.query(Permission).filter(Permission.user == user).all()
     
-    def update(self, user: str, module: str, new_module: str) -> None:
-        session = self.session_construct()
-        to_update = session.query(Permission).filter(Permission.user == user).filter(Permission.module == module).first()
-        to_update.module = new_module
-        session.commit()
-        session.refresh(to_update)
-        session.close()
-    
     def delete(self, user: str, module: str) -> None:
         session = self.session_construct()
         to_delete = session.query(Permission).filter(Permission.user == user).filter(Permission.module == module).first()
         session.delete(to_delete)
         session.commit()
 
-if __name__ == "__main__":
-    database = PermissionsClient()
-    database.create("72776", "zadmin", "zAdmin")
