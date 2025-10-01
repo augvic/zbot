@@ -56,14 +56,14 @@ class PositivoFederalRevenueApi:
         cleaned_response["inscricoes_estaduais"] = [
             {
                 "state_registration": inscricao['inscricao_estadual'],
-                "status": {'HABILITADA' if inscricao['ativo'] else 'NÃO HABILITADA'}
+                "status": ('HABILITADA' if inscricao['ativo'] else 'NÃO HABILITADA')
             }
             for inscricao in response["estabelecimento"]["inscricoes_estaduais"]
         ] if response["estabelecimento"]["inscricoes_estaduais"] else [{"state_registration": "ISENTO", "status": "-"}]
         cleaned_response["inscricoes_suframa"] = [
             {
                 "suframa_registration": inscricao['inscricao_suframa'],
-                "status": {'HABILITADA' if inscricao['ativo'] else 'NÃO HABILITADA'}
+                "status": ('HABILITADA' if inscricao['ativo'] else 'NÃO HABILITADA')
             }
             for inscricao in response["estabelecimento"]["inscricoes_suframa"]
         ] if response["estabelecimento"]["inscricoes_suframa"] else [{"suframa_registration": "ISENTO", "status": "-"}]

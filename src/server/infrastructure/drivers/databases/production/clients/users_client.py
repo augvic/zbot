@@ -6,7 +6,7 @@ from os import path
 class UsersClient:
     
     def __init__(self):
-        BASE_DIR = path.abspath(path.join(path.dirname(path.abspath(__file__)), "../../../../../../.databases"))
+        BASE_DIR = path.abspath(path.join(path.dirname(path.abspath(__file__)), "../../../../../storage/.databases"))
         url = f"sqlite:///{BASE_DIR}/production.db"
         self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
         self.session_construct = sessionmaker(bind=self.engine)

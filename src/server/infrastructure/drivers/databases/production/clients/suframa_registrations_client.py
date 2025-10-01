@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path
 
-class ModulesClient:
+class SuframaRegistrationsClient:
     
     def __init__(self):
         BASE_DIR = path.abspath(path.join(path.dirname(path.abspath(__file__)), "../../../../../storage/.databases"))
@@ -12,31 +12,33 @@ class ModulesClient:
         self.session_construct = sessionmaker(bind=self.engine)
         database.metadata.create_all(self.engine)
     
-    def create(self, module: str, description: str) -> None:
+    def create(self,
+        cnpj: str,
+        suframa_registration: str,
+        status: str
+    ) -> None:
         session = self.session_construct()
-        to_create = Module(
-            module=module,
-            description=description
+        to_create = SuframaRegistration(
+            cnpj=cnpj,
+            suframa_registration=suframa_registration,
+            status=status
         )
         session.add(to_create)
         session.commit()
         session.close()
     
-    def read(self, module: str) -> Module | list[Module]:
+    def read(self, cnpj: str) -> list[SuframaRegistration]:
         session = self.session_construct()
-        if module == "all":
-            return session.query(Module).all()
-        else:
-            return session.query(Module).filter(Module.module == module).first()
+        return session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
     
-    def delete(self, module: str) -> None:
+    def delete(self, cnpj: str) -> None:
         session = self.session_construct()
-        to_delete = session.query(Module).filter(Module.module == module).first()
-        session.delete(to_delete)
+        to_delete = session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
+        for delete in to_delete:
+            session.delete(delete)
         session.commit()
         session.close()
 
 if __name__ == "__main__":
-    database = ModulesClient()
-    database.delete("zadmin")
-    database.create("zAdmin", "Gerencie a aplicação.")
+    database = SuframaRegistrationsClient()
+    database.delete("31933143000180")

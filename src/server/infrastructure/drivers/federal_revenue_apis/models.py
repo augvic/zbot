@@ -17,10 +17,10 @@ class FederalRevenueData:
         state: str,
         fone: str,
         email: str,
-        state_registrations: list | str,
-        suframa_registrations: list | str,
+        state_registrations: list[dict],
+        suframa_registrations: list[dict],
         tax_regime: str,
-        ncea: list,
+        ncea: list[dict],
         comission_receipt: str
     ) -> None:
         self.cnpj = cnpj

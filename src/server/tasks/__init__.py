@@ -12,4 +12,4 @@ from .get_permissions import GetPermissions
 from .update_user import UpdateUser
 from .create_permissions import CreatePermissions
 from .delete_permission import DeletePermission
-from .update_permissions import UpdatePermissions
+from .include_new_registration import IncludeNewRegistration
