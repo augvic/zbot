@@ -5,8 +5,8 @@
   "main": "",
   "scripts": {
     "compile": "tsc && npm run tailwindcss && npm run copy-files",
-    "tailwindcss": "npx @tailwindcss/cli -i ./src/web_client/io/static/css/input.css -o ./src/web_client/io/static/css/output.css",
-    "copy-files": "xcopy .\\src\\web_client\\static\\css .\\.javascript\\static\\css /E /I /Y && xcopy .\\src\\web_client\\static\\images .\\.javascript\\static\\images /E /I /Y && xcopy .\\src\\web_client\\template .\\.javascript\\template /E /I /Y"
+    "tailwindcss": "npx @tailwindcss/cli -i ./src/server/storage/web/static/css/input.css -o ./src/server/storage/web/static/css/output.css",
+    "copy-files": "xcopy .\\src\\server\\storage\\web\\static\\css .\\.javascript\\static\\css /E /I /Y && xcopy .\\src\\server\\storage\\web\\static\\images .\\.javascript\\static\\images /E /I /Y && xcopy .\\src\\server\\storage\\web\\template .\\.javascript\\template /E /I /Y"
   },
   "repository": {
     "type": "git",
