@@ -1,5 +1,5 @@
-from flask import Flask, request
-from src.tasks import GetPermissions, CreatePermissions, DeletePermission
+from flask import Flask
+from src.tasks import GetPermissions, CreatePermission, DeletePermission
 
 class Permissions:
     
@@ -13,13 +13,12 @@ class Permissions:
             task = GetPermissions()
             return task.execute(user)
         
-        @self.app.route("/permissions/<user>", methods=["POST"])
-        def post_permissions(user: str) -> dict | str:
-            data = request.json
-            task = CreatePermissions()
-            return task.execute(user, data)
+        @self.app.route("/permissions/<user>/<permission>", methods=["POST"])
+        def post_permissions(user: str, permission: str) -> dict | str:
+            task = CreatePermission()
+            return task.execute(user, permission)
         
-        @self.app.route("/permissions/<user>/<module>", methods=["DELETE"])
-        def delete_permissions(user: str, module: str) -> dict | str:
+        @self.app.route("/permissions/<user>/<permission>", methods=["DELETE"])
+        def delete_permissions(user: str, permission: str) -> dict | str:
             task = DeletePermission()
-            return task.execute(user, module)
+            return task.execute(user, permission)

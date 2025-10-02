@@ -13,7 +13,7 @@ export default class zIndex {
     
     private createSelf() {
         this.element = document.createElement("div");
-        this.element.id = "zAdmin";
+        this.element.id = "zIndex";
         this.element.className = "h-full w-full overflow-hidden flex flex-col bg-gray-300 dark:bg-gray-900 transition-colors duration-300 opacity-fade-in";
     }
     

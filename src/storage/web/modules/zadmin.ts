@@ -558,15 +558,15 @@ class UserModalInputsContainer {
         if (editModal) {
             const response = await fetch(`${window.location.origin}/users/${user.user}`);
             const userDataUpdated = await response.json();
-            this.userInput = new UserModalInput(this.element, "text", "Usuário", "user-modal-user", userDataUpdated.user);
-            this.nameInput = new UserModalInput(this.element, "text", "Nome", "user-modal-name", userDataUpdated.name);
-            this.emailInput = new UserModalInput(this.element, "text", "E-mail", "user-modal-email", userDataUpdated.email);
-            this.passwordInput = new UserModalInput(this.element, "text", "Senha", "user-modal-password", userDataUpdated.password);
+            this.userInput = new UserModalInput(this.element, "text", "Usuário", "user-modal-user", userDataUpdated.user, editModal);
+            this.nameInput = new UserModalInput(this.element, "text", "Nome", "user-modal-name", userDataUpdated.name, editModal);
+            this.emailInput = new UserModalInput(this.element, "text", "E-mail", "user-modal-email", userDataUpdated.email, editModal);
+            this.passwordInput = new UserModalInput(this.element, "text", "Senha", "user-modal-password", userDataUpdated.password, editModal);
         } else {
-            this.userInput = new UserModalInput(this.element, "text", "Usuário", "user-modal-user", "");
-            this.nameInput = new UserModalInput(this.element, "text", "Nome", "user-modal-name", "");
-            this.emailInput = new UserModalInput(this.element, "text", "E-mail", "user-modal-email", "");
-            this.passwordInput = new UserModalInput(this.element, "text", "Senha", "user-modal-password", "");
+            this.userInput = new UserModalInput(this.element, "text", "Usuário", "user-modal-user", "", editModal);
+            this.nameInput = new UserModalInput(this.element, "text", "Nome", "user-modal-name", "", editModal);
+            this.emailInput = new UserModalInput(this.element, "text", "E-mail", "user-modal-email", "", editModal);
+            this.passwordInput = new UserModalInput(this.element, "text", "Senha", "user-modal-password", "", editModal);
         }
     }
     
@@ -763,18 +763,22 @@ class UserModalInput {
     
     element!: HTMLInputElement
     
-    constructor(appendTo: HTMLElement, type: string, placeholder: string, id: string, value: string) {
-        this.createSelf(placeholder, id, type, value);
+    constructor(appendTo: HTMLElement, type: string, placeholder: string, id: string, value: string, editModal: boolean) {
+        this.createSelf(placeholder, id, type, value, editModal);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(placeholder: string, id: string, type: string, value: string) {
+    private createSelf(placeholder: string, id: string, type: string, value: string, editModal: boolean) {
         this.element = document.createElement("input");
         this.element.id = id;
         this.element.type = type;
         this.element.className = "w-[300px] h-[30px] p-2 bg-white border border-gray-300 outline-none rounded-md";
         this.element.placeholder = placeholder;
         this.element.value = value;
+        if (id == "user-modal-user" && editModal == true) {
+            this.element.readOnly = true;
+            this.element.className = "w-[300px] h-[30px] p-2 border outline-none rounded-md cursor-default bg-gray-300 text-black border-gray-300 dark:bg-gray-900 dark:text-white dark:border-gray-900 transition-colors duration-300";
+        }
     }
     
 }
@@ -810,16 +814,27 @@ class UserModalCreateButton {
             const data = await response.json();
             if (!data.success) {
                 new ZadminNotificationPopUp(data.message, "red");
-            } else {
-                new ZadminNotificationPopUp(data.message, "green");
-                const modal = document.getElementById("user-modal")!;
-                modal.classList.remove("opacity-fade-in");
-                modal.classList.add("opacity-fade-out");
-                modal.addEventListener("animationend", () => {
-                    modal.remove();
-                    new UsersTableBodyRow(tableBody, { user: user, name: name, email: email, password: password });
-                }, { once: true });
+                return;
             }
+            const permissionsToCreate = document.querySelectorAll<HTMLElement>(".permission-to-create");
+            permissionsToCreate.forEach(async permission => {
+                const response = await fetch(`${window.location.origin}/permissions/${user}/${permission.innerText}`, {
+                    method: "POST"
+                });
+                const data = await response.json();
+                if (!data.success) {
+                    new ZadminNotificationPopUp(data.message, "red");
+                    return;
+                }
+            });
+            new ZadminNotificationPopUp("Usuário criado.", "green");
+            const modal = document.getElementById("user-modal")!;
+            modal.classList.remove("opacity-fade-in");
+            modal.classList.add("opacity-fade-out");
+            modal.addEventListener("animationend", () => {
+                modal.remove();
+                new UsersTableBodyRow(tableBody, { user: user, name: name, email: email, password: password });
+            }, { once: true });
         });
     }
     
@@ -847,11 +862,6 @@ class UserModalSaveButton {
             const name = (document.getElementById("user-modal-name") as HTMLInputElement).value!;
             const email = (document.getElementById("user-modal-email") as HTMLInputElement).value!;
             const password = (document.getElementById("user-modal-password") as HTMLInputElement).value!;
-            const permissionsElements = document.querySelectorAll<HTMLElement>("permissions-cell");
-            const permissionsList: string[] = [];
-            permissionsElements.forEach(element => {
-                permissionsList.push(element.innerText.toLowerCase());
-            });
             const response = await fetch(`${window.location.origin}/users/${user}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -861,18 +871,30 @@ class UserModalSaveButton {
             if (!data.success) {
                 new ZadminNotificationPopUp(data.message, "red");
                 return;
-            } else {
-                new ZadminNotificationPopUp(data.message, "green");
             }
-            if (permissionsElements.length != 0) {
-                // const data = await ZadminTasks.updateUserPermissions(user, permissionsList);
+            const permissionsToDelete = document.querySelectorAll<HTMLElement>(".permission-to-delete");
+            permissionsToDelete.forEach(async permission => {
+                const response = await fetch(`${window.location.origin}/permissions/${user}/${permission.innerText}`, {
+                    method: "DELETE"
+                });
+                const data = await response.json();
                 if (!data.success) {
                     new ZadminNotificationPopUp(data.message, "red");
                     return;
-                } else {
-                    new ZadminNotificationPopUp(data.message, "green");
                 }
-            }
+            });
+            const permissionsToCreate = document.querySelectorAll<HTMLElement>(".permission-to-create");
+            permissionsToCreate.forEach(async permission => {
+                const response = await fetch(`${window.location.origin}/permissions/${user}/${permission.innerText}`, {
+                    method: "POST"
+                });
+                const data = await response.json();
+                if (!data.success) {
+                    new ZadminNotificationPopUp(data.message, "red");
+                    return;
+                }
+            });
+            new ZadminNotificationPopUp("Usuário atualizado.", "green");
             const modal = document.getElementById("user-modal")!;
             modal.classList.remove("opacity-fade-in");
             modal.classList.add("opacity-fade-out");

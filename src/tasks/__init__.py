@@ -10,6 +10,6 @@ from .delete_user import DeleteUser
 from .get_modules_list import GetModulesList
 from .get_permissions import GetPermissions
 from .update_user import UpdateUser
-from .create_permissions import CreatePermissions
+from .create_permission import CreatePermission
 from .delete_permission import DeletePermission
 from .include_new_registration import IncludeNewRegistration
