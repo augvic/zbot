@@ -118,7 +118,7 @@ class SearchUserButton {
                 userRows.forEach(element => {
                     const row = element as HTMLElement;
                     row.style.display = "flex";
-                    void row.offsetHeight;
+                    row.offsetHeight;
                     row.style.height = "46px";   
                 });
                 return;
@@ -132,7 +132,7 @@ class SearchUserButton {
                     }, 300);
                 } else {
                     row.style.display = "flex";
-                    void row.offsetHeight;
+                    row.offsetHeight;
                     row.style.height = "46px";
                 }
             });
@@ -167,7 +167,7 @@ class AddUserButton {
     }
     
     private startListeners() {
-        this.element.addEventListener("click", () => {
+        this.button.addEventListener("click", () => {
             new UserModal(document.getElementById("zAdmin")!, {}, false);
         });
     }
@@ -282,7 +282,9 @@ class UsersTableBody {
         const response = await fetch(`${window.location.origin}/users/all`);
         const users: [{[key: string]: string}] = await response.json();
         users.forEach((user) => {
-            new UsersTableBodyRow(this.element, user);
+            let row = new UsersTableBodyRow(this.element, user);
+            row.element.offsetHeight;
+            row.element.style.height = "46px";
         });
     }
     
@@ -301,7 +303,7 @@ class UsersTableBodyRow {
     private createSelf(user: string) {
         this.element = document.createElement("div");
         this.element.id = `${user}-row`;
-        this.element.className = "w-full h-[46px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 opacity-fade-in table-row-transitions user-row";
+        this.element.className = "w-full h-[0px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 table-row-transitions user-row";
     }
     
     private createComponents(user: {[key: string]: string}) {
@@ -415,14 +417,10 @@ class UsersTableDeleteButton {
             } else {
                 new Notification(data.message, "green");
                 const userRow = document.getElementById(`${user}-row`)!;
-                userRow.classList.add("opacity-fade-out");
-                userRow.addEventListener("animationend", () => {
-                    userRow.style.opacity = "0";
-                    userRow.style.height = "0px";
-                    userRow.addEventListener("transitionend", () => {
-                        userRow.remove();
-                    }, { once: true });
-                }, { once: true });
+                userRow.style.height = "0px";
+                setTimeout(() => {
+                    userRow.remove();
+                }, 300);
             }
         });
     }
@@ -728,13 +726,15 @@ class UserModalAddModuleButton {
             }
             if (rowExists != null && rowExists.classList.contains("permission-to-delete")) {
                 rowExists.style.display = "flex";
-                rowExists.style.opacity = "1";
+                rowExists.offsetHeight;
                 rowExists.style.height = "46px";
                 rowExists.classList.remove("permission-to-delete");
                 return;
             }
             const permissionsTableBody = document.getElementById("permissions-table-body")!;
             let permissionRow = new PermissionsTableBodyRow(permissionsTableBody, { module: selectedModule });
+            permissionRow.element.offsetHeight;
+            permissionRow.element.style.height = "46px";
             permissionRow.element.classList.add("permission-to-create");
         });
     }
@@ -866,7 +866,9 @@ class UserModalCreateButton {
             modal.classList.add("opacity-fade-out");
             modal.addEventListener("animationend", () => {
                 modal.remove();
-                new UsersTableBodyRow(tableBody, { user: user, name: name, email: email, password: password });
+                let row = new UsersTableBodyRow(tableBody, { user: user, name: name, email: email, password: password });
+                row.element.offsetHeight;
+                row.element.style.height = "46px";
             }, { once: true });
         });
     }
@@ -1055,7 +1057,9 @@ class PermissionsTableBody {
             const response = await fetch(`${window.location.origin}/permissions/${user.user}`);
             const permissions: [{[key: string]: string}] = await response.json();
             permissions.forEach((permission) => {
-                new PermissionsTableBodyRow(this.element, permission);
+                let row = new PermissionsTableBodyRow(this.element, permission);
+                row.element.offsetHeight;
+                row.element.style.height = "46px";
             });
         }
     }
@@ -1075,7 +1079,7 @@ class PermissionsTableBodyRow {
     private createSelf(permission: {[key: string]: string}) {
         this.element = document.createElement("div");
         this.element.id = `${permission.module}-permission`;
-        this.element.className = "w-full h-[46px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 opacity-fade-in table-row-transitions";
+        this.element.className = "w-full h-[0px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 table-row-transitions";
     }
     
     private createComponents(permission: {[key: string]: string}) {
@@ -1096,7 +1100,7 @@ class PermissionsTableBodyRowCell {
     
     private createSelf(text: string) {
         this.element = document.createElement("div");
-        this.element.className = "permissions-cell p-2 h-auto w-[80%] flex items-center justify-center overflow-x-auto custom-scroll";
+        this.element.className = "permissions-cell p-2 h-auto w-[80%] flex items-center justify-center overflow-hidden custom-scroll";
         this.element.innerText = text;
     }
     
@@ -1147,19 +1151,15 @@ class PermissionsTableDeleteButton {
     private startListeners(permission: {[key: string]: string}) {
         this.element.addEventListener("click", () => {
             let permissionRow = document.getElementById(`${permission.module}-permission`)!;
-            permissionRow.classList.add("opacity-fade-out");
-            permissionRow.addEventListener("animationend", () => {
-                permissionRow.style.opacity = "0";
-                permissionRow.style.height = "0px";
-                permissionRow.addEventListener("transitionend", () => {
-                    if (permissionRow.classList.contains("permission-to-create")) {
-                        permissionRow.remove();
-                    } else {
-                        permissionRow.classList.add("permission-to-delete");
-                        permissionRow.style.display = "none";
-                    }
-                }, { once: true });
-            }, { once: true });
+            permissionRow.style.height = "0px";
+            setTimeout(() => {
+                if (permissionRow.classList.contains("permission-to-create")) {
+                    permissionRow.remove();
+                } else {
+                    permissionRow.classList.add("permission-to-delete");
+                    permissionRow.style.display = "none";
+                }
+            }, 300);
         });
     }
     

@@ -235,6 +235,9 @@
     width: calc(var(--spacing) * 7);
     height: calc(var(--spacing) * 7);
   }
+  .h-\[0px\] {
+    height: 0px;
+  }
   .h-\[30px\] {
     height: 30px;
   }
@@ -330,9 +333,6 @@
   }
   .overflow-hidden {
     overflow: hidden;
-  }
-  .overflow-x-auto {
-    overflow-x: auto;
   }
   .overflow-y-auto {
     overflow-y: auto;
