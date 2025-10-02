@@ -83,6 +83,7 @@ class SearchUserInput {
     private createSelf() {
         this.element = document.createElement("input");
         this.element.className = "h-[30px] w-[300px] bg-white rounded-md border border-gray-300 outline-none p-3";
+        this.element.id = "search-user-input";
         this.element.placeholder = "Matrícula";
     }
     
@@ -91,11 +92,12 @@ class SearchUserInput {
 class SearchUserButton {
     
     element!: HTMLElement
-    icon!: ZadminIcon
+    icon!: Icon
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
         this.createComponents();
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
@@ -105,7 +107,36 @@ class SearchUserButton {
     }
     
     private createComponents() {
-        this.icon = new ZadminIcon("/static/images/magnifying_glass.png", this.element);
+        this.icon = new Icon("/static/images/magnifying_glass.png", this.element);
+    }
+    
+    private startListeners() {
+        this.element.addEventListener("click", () => {
+            const toSearch = (document.getElementById("search-user-input")! as HTMLInputElement).value;
+            const userRows = document.querySelectorAll(".user-row");
+            if (toSearch == "") {
+                userRows.forEach(element => {
+                    const row = element as HTMLElement;
+                    row.style.display = "flex";
+                    void row.offsetHeight;
+                    row.style.height = "46px";   
+                });
+                return;
+            }
+            userRows.forEach(element => {
+                const row = element as HTMLElement;
+                if (!row.id.includes(toSearch)) {
+                    row.style.height = "0px";
+                    setTimeout(() => {
+                        row.style.display = "none";
+                    }, 300);
+                } else {
+                    row.style.display = "flex";
+                    void row.offsetHeight;
+                    row.style.height = "46px";
+                }
+            });
+        });
     }
     
 }
@@ -114,7 +145,7 @@ class AddUserButton {
     
     element!: HTMLElement
     button!: HTMLElement
-    icon!: ZadminIcon
+    icon!: Icon
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -132,7 +163,7 @@ class AddUserButton {
     }
     
     private createComponents() {
-        this.icon = new ZadminIcon("/static/images/plus.png", this.button);
+        this.icon = new Icon("/static/images/plus.png", this.button);
     }
     
     private startListeners() {
@@ -270,7 +301,7 @@ class UsersTableBodyRow {
     private createSelf(user: string) {
         this.element = document.createElement("div");
         this.element.id = `${user}-row`;
-        this.element.className = "w-full h-[46px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 opacity-fade-in table-row-transitions";
+        this.element.className = "w-full h-[46px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 opacity-fade-in table-row-transitions user-row";
     }
     
     private createComponents(user: {[key: string]: string}) {
@@ -294,7 +325,7 @@ class UsersTableBodyRowCell {
     
     private createSelf(text: string, user: string, type: string) {
         this.element = document.createElement("div");
-        this.element.className = "p-2 h-auto w-[20%] flex items-center justify-center overflow-x-auto custom-scroll";
+        this.element.className = "p-2 h-auto w-[20%] flex items-center justify-center overflow-hidden custom-scroll";
         this.element.id = `${user}-${type}-cell`;
         this.element.innerText = text;
     }
@@ -328,7 +359,7 @@ class UsersTableBodyRowButtonsCell {
 class UsersTableEditButton {
     
     element!: HTMLElement
-    icon!: ZadminIcon
+    icon!: Icon
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
@@ -342,7 +373,7 @@ class UsersTableEditButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-blue-700 rounded-md hover:bg-blue-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new ZadminIcon("/static/images/edit.png", this.element);
+        this.icon = new Icon("/static/images/edit.png", this.element);
     }
     
     private startListeners(user: {[key: string]: string}) {
@@ -356,7 +387,7 @@ class UsersTableEditButton {
 class UsersTableDeleteButton {
     
     element!: HTMLElement
-    icon!: ZadminIcon
+    icon!: Icon
     
     constructor(appendTo: HTMLElement, user: string) {
         this.createSelf();
@@ -370,7 +401,7 @@ class UsersTableDeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new ZadminIcon("/static/images/delete.png", this.element);
+        this.icon = new Icon("/static/images/delete.png", this.element);
     }
     
     private startListeners(user: string) {
@@ -380,9 +411,9 @@ class UsersTableDeleteButton {
             });
             const data = await response.json();
             if (!data.success) {
-                new ZadminNotificationPopUp(data.message, "red");
+                new Notification(data.message, "red");
             } else {
-                new ZadminNotificationPopUp(data.message, "green");
+                new Notification(data.message, "green");
                 const userRow = document.getElementById(`${user}-row`)!;
                 userRow.classList.add("opacity-fade-out");
                 userRow.addEventListener("animationend", () => {
@@ -398,7 +429,7 @@ class UsersTableDeleteButton {
     
 }
 
-class ZadminIcon {
+class Icon {
     
     element!: HTMLImageElement
     
@@ -415,7 +446,7 @@ class ZadminIcon {
     
 }
 
-class ZadminNotificationPopUp {
+class Notification {
     
     element!: HTMLElement
     
@@ -467,7 +498,9 @@ class UserModal {
     constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
         this.createComponents(user, editModal);
-        appendTo.appendChild(this.element);
+        setTimeout(() => {
+            appendTo.appendChild(this.element);
+        }, 200);
     }
     
     private createSelf() {
@@ -530,7 +563,7 @@ class UserModalElements {
     
     private createComponents(user: {[key: string]: string}, editModal: boolean) {
         this.inputsContainer = new UserModalInputsContainer(this.element, user, editModal);
-        this.tableContainer = new UserModalTableContainer(this.element, user);
+        this.tableContainer = new UserModalTableContainer(this.element, user, editModal);
     }
     
 }
@@ -578,9 +611,9 @@ class UserModalTableContainer {
     permissionsTableContainer!: PermissionsTableContainer
     selectContainer!: UserModalModulesListContainer
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user);
+        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
     }
     
@@ -589,9 +622,9 @@ class UserModalTableContainer {
         this.element.className = "w-[300px] h-[300px] flex flex-col p-3 gap-y-2 items-center justify-center border border-gray-300 dark:border-gray-900 transition-colors duration-300 rounded-lg";
     }
     
-    private createComponents(user: {[key: string]: string}) {
+    private createComponents(user: {[key: string]: string}, editModal: boolean) {
         this.selectContainer = new UserModalModulesListContainer(this.element);
-        this.permissionsTableContainer = new PermissionsTableContainer(this.element, user);
+        this.permissionsTableContainer = new PermissionsTableContainer(this.element, user, editModal);
     }
     
 }
@@ -665,7 +698,7 @@ class Option {
 class UserModalAddModuleButton {
     
     element!: HTMLElement
-    icon!: ZadminIcon
+    icon!: Icon
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -680,7 +713,7 @@ class UserModalAddModuleButton {
     }
     
     private createComponents() {
-        this.icon = new ZadminIcon("/static/images/plus.png", this.element);
+        this.icon = new Icon("/static/images/plus.png", this.element);
     }
     
     private startListeners() {
@@ -690,7 +723,7 @@ class UserModalAddModuleButton {
             const selectedModule = modulesList.options[index].innerText;
             const rowExists = document.getElementById(`${selectedModule}-permission`);
             if (rowExists != null && !rowExists.classList.contains("permission-to-delete")) {
-                new ZadminNotificationPopUp("Módulo já adicionado.", "orange");
+                new Notification("Módulo já adicionado.", "orange");
                 return;
             }
             if (rowExists != null && rowExists.classList.contains("permission-to-delete")) {
@@ -813,7 +846,7 @@ class UserModalCreateButton {
             });
             const data = await response.json();
             if (!data.success) {
-                new ZadminNotificationPopUp(data.message, "red");
+                new Notification(data.message, "red");
                 return;
             }
             const permissionsToCreate = document.querySelectorAll<HTMLElement>(".permission-to-create");
@@ -823,11 +856,11 @@ class UserModalCreateButton {
                 });
                 const data = await response.json();
                 if (!data.success) {
-                    new ZadminNotificationPopUp(data.message, "red");
+                    new Notification(data.message, "red");
                     return;
                 }
             });
-            new ZadminNotificationPopUp("Usuário criado.", "green");
+            new Notification("Usuário criado.", "green");
             const modal = document.getElementById("user-modal")!;
             modal.classList.remove("opacity-fade-in");
             modal.classList.add("opacity-fade-out");
@@ -869,7 +902,7 @@ class UserModalSaveButton {
             });
             const data = await response.json();
             if (!data.success) {
-                new ZadminNotificationPopUp(data.message, "red");
+                new Notification(data.message, "red");
                 return;
             }
             const permissionsToDelete = document.querySelectorAll<HTMLElement>(".permission-to-delete");
@@ -879,7 +912,7 @@ class UserModalSaveButton {
                 });
                 const data = await response.json();
                 if (!data.success) {
-                    new ZadminNotificationPopUp(data.message, "red");
+                    new Notification(data.message, "red");
                     return;
                 }
             });
@@ -890,11 +923,11 @@ class UserModalSaveButton {
                 });
                 const data = await response.json();
                 if (!data.success) {
-                    new ZadminNotificationPopUp(data.message, "red");
+                    new Notification(data.message, "red");
                     return;
                 }
             });
-            new ZadminNotificationPopUp("Usuário atualizado.", "green");
+            new Notification("Usuário atualizado.", "green");
             const modal = document.getElementById("user-modal")!;
             modal.classList.remove("opacity-fade-in");
             modal.classList.add("opacity-fade-out");
@@ -922,9 +955,9 @@ class PermissionsTableContainer {
     element!: HTMLElement
     modulesTable!: PermissionsTable
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user);
+        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
     }
     
@@ -933,8 +966,8 @@ class PermissionsTableContainer {
         this.element.className = "w-full h-full flex-1 overflow-y-auto custom-scroll";
     }
     
-    private createComponents(user: {[key: string]: string}) {
-        this.modulesTable = new PermissionsTable(this.element, user);   
+    private createComponents(user: {[key: string]: string}, editModal: boolean) {
+        this.modulesTable = new PermissionsTable(this.element, user, editModal);   
     }
     
 }
@@ -945,9 +978,9 @@ class PermissionsTable {
     tableHead!: PermissionsTableHead
     tableBody!: PermissionsTableBody
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user);
+        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
     }
     
@@ -956,9 +989,9 @@ class PermissionsTable {
         this.element.className = "h-auto w-full flex flex-col whitespace-nowrap cursor-default border-collapse text-center text-black dark:text-white transition-colors duration-300";
     }
     
-    private createComponents(user: {[key: string]: string}) {
+    private createComponents(user: {[key: string]: string}, editModal: boolean) {
         this.tableHead = new PermissionsTableHead(this.element);
-        this.tableBody = new PermissionsTableBody(this.element, user);
+        this.tableBody = new PermissionsTableBody(this.element, user, editModal);
     }
     
 }
@@ -1005,9 +1038,9 @@ class PermissionsTableBody {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user);
+        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
     }
     
@@ -1017,12 +1050,14 @@ class PermissionsTableBody {
         this.element.className = "w-auto h-auto flex flex-col";
     }
     
-    private async createComponents(user: {[key: string]: string}) {
-        const response = await fetch(`${window.location.origin}/permissions/${user.user}`);
-        const permissions: [{[key: string]: string}] = await response.json();
-        permissions.forEach((permission) => {
-            new PermissionsTableBodyRow(this.element, permission);
-        });
+    private async createComponents(user: {[key: string]: string}, editModal: boolean) {
+        if (editModal) {
+            const response = await fetch(`${window.location.origin}/permissions/${user.user}`);
+            const permissions: [{[key: string]: string}] = await response.json();
+            permissions.forEach((permission) => {
+                new PermissionsTableBodyRow(this.element, permission);
+            });
+        }
     }
     
 }
@@ -1092,7 +1127,7 @@ class PermissionsTableBodyRowButtonsCell {
 class PermissionsTableDeleteButton {
     
     element!: HTMLElement
-    icon!: ZadminIcon
+    icon!: Icon
     
     constructor(appendTo: HTMLElement, permission: {[key: string]: string}) {
         this.createSelf();
@@ -1106,7 +1141,7 @@ class PermissionsTableDeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new ZadminIcon("/static/images/delete.png", this.element);
+        this.icon = new Icon("/static/images/delete.png", this.element);
     }
     
     private startListeners(permission: {[key: string]: string}) {
@@ -1121,7 +1156,7 @@ class PermissionsTableDeleteButton {
                         permissionRow.remove();
                     } else {
                         permissionRow.classList.add("permission-to-delete");
-                        permissionRow.style.display = "hidden";
+                        permissionRow.style.display = "none";
                     }
                 }, { once: true });
             }, { once: true });

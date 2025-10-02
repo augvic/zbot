@@ -13,3 +13,5 @@ from .update_user import UpdateUser
 from .create_permission import CreatePermission
 from .delete_permission import DeletePermission
 from .include_new_registration import IncludeNewRegistration
+from .get_federal_revenue_data import GetFederalRevenueData
+from .get_financial_data import GetFinancialData
