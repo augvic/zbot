@@ -13,7 +13,7 @@ exe = EXE(
     analysis.scripts,
     analysis.binaries,
     analysis.datas,
-    name='zBot_cli',
+    name='zBotCli',
     upx=True,
     icon="./src/storage/images/icon.ico"
 )

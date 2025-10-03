@@ -179,7 +179,3 @@ class RegistrationsClient:
         session.delete(to_delete)
         session.commit()
         session.close()
-
-if __name__ == "__main__":
-    database = RegistrationsClient()
-    database.delete("31933143000180")

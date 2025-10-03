@@ -38,7 +38,3 @@ class StateRegistrationsClient:
             session.delete(delete)
         session.commit()
         session.close()
-
-if __name__ == "__main__":
-    database = StateRegistrationsClient()
-    database.delete("31933143000180")

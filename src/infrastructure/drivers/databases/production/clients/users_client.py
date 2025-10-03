@@ -53,4 +53,4 @@ class UsersClient:
 
 if __name__ == "__main__":
     database = UsersClient()
-    database.delete("ac\zc")
+    database.delete("")

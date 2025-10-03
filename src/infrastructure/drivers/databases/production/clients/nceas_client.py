@@ -38,7 +38,3 @@ class NceasClient:
             session.delete(delete)
         session.commit()
         session.close()
-
-if __name__ == "__main__":
-    database = NceasClient()
-    database.delete("31933143000180")

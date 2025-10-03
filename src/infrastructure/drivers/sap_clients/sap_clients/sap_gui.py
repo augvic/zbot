@@ -40,7 +40,15 @@ class SapGui:
                 try:
                     self.session.findById("wnd[1]").close()
                 except:
+                    pass
+                try:
                     self.session.findById("wnd[0]").sendVKey(3)
+                except:
+                    pass
+                try:
+                    self.session.findById("wnd[1]/usr/btnSPOP-OPTION2").press()
+                except:
+                    pass
     
     def press_enter(self, index: str) -> None:
         self.session.findById(rf"wnd[{index}]").sendVKey(0)

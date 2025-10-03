@@ -38,7 +38,3 @@ class SuframaRegistrationsClient:
             session.delete(delete)
         session.commit()
         session.close()
-
-if __name__ == "__main__":
-    database = SuframaRegistrationsClient()
-    database.delete("31933143000180")
