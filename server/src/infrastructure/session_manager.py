@@ -1,11 +1,12 @@
 from flask import session
+from typing import Any
 
 class SessionManager:
     
-    def save_in_session(self, key: str, value: str) -> None:
+    def save_in_session(self, key: str, value: Any) -> None:
         session[key] = value
     
-    def get_from_session(self, key: str) -> str:
+    def get_from_session(self, key: str) -> Any:
         return session[key]
     
     def is_user_in_session(self) -> bool:

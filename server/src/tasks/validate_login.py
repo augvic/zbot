@@ -1,6 +1,7 @@
 from src.infrastructure.databases.production.clients.users_client import UsersClient
 from src.infrastructure.databases.production.clients.permissions_client import PermissionsClient
 from src.infrastructure.databases.production.clients.modules_client import ModulesClient
+from src.infrastructure.session_manager import SessionManager
 from datetime import datetime
 
 class ValidateLogin:
@@ -9,8 +10,9 @@ class ValidateLogin:
         self.users_client = UsersClient()
         self.permissions_client = PermissionsClient()
         self.modules_client = ModulesClient()
+        self.session_manager = SessionManager()
     
-    def execute(self, login_data: dict[str, str]) -> dict[str, str | bool | list[str]]:
+    def execute(self, login_data: dict[str, str]) -> dict[str, str | bool]:
         self._setup()
         try:
             user = self.users_client.read(login_data["user"])
@@ -26,7 +28,9 @@ class ValidateLogin:
             permissions_list: list[str] = []
             for user_permission in user_permissions:
                 permissions_list.append({"module": user_permission.module, "description": modules_descriptions[user_permission.module]}) # type: ignore
-            return {"success": True, "permissions": permissions_list}
+            self.session_manager.save_in_session("user", login_data["user"])
+            self.session_manager.save_in_session("session_modules", permissions_list)
+            return {"success": True, "message": "Logado com sucesso."}
         except Exception as error:
             print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
             return {"success": False, "message": "Erro ao processar login."}

@@ -1,17 +1,18 @@
-from flask import Flask, Response
-from src.tasks import SendModule
+from flask import Blueprint, Response
+from flask.views import MethodView
+from src.tasks.send_module import SendModule
+from src.tasks.verify_if_have_access import VerifyIfHaveAccess
 
-class ModuleBundle:
+module_bundle = Blueprint("module_bundle", __name__)
+
+class ModuleBundle(MethodView):
     
-    def __init__(self, app: Flask):
-        self.app = app
-        self.routes()
-    
-    def routes(self) -> None:
-        @self.app.route("/module-bundle/<module>", methods=["GET"])
-        def get_module_bundle(module) -> Response:
-            moduleUpperCase = (module[0] + module[1].upper() + module[2:]).replace(".js", "")
-            if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access(moduleUpperCase):
-                return "Sem autorização.", 401
-            task = SendModule()
-            return task.execute(module)
+    def get(self, module: str) -> Response | str | tuple[str, int]:
+        task1 = VerifyIfHaveAccess()
+        task2 = SendModule()
+        moduleUpperCase = (module[0] + module[1].upper() + module[2:]).replace(".js", "")
+        if not task1.execute(moduleUpperCase):
+            return "Sem autorização.", 401
+        return task2.execute(module)
+
+module_bundle.add_url_rule("/module-bundle/<module>", view_func=ModuleBundle.as_view("module_bundle"), methods=["GET"])

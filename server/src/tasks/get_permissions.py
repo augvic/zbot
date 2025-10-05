@@ -1,6 +1,6 @@
 from src.infrastructure.databases.production.clients.permissions_client import PermissionsClient
 from src.infrastructure.serializers.sqla_serializer import SqlaSerializer
-from src.io.session_manager import SessionManager
+from src.infrastructure.session_manager import SessionManager
 from datetime import datetime
 
 class GetPermissions:

@@ -1,5 +1,5 @@
 from src.infrastructure.storage_managers.bundle_manager import BundleManager
-from src.io.session_manager import SessionManager
+from src.infrastructure.session_manager import SessionManager
 from flask import Response
 from datetime import datetime
 

@@ -1,30 +1,34 @@
-from flask import Flask
-from src.tasks import GetPermissions, CreatePermission, DeletePermission
+from flask import Blueprint
+from flask.views import MethodView
+from src.tasks.get_permissions import GetPermissions
+from src.tasks.create_permission import CreatePermission
+from src.tasks.delete_permission import DeletePermission
+from src.tasks.verify_if_have_access import VerifyIfHaveAccess
 
-class Permissions:
+permissions = Blueprint("permissions", __name__)
+
+class Permissions(MethodView):
     
-    def __init__(self, app: Flask):
-        self.app = app
-        self.routes()
+    def get(self, user: str) -> dict[str, str | bool | list[dict[str, str]]] | tuple[str, int]:
+        task1 = VerifyIfHaveAccess()
+        task2 = GetPermissions()
+        if not task1.execute("zAdmin"):
+            return "Sem autorização.", 401
+        return task2.execute(user)
     
-    def routes(self) -> None:
-        @self.app.route("/permissions/<user>", methods=["GET"])
-        def get_permissions(user: str) -> dict | str:
-            if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zAdmin"):
-                return "Sem autorização.", 401
-            task = GetPermissions()
-            return task.execute(user)
-        
-        @self.app.route("/permissions/<user>/<permission>", methods=["POST"])
-        def post_permissions(user: str, permission: str) -> dict | str:
-            if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zAdmin"):
-                return "Sem autorização.", 401
-            task = CreatePermission()
-            return task.execute(user, permission)
-        
-        @self.app.route("/permissions/<user>/<permission>", methods=["DELETE"])
-        def delete_permissions(user: str, permission: str) -> dict | str:
-            if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zAdmin"):
-                return "Sem autorização.", 401
-            task = DeletePermission()
-            return task.execute(user, permission)
+    def post(self, user: str, permission: str) -> tuple[str, int] | dict[str, str | bool]:
+        task1 = VerifyIfHaveAccess()
+        task2 = CreatePermission()
+        if not task1.execute("zAdmin"):
+            return "Sem autorização.", 401
+        return task2.execute(user, permission)
+    
+    def delete(self, user: str, permission: str) -> tuple[str, str | int] | dict[str, str | bool]:
+        task1 = VerifyIfHaveAccess()
+        task2 = DeletePermission()
+        if not task1.execute("zAdmin"):
+            return "Sem autorização.", 401
+        return task2.execute(user, permission)
+
+permissions.add_url_rule("/permissions/<user>", view_func=Permissions.as_view("permissions_get"), methods=["GET"])
+permissions.add_url_rule("/permissions/<user>/<permission>", view_func=Permissions.as_view("permissions_post_delete"), methods=["POST", "DELETE"])

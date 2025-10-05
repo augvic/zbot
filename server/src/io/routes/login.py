@@ -2,19 +2,18 @@ from flask import request, Blueprint
 from flask.views import MethodView
 from src.tasks.validate_login import ValidateLogin
 from src.tasks.verify_if_logged_in import VerifyIfLoggedIn
+from typing import cast
 
 login = Blueprint("login", __name__)
 
 class Login(MethodView):
     
-    def post(self) -> dict[str, str]:
-        data = request.json
+    def post(self) -> dict[str, str | bool]:
+        data = cast(dict[str, str], request.json)
         task = ValidateLogin()
-        response = task.execute(data)
-        self.session_manager.save_in_session("user", data["user"])
-        self.session_manager.save_in_session("session_modules", permissions["permissions"])
+        return task.execute(data)
     
-    def get(self) -> dict[str, str]:
+    def get(self) -> dict[str, bool]:
         task = VerifyIfLoggedIn()
         return task.execute()
 

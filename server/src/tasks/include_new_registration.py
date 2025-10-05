@@ -3,7 +3,7 @@ from src.infrastructure.databases.production.clients.registrations_client import
 from src.infrastructure.databases.production.clients.nceas_client import NceasClient
 from src.infrastructure.databases.production.clients.state_registrations_client import StateRegistrationsClient
 from src.infrastructure.databases.production.clients.suframa_registrations_client import SuframaRegistrationsClient
-from src.io.session_manager import SessionManager
+from src.infrastructure.session_manager import SessionManager
 from datetime import datetime
 from os import path, makedirs
 from shutil import copy2
