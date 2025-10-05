@@ -1,28 +1,17 @@
-from pandas import DataFrame
+from dataclasses import dataclass
 from datetime import date
+from pandas import DataFrame
 
+@dataclass
 class FinancialData:
     
-    def __init__(self,
-        cnpj_root: str = "",
-        limit: str | float = "",
-        maturity: str | date = "",
-        in_open: str | float = "",
-        margin: str | float = "",
-        overdue_nfs: str = "",
-        fbl5n_table: DataFrame | None = None
-    ) -> None:
-        self.cnpj_root = cnpj_root
-        self.limit = limit
-        self.maturity = maturity
-        self.in_open = in_open
-        self.margin = margin
-        self.overdue_nfs = overdue_nfs
-        self.fbl5n_table = fbl5n_table
-    
-    def subtract_margin(self, value: str) -> None:
-        if self.margin != "Sem margem disponível.":
-            self.margin = float(self.margin) - float(value)
+    cnpj_root: str = ""
+    limit: str | float = ""
+    maturity: str | date = ""
+    in_open: str | float = ""
+    margin: str | float = ""
+    overdue_nfs: str = ""
+    fbl5n_table: DataFrame | None = None
 
 class Partner:
     

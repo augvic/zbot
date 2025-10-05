@@ -10,22 +10,30 @@ class Users:
     def routes(self) -> None:
         @self.app.route("/users/<user>", methods=["GET"])
         def get_users(user: str) -> dict | str:
+            if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zAdmin"):
+                return "Sem autorização.", 401
             task = GetUsers()
             return task.execute(user)
         
         @self.app.route("/users", methods=["POST"])
         def post_users() -> dict | str:
+            if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zAdmin"):
+                return "Sem autorização.", 401
             data = request.json
             task = CreateUser()
             return task.execute(data)
         
         @self.app.route("/users/<user>", methods=["DELETE"])
         def delete_users(user: str) -> dict | str:
+            if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zAdmin"):
+                return "Sem autorização.", 401
             task = DeleteUser()
             return task.execute(user)
         
         @self.app.route("/users/<user>", methods=["PUT"])
         def update_users(user: str) -> dict | str:
+            if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zAdmin"):
+                return "Sem autorização.", 401
             data = request.json
             task = UpdateUser()
             return task.execute(user, data)

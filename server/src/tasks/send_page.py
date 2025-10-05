@@ -1,5 +1,7 @@
-from src.infrastructure.managers import BundleManager, SessionManager
+from src.infrastructure.storage_managers.bundle_manager import BundleManager
+from src.io.session_manager import SessionManager
 from flask import Response
+from datetime import datetime
 
 class SendPage:
     
@@ -7,9 +9,10 @@ class SendPage:
         self.bundle_sender = BundleManager()
         self.session_manager = SessionManager()
     
-    def execute(self, page: str) -> Response:
+    def execute(self, page: str) -> Response | str:
         self._setup()
-        if page == "zindex.js":
-            if not self.session_manager.is_user_in_session():
-                return "Necessário logar.", 401
-        return self.bundle_sender.send_page(page)
+        try:
+            return self.bundle_sender.send_page(page)
+        except Exception as error:
+            print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
+            return "Erro ao enviar página."

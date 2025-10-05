@@ -1,4 +1,5 @@
-from src.infrastructure.databases.production.models import *
+from src.infrastructure.databases.production.models import SuframaRegistration
+from src.infrastructure.databases.production.models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path

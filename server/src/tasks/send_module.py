@@ -1,5 +1,7 @@
-from src.infrastructure.managers import BundleManager, SessionManager
+from src.infrastructure.storage_managers.bundle_manager import BundleManager
+from src.io.session_manager import SessionManager
 from flask import Response
+from datetime import datetime
 
 class SendModule:
     
@@ -7,9 +9,10 @@ class SendModule:
         self.bundle_sender = BundleManager()
         self.session_manager = SessionManager()
     
-    def execute(self, module: str) -> Response:
+    def execute(self, module: str) -> Response | str:
         self._setup()
-        moduleUpperCase = (module[0] + module[1].upper() + module[2:]).replace(".js", "")
-        if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access(moduleUpperCase):
-            return "Sem autorização.", 401
-        return self.bundle_sender.send_module(module)
+        try:
+            return self.bundle_sender.send_module(module)
+        except Exception as error:
+            print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
+            return "Erro ao enviar módulo."

@@ -1,18 +1,21 @@
-from src.infrastructure.drivers.databases.production.clients import ModulesClient
-from src.infrastructure.drivers.databases import Serializer
-from src.infrastructure.managers import SessionManager
+from src.infrastructure.databases.production.clients.modules_client import ModulesClient
+from src.infrastructure.serializers.sqla_serializer import SqlaSerializer
+from src.io.session_manager import SessionManager
+from datetime import datetime
 
 class GetModulesList:
     
     def _setup(self) -> None:
         self.modules_client = ModulesClient()
         self.session_manager = SessionManager()
-        self.serializer = Serializer()
+        self.serializer = SqlaSerializer()
     
-    def execute(self) -> dict | str:
+    def execute(self) -> dict[str, str | bool | list[dict[str, str]]]:
         self._setup()
-        if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access("zAdmin"):
-            return "Sem autorização.", 401
-        modules = self.modules_client.read("all")
-        modules_serialized = self.serializer.serialize_list(modules)
-        return modules_serialized
+        try:
+            modules = self.modules_client.read()
+            modules_serialized = self.serializer.serialize_list(modules)
+            return {"success": True, "modules_list": modules_serialized}
+        except Exception as error:
+            print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
+            return {"success": False, "message": "Erro ao coletar lista de módulos."}

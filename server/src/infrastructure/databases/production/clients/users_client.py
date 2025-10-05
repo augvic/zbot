@@ -1,4 +1,5 @@
-from src.infrastructure.databases.production.models import *
+from src.infrastructure.databases.production.models import User
+from src.infrastructure.databases.production.models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path
@@ -25,12 +26,13 @@ class UsersClient:
         session.refresh(to_create)
         session.close()
     
-    def read(self, user: str) -> User | list[User]:
+    def read(self, user: str) -> User:
         session = self.session_construct()
-        if user == "all":
-            return session.query(User).all()
-        else:
-            return session.query(User).filter(User.user == user).first()
+        return session.query(User).filter(User.user == user).first()
+    
+    def read_all(self) -> list[User]:
+        session = self.session_construct()
+        return session.query(User).all()
     
     def update(self, user: str, name: str = "", email: str = "", password: str = "") -> None:
         session = self.session_construct()

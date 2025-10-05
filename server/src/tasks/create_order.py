@@ -1,3 +1,4 @@
+from datetime import datetime
 from src.infrastructure.sap_clients.clients.order_creator import OrderCreator
 from src.infrastructure.sap_clients.models import *
 
@@ -97,7 +98,8 @@ class CreateOrder:
             )
             doc_number = self.order_creator.create(order)
             return {"success": True, "message": doc_number}
-        except:
+        except Exception as error:
+            print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
             self.order_creator.go_home()
             return {"success": False, "message": "Erro ao criar documento no SAP."}
 

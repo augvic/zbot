@@ -1,4 +1,5 @@
-from src.infrastructure.databases.production.models import *
+from src.infrastructure.databases.production.models import Registration
+from src.infrastructure.databases.production.models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path
@@ -77,12 +78,13 @@ class RegistrationsClient:
         session.commit()
         session.close()
     
-    def read(self, cnpj: str) -> Registration | list[Registration]:
+    def read(self, cnpj: str) -> Registration:
         session = self.session_construct()
-        if cnpj == "all":
-            return session.query(Registration).all()
-        else:
-            return session.query(Registration).filter(Registration.cnpj == cnpj).first()
+        return session.query(Registration).filter(Registration.cnpj == cnpj).first()
+        
+    def read_all(self) -> list[Registration]:
+        session = self.session_construct()
+        return session.query(Registration).all()
     
     def update(self,
         cnpj: str,
