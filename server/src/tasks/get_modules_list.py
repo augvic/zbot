@@ -15,7 +15,7 @@ class GetModulesList:
         try:
             modules = self.modules_client.read()
             modules_serialized = self.serializer.serialize_list(modules)
-            return {"success": True, "modules_list": modules_serialized}
+            return {"success": True, "modules": modules_serialized}
         except Exception as error:
             print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
             return {"success": False, "message": "Erro ao coletar lista de módulos."}

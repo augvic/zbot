@@ -280,8 +280,12 @@ class UsersTableBody {
     
     private async createComponents() {
         const response = await fetch(`${window.location.origin}/users/all`);
-        const users: [{[key: string]: string}] = await response.json();
-        users.forEach((user) => {
+        const data: {[key: string]: boolean | [{}] | string} = await response.json();
+        if (!data.success) {
+            new Notification(data.message as string, "red");
+        }
+        const users = data.users as [{}]
+        users.forEach((user: {}) => {
             let row = new UsersTableBodyRow(this.element, user);
             row.element.offsetHeight;
             row.element.style.height = "46px";
@@ -588,7 +592,11 @@ class UserModalInputsContainer {
     private async createComponents(user: {[key: string]: string}, editModal: boolean) {
         if (editModal) {
             const response = await fetch(`${window.location.origin}/users/${user.user}`);
-            const userDataUpdated = await response.json();
+            const data = await response.json();
+            if (!data.success) {
+                new Notification(data.message, "red");
+            }
+            const userDataUpdated = data.users;
             this.userInput = new UserModalInput(this.element, "text", "Usuário", "user-modal-user", userDataUpdated.user, editModal);
             this.nameInput = new UserModalInput(this.element, "text", "Nome", "user-modal-name", userDataUpdated.name, editModal);
             this.emailInput = new UserModalInput(this.element, "text", "E-mail", "user-modal-email", userDataUpdated.email, editModal);
@@ -669,7 +677,11 @@ class UserModalModulesList {
     
     private async createComponents() {
         const response = await fetch(`${window.location.origin}/modules-list`);
-        const modules: [{[key: string]: string}] = await response.json();
+        const data: {[key: string]: string | boolean | [{}]} = await response.json();
+        if (!data.success) {
+            new Notification(data.message as string, "red");
+        }
+        const modules = data.modules as [{[key: string]: string}]
         modules.forEach(module => {
             new Option(this.element, module.module)
         });
@@ -936,15 +948,14 @@ class UserModalSaveButton {
             modal.addEventListener("animationend", () => {
                 modal.remove();
                 let userRow = document.getElementById(`${user}-row`)!;
-                userRow.classList.remove("opacity-fade-in");
-                userRow.classList.add("opacity-fade-out");
-                userRow.addEventListener("animationend", () => {
+                const currentBgColor = userRow.style.backgroundColor;
+                userRow.style.backgroundColor = "#abffb7";
+                userRow.addEventListener("transitionend", () => {
                     document.getElementById(`${user}-user-cell`)!.innerText = user;
                     document.getElementById(`${user}-name-cell`)!.innerText = name;
                     document.getElementById(`${user}-email-cell`)!.innerText = email;
                     document.getElementById(`${user}-password-cell`)!.innerText = password;
-                    userRow.classList.remove("opacity-fade-out");
-                    userRow.classList.add("opacity-fade-in");
+                    userRow.style.backgroundColor = currentBgColor;
                 }, { once: true });
             }, { once: true });
         });
@@ -1055,7 +1066,11 @@ class PermissionsTableBody {
     private async createComponents(user: {[key: string]: string}, editModal: boolean) {
         if (editModal) {
             const response = await fetch(`${window.location.origin}/permissions/${user.user}`);
-            const permissions: [{[key: string]: string}] = await response.json();
+            const data: {[key: string]: boolean | string | [string]} = await response.json();
+            if (!data.success) {
+                new Notification(data.message as string, "red");
+            }
+            const permissions = data.permissions as [{}]
             permissions.forEach((permission) => {
                 let row = new PermissionsTableBodyRow(this.element, permission);
                 row.element.offsetHeight;

@@ -19,7 +19,7 @@ class ValidateLogin:
             if user == None:
                 return {"success": False, "message": "Usuário não enviado."}
             if user.password != login_data["password"]:
-                return {"success": False, "message": "Erro ao logar."}
+                return {"success": False, "message": "Login inválido."}
             modules = self.modules_client.read()
             modules_descriptions = {}
             for module in modules:

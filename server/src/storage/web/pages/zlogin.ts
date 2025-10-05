@@ -145,7 +145,7 @@ class LoginButton {
             });
             const responseDict = await response.json()
             if (!responseDict.success) {
-                new Notification("Login inválido.", "red");
+                new Notification(responseDict.message, "red");
             } else {
                 const loginPage = document.getElementById("zLogin")!;
                 loginPage.classList.add("opacity-fade-out");
@@ -155,7 +155,7 @@ class LoginButton {
                     let bundleClass = bundle.default;
                     document.body.innerHTML = "";
                     new bundleClass();
-                    new Notification("Logado com sucesso.", "green");
+                    new Notification(responseDict.message, "green");
                 });
             }
         });
