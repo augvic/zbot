@@ -28,7 +28,7 @@ class NceasClient:
         session.commit()
         session.close()
     
-    def read(self, cnpj: str) -> list[Ncea]:
+    def read_all(self, cnpj: str) -> list[Ncea]:
         session = self.session_construct()
         return session.query(Ncea).filter(Ncea.cnpj == cnpj).all()
     

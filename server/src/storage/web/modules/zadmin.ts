@@ -24,7 +24,31 @@ export default class zAdmin {
 class Container {
     
     element!: HTMLElement
-    titleBar!: ContainerTopBar
+    usersSection!: UsersSection
+    modulesSection!: ModulesSection
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.id = "sections-container";
+        this.element.className = "w-[95%] h-[95%] flex bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg";
+    }
+    
+    private createComponents() {
+        this.usersSection = new UsersSection(this.element);
+    }
+    
+}
+
+class UsersSection {
+    
+    element!: HTMLElement
+    titleBar!: UsersSectionTopBar
     tableContainer!: UsersTableContainer
     
     constructor(appendTo: HTMLElement) {
@@ -35,22 +59,24 @@ class Container {
     
     private createSelf() {
         this.element = document.createElement("div");
-        this.element.className = "w-[95%] h-[95%] flex flex-col bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg p-5 gap-3";
+        this.element.id = "users-section";
+        this.element.className = "w-full h-full flex flex-col p-5 gap-3 opacity-fade-in";
     }
     
     private createComponents() {
-        this.titleBar = new ContainerTopBar(this.element);
+        this.titleBar = new UsersSectionTopBar(this.element);
         this.tableContainer = new UsersTableContainer(this.element);
     }
     
 }
 
-class ContainerTopBar {
+class UsersSectionTopBar {
     
     element!: HTMLElement
     searchInput!: SearchUserInput
     searchButton!: SearchUserButton
     addUserButton!: AddUserButton
+    goToModulesSection!: GoToModulesSection
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -67,6 +93,7 @@ class ContainerTopBar {
         this.searchInput = new SearchUserInput(this.element);
         this.searchButton = new SearchUserButton(this.element);
         this.addUserButton = new AddUserButton(this.element);
+        this.goToModulesSection = new GoToModulesSection(this.element);
     }
     
 }
@@ -144,7 +171,6 @@ class SearchUserButton {
 class AddUserButton {
     
     element!: HTMLElement
-    button!: HTMLElement
     icon!: Icon
     
     constructor(appendTo: HTMLElement) {
@@ -155,20 +181,52 @@ class AddUserButton {
     }
     
     private createSelf() {
-        this.element = document.createElement("div");
-        this.element.className = "w-auto h-auto flex flex-1 items-center justify-end";
-        this.button = document.createElement("button");
-        this.button.className = "h-auto w-auto p-1 bg-green-700 text-white hover:bg-green-900 hover:text-black cursor-pointer rounded-md transition-colors duration-300";
-        this.element.appendChild(this.button);
+        this.element = document.createElement("button");
+        this.element.className = "h-auto w-auto p-1 bg-green-700 text-white hover:bg-green-900 hover:text-black cursor-pointer rounded-md transition-colors duration-300";
     }
     
     private createComponents() {
-        this.icon = new Icon("/static/images/plus.png", this.button);
+        this.icon = new Icon("/static/images/plus.png", this.element);
+    }
+    
+    private startListeners() {
+        this.element.addEventListener("click", () => {
+            new UserModal(document.getElementById("zAdmin")!, {}, false);
+        });
+    }
+    
+}
+
+class GoToModulesSection {
+    
+    element!: HTMLElement
+    button!: HTMLElement
+    icon!: Icon
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.startListeners();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-auto h-auto flex flex-1 items-center justify-end";
+        this.button = document.createElement("button");
+        this.button.className = "h-auto w-auto px-2 py-1 bg-amber-700 text-white hover:bg-amber-900 cursor-pointer rounded-md transition-colors duration-300";
+        this.button.innerText = "Alternar para módulos."
+        this.element.appendChild(this.button);
     }
     
     private startListeners() {
         this.button.addEventListener("click", () => {
-            new UserModal(document.getElementById("zAdmin")!, {}, false);
+            const sectionsContainer = document.getElementById("sections-container")!;
+            const usersSection = document.getElementById("users-section")!;
+            usersSection.classList.add("opacity-fade-out");
+            usersSection.addEventListener("animationend", () => {
+                usersSection.remove();
+                new ModulesSection(sectionsContainer);
+            }, { once: true });
         });
     }
     
@@ -860,6 +918,8 @@ class UserModalCreateButton {
             if (!data.success) {
                 new Notification(data.message, "red");
                 return;
+            } else {
+                new Notification(data.message, "green");
             }
             const permissionsToCreate = document.querySelectorAll<HTMLElement>(".permission-to-create");
             permissionsToCreate.forEach(async permission => {
@@ -869,10 +929,10 @@ class UserModalCreateButton {
                 const data = await response.json();
                 if (!data.success) {
                     new Notification(data.message, "red");
-                    return;
+                } else {
+                    new Notification(data.message, "green");
                 }
             });
-            new Notification("Usuário criado.", "green");
             const modal = document.getElementById("user-modal")!;
             modal.classList.remove("opacity-fade-in");
             modal.classList.add("opacity-fade-out");
@@ -918,6 +978,8 @@ class UserModalSaveButton {
             if (!data.success) {
                 new Notification(data.message, "red");
                 return;
+            } else {
+                new Notification(data.message, "green");
             }
             const permissionsToDelete = document.querySelectorAll<HTMLElement>(".permission-to-delete");
             permissionsToDelete.forEach(async permission => {
@@ -927,7 +989,8 @@ class UserModalSaveButton {
                 const data = await response.json();
                 if (!data.success) {
                     new Notification(data.message, "red");
-                    return;
+                } else {
+                    new Notification(data.message, "green");
                 }
             });
             const permissionsToCreate = document.querySelectorAll<HTMLElement>(".permission-to-create");
@@ -938,10 +1001,10 @@ class UserModalSaveButton {
                 const data = await response.json();
                 if (!data.success) {
                     new Notification(data.message, "red");
-                    return;
+                } else {
+                    new Notification(data.message, "green");
                 }
             });
-            new Notification("Usuário atualizado.", "green");
             const modal = document.getElementById("user-modal")!;
             modal.classList.remove("opacity-fade-in");
             modal.classList.add("opacity-fade-out");
@@ -1175,6 +1238,645 @@ class PermissionsTableDeleteButton {
                     permissionRow.style.display = "none";
                 }
             }, 300);
+        });
+    }
+    
+}
+
+class ModulesSection {
+    
+    element!: HTMLElement
+    titleBar!: ModulesSectionTopBar
+    tableContainer!: ModulesTableContainer
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.id = "modules-section";
+        this.element.className = "w-full h-full flex flex-col p-5 gap-3 opacity-fade-in";
+    }
+    
+    private createComponents() {
+        this.titleBar = new ModulesSectionTopBar(this.element);
+        this.tableContainer = new ModulesTableContainer(this.element);
+    }
+    
+}
+
+class ModulesSectionTopBar {
+    
+    element!: HTMLElement
+    searchInput!: SearchModuleInput
+    searchButton!: SearchModuleButton
+    AddModuleButton!: AddModuleButton
+    GoToUsersSection!: GoToUsersSection
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-full h-auto flex items-center gap-2";
+    }
+    
+    private createComponents() {
+        this.searchInput = new SearchModuleInput(this.element);
+        this.searchButton = new SearchModuleButton(this.element);
+        this.AddModuleButton = new AddModuleButton(this.element);
+        this.GoToUsersSection = new GoToUsersSection(this.element);
+    }
+    
+}
+
+class SearchModuleInput {
+    
+    element!: HTMLInputElement
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("input");
+        this.element.className = "h-[30px] w-[300px] bg-white rounded-md border border-gray-300 outline-none p-3";
+        this.element.id = "search-module-input";
+        this.element.placeholder = "Módulo";
+    }
+    
+}
+
+class SearchModuleButton {
+    
+    element!: HTMLElement
+    icon!: Icon
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        this.startListeners();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.className = "h-auto w-auto p-1 bg-blue-700 text-white hover:bg-blue-900 hover:text-black cursor-pointer rounded-md transition-colors duration-300";
+    }
+    
+    private createComponents() {
+        this.icon = new Icon("/static/images/magnifying_glass.png", this.element);
+    }
+    
+    private startListeners() {
+        this.element.addEventListener("click", () => {
+            const toSearch = (document.getElementById("search-module-input")! as HTMLInputElement).value;
+            const userRows = document.querySelectorAll(".user-row");
+            if (toSearch == "") {
+                userRows.forEach(element => {
+                    const row = element as HTMLElement;
+                    row.style.display = "flex";
+                    row.offsetHeight;
+                    row.style.height = "46px";   
+                });
+                return;
+            }
+            userRows.forEach(element => {
+                const row = element as HTMLElement;
+                if (!row.id.includes(toSearch)) {
+                    row.style.height = "0px";
+                    setTimeout(() => {
+                        row.style.display = "none";
+                    }, 300);
+                } else {
+                    row.style.display = "flex";
+                    row.offsetHeight;
+                    row.style.height = "46px";
+                }
+            });
+        });
+    }
+    
+}
+
+class AddModuleButton {
+    
+    element!: HTMLElement
+    icon!: Icon
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        this.startListeners();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.className = "h-auto w-auto p-1 bg-green-700 text-white hover:bg-green-900 hover:text-black cursor-pointer rounded-md transition-colors duration-300";
+    }
+    
+    private createComponents() {
+        this.icon = new Icon("/static/images/plus.png", this.element);
+    }
+    
+    private startListeners() {
+        this.element.addEventListener("click", () => {
+            new ModulesModal(document.getElementById("zAdmin")!);
+        });
+    }
+    
+}
+
+class GoToUsersSection {
+    
+    element!: HTMLElement
+    button!: HTMLElement
+    icon!: Icon
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.startListeners();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-auto h-auto flex flex-1 items-center justify-end";
+        this.button = document.createElement("button");
+        this.button.className = "h-auto w-auto px-2 py-1 bg-amber-700 text-white hover:bg-amber-900 cursor-pointer rounded-md transition-colors duration-300";
+        this.button.innerText = "Alternar para usuários."
+        this.element.appendChild(this.button);
+    }
+    
+    private startListeners() {
+        this.button.addEventListener("click", () => {
+            const sectionsContainer = document.getElementById("sections-container")!;
+            const modulesSection = document.getElementById("modules-section")!;
+            modulesSection.classList.add("opacity-fade-out");
+            modulesSection.addEventListener("animationend", () => {
+                modulesSection.remove();
+                new UsersSection(sectionsContainer);
+            }, { once: true });
+        });
+    }
+    
+}
+
+class ModulesTableContainer {
+    
+    element!: HTMLElement
+    table!: ModulesTable
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-auto h-auto flex-1 overflow-y-auto custom-scroll";
+    }
+    
+    private createComponents() {
+        this.table = new ModulesTable(this.element);   
+    }
+    
+}
+
+class ModulesTable {
+    
+    element!: HTMLElement
+    tableHead!: ModulesTableHead
+    tableBody!: ModulesTableBody
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "h-auto w-full flex flex-col whitespace-nowrap cursor-default border-collapse text-center text-black dark:text-white transition-colors duration-300";
+    }
+    
+    private createComponents() {
+        this.tableHead = new ModulesTableHead(this.element);
+        this.tableBody = new ModulesTableBody(this.element);
+    }
+    
+}
+
+class ModulesTableHead {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "font-bold h-[46px] w-full flex bg-gray-300 dark:bg-gray-900 transition-colors duration-300 sticky top-0 rounded-tl-lg rounded-tr-lg";
+    }
+    
+    private createComponents() {
+        new ModulesTableHeadRowCell(this.element, "Módulo");
+        new ModulesTableHeadRowCell(this.element, "Descrição");
+        new ModulesTableHeadRowButtonCell(this.element, "");
+    }
+    
+}
+
+class ModulesTableHeadRowCell {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, text: string) {
+        this.createSelf(text);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(text: string) {
+        this.element = document.createElement("div");
+        this.element.className = "p-2 flex h-auto w-[40%] items-center justify-center";
+        this.element.innerText = text;
+    }
+    
+}
+
+class ModulesTableHeadRowButtonCell {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, text: string) {
+        this.createSelf(text);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(text: string) {
+        this.element = document.createElement("div");
+        this.element.className = "p-2 flex h-auto w-[20%] items-center justify-center";
+        this.element.innerText = text;
+    }
+    
+}
+
+class ModulesTableBody {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.id = "modules-table-body";
+        this.element.className = "w-auto h-auto flex flex-col";
+    }
+    
+    private async createComponents() {
+        const response = await fetch(`${window.location.origin}/modules-list`);
+        const data: {[key: string]: boolean | [{}] | string} = await response.json();
+        if (!data.success) {
+            new Notification(data.message as string, "red");
+        }
+        const modules = data.modules as [{}]
+        modules.forEach((module) => {
+            let row = new ModulesTableBodyRow(this.element, module);
+            row.element.offsetHeight;
+            row.element.style.height = "46px";
+        });
+    }
+    
+}
+
+class ModulesTableBodyRow {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, module: {[key: string]: string}) {
+        this.createSelf(module);
+        this.createComponents(module);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(module: {[key: string]: string}) {
+        this.element = document.createElement("div");
+        this.element.id = `${module.module}-row`;
+        this.element.className = "w-full h-[0px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 table-row-transitions user-row";
+    }
+    
+    private createComponents(module: {[key: string]: string}) {
+        new ModulesTableBodyRowCell(this.element, module.module);
+        new ModulesTableBodyRowCell(this.element, module.description);
+        new ModulesTableBodyRowButtonsCell(this.element, module);
+    }
+    
+}
+
+class ModulesTableBodyRowCell {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, text: string) {
+        this.createSelf(text);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(text: string) {
+        this.element = document.createElement("div");
+        this.element.className = "p-2 h-auto w-[40%] flex items-center justify-center overflow-hidden custom-scroll";
+        this.element.innerText = text;
+    }
+    
+}
+
+class ModulesTableBodyRowButtonsCell {
+    
+    element!: HTMLElement
+    deleteButton!: ModulesTableDeleteButton
+    
+    constructor(appendTo: HTMLElement, module: {[key: string]: string}) {
+        this.createSelf();
+        this.createComponents(module);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "p-2 h-auto w-[20%] flex gap-x-2 items-center justify-center";
+    }
+    
+    private createComponents(module: {[key: string]: string}) {
+        this.deleteButton = new ModulesTableDeleteButton(this.element, module.module);
+    }
+    
+}
+
+class ModulesTableDeleteButton {
+    
+    element!: HTMLElement
+    icon!: Icon
+    
+    constructor(appendTo: HTMLElement, module: string) {
+        this.createSelf();
+        this.createComponents();
+        this.startListeners(module);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
+    }
+    private createComponents() {
+        this.icon = new Icon("/static/images/delete.png", this.element);
+    }
+    
+    private startListeners(module: string) {
+        this.element.addEventListener("click", async () => {
+            const response = await fetch(`${window.location.origin}/modules-list/${module}`, {
+                method: "DELETE",
+            });
+            const data = await response.json();
+            if (!data.success) {
+                new Notification(data.message, "red");
+            } else {
+                new Notification(data.message, "green");
+                const userRow = document.getElementById(`${module}-row`)!;
+                userRow.style.height = "0px";
+                setTimeout(() => {
+                    userRow.remove();
+                }, 300);
+            }
+        });
+    }
+    
+}
+
+class ModulesModal {
+    
+    element!: HTMLElement
+    modal!: ModulesModalContainer
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        setTimeout(() => {
+            appendTo.appendChild(this.element);
+        }, 200);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.id = "modules-modal";
+        this.element.className = "w-full h-full fixed flex items-center justify-center z-50 bg-black/80 opacity-fade-in";
+    }
+    private createComponents() {
+        this.modal = new ModulesModalContainer(this.element);
+    }
+    
+}
+
+class ModulesModalContainer {
+    
+    element!: HTMLElement
+    closeButtonContainer!: ModulesModalCloseButtonContainer
+    elementsContainer!: ModulesModalElements
+    button!: ModulesModalCreateButton
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-auto h-auto flex flex-col items-center p-3 bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg gap-y-2";
+    }
+    
+    private createComponents() {
+        this.closeButtonContainer = new ModulesModalCloseButtonContainer(this.element);
+        this.elementsContainer = new ModulesModalElements(this.element);
+        this.button = new ModulesModalCreateButton(this.element);
+    }
+    
+}
+
+class ModulesModalElements {
+    
+    element!: HTMLElement
+    inputsContainer!: ModulesModalInputsContainer
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-full h-auto flex flex-1 gap-x-2";
+    }
+    
+    private createComponents() {
+        this.inputsContainer = new ModulesModalInputsContainer(this.element);
+    }
+    
+}
+
+class ModulesModalInputsContainer {
+    
+    element!: HTMLElement
+    moduleInput!: ModulesModalInput
+    descriptionInput!: ModulesModalInput
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-auto h-auto flex flex-col p-3 items-center justify-center gap-y-2 border border-gray-300 dark:border-gray-900 transition-colors duration-300 rounded-lg";
+    }
+    
+    private async createComponents() {
+        this.moduleInput = new ModulesModalInput(this.element, "text", "Módulo", "modules-modal-module");
+        this.descriptionInput = new ModulesModalInput(this.element, "text", "Descrição", "modules-modal-description");
+    }
+    
+}
+
+class ModulesModalCloseButtonContainer {
+    
+    element!: HTMLElement
+    closeButton!: ModulesModalCloseButton
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-full h-auto flex justify-end";
+    }
+    
+    private createComponents() {
+        this.closeButton = new ModulesModalCloseButton(this.element);
+    }
+    
+}
+
+class ModulesModalCloseButton {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.startListeners();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.className = "w-auto h-auto rounded-full px-2 bg-red-700 hover:bg-red-900 cursor-pointer text-white transition-colors duration-300";
+        this.element.innerText = "x";
+    }
+    
+    private startListeners() {
+        this.element.addEventListener("click", () => {
+            const modal = document.getElementById("modules-modal")!;
+            modal.classList.remove("opacity-fade-in");
+            modal.classList.add("opacity-fade-out");
+            modal.addEventListener("animationend", () => {
+                modal.remove();
+            }, { once: true });
+        });
+    }
+    
+}
+
+class ModulesModalInput {
+    
+    element!: HTMLInputElement
+    
+    constructor(appendTo: HTMLElement, type: string, placeholder: string, id: string) {
+        this.createSelf(placeholder, id, type);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(placeholder: string, id: string, type: string) {
+        this.element = document.createElement("input");
+        this.element.id = id;
+        this.element.type = type;
+        this.element.className = "w-[300px] h-[30px] p-2 bg-white border border-gray-300 outline-none rounded-md";
+        this.element.placeholder = placeholder;
+    }
+    
+}
+
+class ModulesModalCreateButton {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.startListeners();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.className = "w-auto h-auto p-2 bg-green-700 hover:bg-green-900 transition-colors duration-300 rounded-md cursor-pointer text-white";
+        this.element.innerText = "Adicionar";
+    }
+    
+    private startListeners() {
+        this.element.addEventListener("click", async () => {
+            const tableBody = document.getElementById("modules-table-body")!;
+            const module = (document.getElementById("modules-modal-module") as HTMLInputElement).value!;
+            const description = (document.getElementById("modules-modal-description") as HTMLInputElement).value!;
+            const response = await fetch(`${window.location.origin}/modules-list`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ module, description })
+            });
+            const data = await response.json();
+            if (!data.success) {
+                new Notification(data.message, "red");
+                return;
+            } else {
+                new Notification(data.message, "green");
+            }
+            const modal = document.getElementById("modules-modal")!;
+            modal.classList.remove("opacity-fade-in");
+            modal.classList.add("opacity-fade-out");
+            modal.addEventListener("animationend", () => {
+                modal.remove();
+                let row = new ModulesTableBodyRow(tableBody, { module: module, description: description });
+                row.element.offsetHeight;
+                row.element.style.height = "46px";
+            }, { once: true });
         });
     }
     

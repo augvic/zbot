@@ -12,7 +12,7 @@ class UpdateUser:
         self._setup()
         try:
             user_exists = self.users_client.read(user)
-            if not user_exists:
+            if user_exists == None:
                 return {"success": False, "message": "Usuário não existe."}
             if user_data["user"] == "":
                 return {"success": False, "message": "Preencha o usuário."}
@@ -26,6 +26,8 @@ class UpdateUser:
                 return {"success": False, "message": "Preencha um e-mail válido."}
             if user_data["password"] == "":
                 return {"success": False, "message": "Preencha a senha."}
+            if user_exists.name == user_data["name"] and user_exists.email == user_data["email"] and user_exists.password == user_data["password"]:
+                return {"success": True, "message": "Nenhum dado do usuário modificado."}
             self.users_client.update(user_data["user"], user_data["name"], user_data["email"], user_data["password"])
             return {"success": True, "message": "Usuário atualizado."}
         except Exception as error:

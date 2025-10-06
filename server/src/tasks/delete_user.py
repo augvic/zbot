@@ -12,10 +12,12 @@ class DeleteUser:
         self._setup()
         try:
             user_exists = self.users_client.read(user)
-            if not user_exists:
-                return {"success": False, "message": "Usuário não existe."}
+            if user_exists == None:
+                return {"success": False, "message": f"Usuário ({user}) não existe."}
+            if user == "72776":
+                return {"success": False, "message": "Criador não pode ser removido."}
             self.users_client.delete(user)
-            return {"success": True, "message": "Usuário removido."}
+            return {"success": True, "message": f"Usuário ({user}) removido."}
         except Exception as error:
             print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
-            return {"success": False, "message": "Erro ao deletar usuário."}
+            return {"success": False, "message": f"Erro ao deletar usuário ({user})."}

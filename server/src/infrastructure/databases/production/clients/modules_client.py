@@ -23,7 +23,11 @@ class ModulesClient:
         session.commit()
         session.close()
     
-    def read(self) -> list[Module]:
+    def read(self, module: str) -> Module | None:
+        session = self.session_construct()
+        return session.query(Module).filter(Module.module == module).first()
+
+    def read_all(self) -> list[Module]:
         session = self.session_construct()
         return session.query(Module).all()
     

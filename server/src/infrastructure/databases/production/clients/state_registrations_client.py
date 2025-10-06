@@ -28,7 +28,7 @@ class StateRegistrationsClient:
         session.commit()
         session.close()
     
-    def read(self, cnpj: str) -> list[StateRegistration]:
+    def read_all(self, cnpj: str) -> list[StateRegistration]:
         session = self.session_construct()
         return session.query(StateRegistration).filter(StateRegistration.cnpj == cnpj).all()
     

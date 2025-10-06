@@ -78,7 +78,7 @@ class RegistrationsClient:
         session.commit()
         session.close()
     
-    def read(self, cnpj: str) -> Registration:
+    def read(self, cnpj: str) -> Registration | None:
         session = self.session_construct()
         return session.query(Registration).filter(Registration.cnpj == cnpj).first()
         

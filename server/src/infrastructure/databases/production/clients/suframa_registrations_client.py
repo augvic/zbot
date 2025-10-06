@@ -28,7 +28,7 @@ class SuframaRegistrationsClient:
         session.commit()
         session.close()
     
-    def read(self, cnpj: str) -> list[SuframaRegistration]:
+    def read_all(self, cnpj: str) -> list[SuframaRegistration]:
         session = self.session_construct()
         return session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
     

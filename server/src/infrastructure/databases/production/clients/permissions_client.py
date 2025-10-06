@@ -23,13 +23,21 @@ class PermissionsClient:
         session.commit()
         session.close()
     
-    def read(self, user: str) -> list[Permission]:
+    def read_all_from_user(self, user: str) -> list[Permission]:
         session = self.session_construct()
         return session.query(Permission).filter(Permission.user == user).all()
     
-    def delete(self, user: str, module: str) -> None:
+    def delete_from_user(self, user: str, module: str) -> None:
         session = self.session_construct()
         to_delete = session.query(Permission).filter(Permission.user == user).filter(Permission.module == module).first()
         session.delete(to_delete)
+        session.commit()
+        session.close()
+    
+    def delete_all(self, module: str) -> None:
+        session = self.session_construct()
+        to_delete = session.query(Permission).filter(Permission.module == module).all()
+        for delete in to_delete:
+            session.delete(delete)
         session.commit()
         session.close()

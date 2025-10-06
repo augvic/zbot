@@ -13,7 +13,7 @@ class GetPermissions:
     def execute(self, user: str) -> dict[str, str | bool | list[dict[str, str]]]:
         self._setup()
         try:
-            permissions = self.permissions_client.read(user)
+            permissions = self.permissions_client.read_all_from_user(user)
             permissions_serialized = self.serializer.serialize_list(permissions)
             return {"success": True, "permissions": permissions_serialized}
         except Exception as error:

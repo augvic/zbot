@@ -17,7 +17,7 @@ class CreatePermission:
             if not user_exists:
                 return {"success": False, "message": "Usuário não existe."}
             self.permissions_client.create(user, permission)
-            return {"success": True, "message": "Permissão criada."}
+            return {"success": True, "message": f"Permissão ({permission}) adicionada."}
         except Exception as error:
             print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
-            return {"success": False, "message": "Error ao criar permissão."}
+            return {"success": False, "message": f"Error ao adicionar permissão ({permission})."}

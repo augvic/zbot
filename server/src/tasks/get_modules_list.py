@@ -13,7 +13,7 @@ class GetModulesList:
     def execute(self) -> dict[str, str | bool | list[dict[str, str]]]:
         self._setup()
         try:
-            modules = self.modules_client.read()
+            modules = self.modules_client.read_all()
             modules_serialized = self.serializer.serialize_list(modules)
             return {"success": True, "modules": modules_serialized}
         except Exception as error:

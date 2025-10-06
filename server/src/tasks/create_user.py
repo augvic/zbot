@@ -16,7 +16,7 @@ class CreateUser:
             if not str(user_data["user"]).isdigit():
                 return {"success": False, "message": "Usuário deve ser somente números."}
             if self.users_client.read(user_data["user"]):
-                return {"success": False, "message": "Usuário já existe."}
+                return {"success": False, "message": f"Usuário ({user_data["user"]}) já existe."}
             if user_data["name"] == "":
                 return {"success": False, "message": "Preencha o nome."}
             if user_data["email"] == "":
@@ -26,7 +26,7 @@ class CreateUser:
             if user_data["password"] == "":
                 return {"success": False, "message": "Preencha a senha."}
             self.users_client.create(user_data["user"], user_data["name"], user_data["email"], user_data["password"])
-            return {"success": True, "message": "Usuário criado."}
+            return {"success": True, "message": f"Usuário ({user_data["user"]}) criado."}
         except Exception as error:
             print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
-            return {"success": False, "message": "Erro ao criar usuário."}
+            return {"success": False, "message": f"Erro ao criar usuário ({user_data["user"]})."}

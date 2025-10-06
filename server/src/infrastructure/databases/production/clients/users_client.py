@@ -26,7 +26,7 @@ class UsersClient:
         session.refresh(to_create)
         session.close()
     
-    def read(self, user: str) -> User:
+    def read(self, user: str) -> User | None:
         session = self.session_construct()
         return session.query(User).filter(User.user == user).first()
     

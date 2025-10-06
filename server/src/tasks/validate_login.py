@@ -20,11 +20,11 @@ class ValidateLogin:
                 return {"success": False, "message": "Usuário não enviado."}
             if user.password != login_data["password"]:
                 return {"success": False, "message": "Login inválido."}
-            modules = self.modules_client.read()
+            modules = self.modules_client.read_all()
             modules_descriptions = {}
             for module in modules:
                 modules_descriptions[module.module] = module.description
-            user_permissions = self.permissions_client.read(user.user)
+            user_permissions = self.permissions_client.read_all_from_user(user.user)
             permissions_list: list[str] = []
             for user_permission in user_permissions:
                 permissions_list.append({"module": user_permission.module, "description": modules_descriptions[user_permission.module]}) # type: ignore
