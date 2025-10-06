@@ -26,7 +26,7 @@ class ModulesClient:
     def read(self, module: str) -> Module | None:
         session = self.session_construct()
         return session.query(Module).filter(Module.module == module).first()
-
+    
     def read_all(self) -> list[Module]:
         session = self.session_construct()
         return session.query(Module).all()

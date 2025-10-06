@@ -5,9 +5,9 @@ export default class zIndex {
     titleBar!: TitleBar
     module!: Module
     
-    constructor() {
+    constructor(loginPage: HTMLElement) {
         this.createSelf();
-        this.createComponents();
+        this.createComponents(loginPage);
         document.body.appendChild(this.element);
     }
     
@@ -17,10 +17,10 @@ export default class zIndex {
         this.element.className = "h-full w-full overflow-hidden flex flex-col bg-gray-300 dark:bg-gray-900 transition-colors duration-300 opacity-fade-in";
     }
     
-    private createComponents() {
+    private createComponents(loginPage: HTMLElement) {
         this.module = new Module(this.element);
         this.menu = new Menu(this.element);
-        this.titleBar = new TitleBar(this.element);
+        this.titleBar = new TitleBar(this.element, loginPage);
     }
     
 }
@@ -29,26 +29,100 @@ class TitleBar {
     
     element!: HTMLElement
     menuButton!: MenuButton
+    user!: UserName
+    logoutButton!: LogoutButton
     themeButton!: ThemeButton
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, loginPage: HTMLElement) {
         this.createSelf();
-        this.createComponents();
+        this.createComponents(loginPage);
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("div");
         this.element.id = "title_bar";
-        this.element.className = "w-full bg-white dark:bg-gray-700 fixed z-50 h-[50px] flex items-center pl-3 transition-colors duration-300";
+        this.element.className = "w-full bg-white dark:bg-gray-700 fixed z-50 h-[50px] flex items-center pl-3 transition-colors duration-300 gap-2";
     }
     
-    private createComponents() {
+    private createComponents(loginPage: HTMLElement) {
         this.menuButton = new MenuButton(this.element);
+        this.user = new UserName(this.element);
+        this.logoutButton = new LogoutButton(this.element, loginPage);
         this.themeButton = new ThemeButton(this.element);
     }
     
 }
+
+class UserName {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        appendTo.appendChild(this.element);
+    }
+    
+    private async createSelf() {
+        this.element = document.createElement("p");
+        this.element.id = "user";
+        this.element.className = "text-black dark:text-white transition-colors duration-300 cursor-default";
+        const response = await fetch(`${window.location.origin}/session-user`);
+        const user = await response.json();
+        this.element.innerText = `Usuário: ${user}`;
+    }
+    
+}
+
+class LogoutButton {
+    
+    element!: HTMLElement
+    icon!: Icon
+    
+    constructor(appendTo: HTMLElement, loginPage: HTMLElement) {
+        this.createSelf();
+        this.createComponents();
+        this.startListeners(loginPage);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("button");
+        this.element.id = "logout_button";
+        this.element.className = "cursor-pointer w-auto h-auto rounded-md transition-colors duration-300 bg-red-700 hover:bg-red-900 p-1";
+    }
+    
+    private createComponents() {
+        this.icon = new Icon(this.element, "logout-icon", "/static/images/logout.png", "5");
+    }
+    
+    private startListeners(loginPage: HTMLElement) {
+        this.element.addEventListener("click", async () => {
+            const response = await fetch(`${window.location.origin}/login`, {
+                method: "DELETE"
+            });
+            const data = await response.json();
+            if (!data.success) {
+                new Notification("Erro ao deslogar.", "red");
+                return;
+            }
+            const page = document.getElementById("zIndex")!;
+            page.classList.remove("opacity-fade-in");
+            page.classList.add("opacity-fade-out");
+            page.addEventListener("animationend", async () => {
+                page.remove();
+                document.body.innerHTML = "";
+                let bundle = await import(`${window.location.origin}/page-bundle/zlogin.js`);
+                let bundleClass = bundle.default;
+                document.body.innerHTML = "";
+                new bundleClass();
+                new Notification("Logout realizado.", "green");
+            });
+        });
+    }
+    
+}
+
 
 class MenuButton {
     
@@ -70,9 +144,9 @@ class MenuButton {
     
     private createComponents() {
         if (document.documentElement.classList.contains("light")) {
-            this.icon = new Icon(this.element, "menu-icon", "/static/images/menu_light.png");
+            this.icon = new Icon(this.element, "menu-icon", "/static/images/menu_light.png", "7");
         } else {
-            this.icon = new Icon(this.element, "menu-icon", "/static/images/menu_dark.png");
+            this.icon = new Icon(this.element, "menu-icon", "/static/images/menu_dark.png", "7");
         }
     }
     
@@ -82,15 +156,15 @@ class MenuButton {
             if (menu.style.display == "none") {
                 menu.classList.add("fade-in-left");
                 menu.style.display = "flex";
-                menu.addEventListener("animationend", () => {
+                setTimeout(() => {
                     menu.classList.remove("fade-in-left");
-                }, { once: true });
+                }, 500);
             } else {
                 menu.classList.add("fade-out-left");
-                menu.addEventListener("animationend", () => {
+                setTimeout(() => {
                     menu.classList.remove("fade-out-left");
-                    menu.style.display = "none";
-                }, { once: true });
+                    menu.style.display = "none";                    
+                }, 400);
             }
         });
     }
@@ -101,16 +175,21 @@ class Icon {
     
     element!: HTMLImageElement
     
-    constructor(appendTo: HTMLElement, id: string, src: string) {
-        this.createSelf(src, id);
+    constructor(appendTo: HTMLElement, id: string, src: string, size: string) {
+        this.createSelf(src, id, size);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf(src: string, id: string) {
+    private createSelf(src: string, id: string, size: string) {
         this.element = document.createElement("img");
         this.element.src = src;
         this.element.id = id;
-        this.element.className = "size-7 opacity-fade-in";
+        this.element.className = "opacity-fade-in";
+        if (size == "7") {
+            this.element.classList.add("size-7");
+        } else {
+            this.element.classList.add("size-5");
+        }
     }
     
 }
@@ -192,9 +271,9 @@ class ModuleButton {
             this.button.addEventListener("mouseleave", () => {
                 hoverSpan.element.classList.remove("opacity-fade-in");
                 hoverSpan.element.classList.add("opacity-fade-out");
-                hoverSpan.element.addEventListener("animationend", () => {
+                setTimeout(() => {
                     hoverSpan.element.remove();
-                }, { once: true });
+                }, 300);
             }, { once: true });
         });
     }
@@ -262,7 +341,7 @@ class ThemeButton {
         } else {
             iconSrc = "/static/images/sun.png";
         }
-        this.icon = new Icon(this.element, "theme-button", iconSrc);
+        this.icon = new Icon(this.element, "theme-button", iconSrc, "7");
     }
     
     private startListeners() {
@@ -292,6 +371,50 @@ class ThemeButton {
                 menuIcon.classList.remove("opacity-fade-in");
                 void menuIcon.offsetWidth;
                 menuIcon.classList.add("opacity-fade-in");
+            }
+        });
+    }
+    
+}
+
+class Notification {
+    
+    element!: HTMLElement
+    
+    constructor(message: string, color: string) {
+        this.createSelf(message, color);
+        this.pushUpExistingNotifications();
+        document.body.appendChild(this.element);
+        setTimeout(() => {
+            this.element.classList.remove("fade-in-right");
+            this.element.classList.add("fade-out-right");
+            this.element.addEventListener("animationend", () => {
+                this.element.remove()
+            }, { once: true });
+        }, 3000);
+    }
+    
+    private createSelf(message: string, color: string) {
+        this.element = document.createElement("div");
+        this.element.className = "notification fixed z-50 bottom-4 right-5 py-3 px-6 text-white rounded-md cursor-default fade-in-right transition-[bottom] duration-300 ease";
+        if (color == "green") {
+            this.element.classList.add("bg-green-400");
+        } else if (color == "orange") {
+            this.element.classList.add("bg-amber-400");
+        } else if (color == "red") {
+            this.element.classList.add("bg-red-400");
+        }
+        this.element.innerText = message;
+    }
+    
+    private pushUpExistingNotifications() {
+        const notifications = document.querySelectorAll<HTMLElement>(".notification");
+        notifications.forEach(notification => {
+            if (notification != this.element) {
+                const currentBottom = parseInt(
+                    getComputedStyle(notification).bottom.replace("px", "")
+                );
+                notification.style.bottom = (currentBottom + 60) + "px";
             }
         });
     }

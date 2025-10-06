@@ -19,3 +19,9 @@ class SessionManager:
             if module_allowed["module"] == module:
                 return True
         return False
+    
+    def remove_from_session(self, key: str) -> None:
+        session.pop(key)
+    
+    def clear_session(self) -> None:
+        session.clear()

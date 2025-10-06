@@ -1,17 +1,17 @@
 from flask import Blueprint
 from flask.views import MethodView
 from src.tasks.verify_if_user_is_in_session import VerifyIfUserIsInSession
-from src.tasks.get_session_modules import GetSessionModules
+from src.tasks.get_session_user import GetSessionUser
 
-session_modules = Blueprint("session_modules", __name__)
+session_user = Blueprint("session_user", __name__)
 
-class SessionModules(MethodView):
+class SessionUser(MethodView):
     
     def get(self) -> tuple[str, int] | list[str]:
         task1 = VerifyIfUserIsInSession()
-        task2 = GetSessionModules()
+        task2 = GetSessionUser()
         if not task1.execute():
             return "Faça login.", 401
         return task2.execute()
 
-session_modules.add_url_rule("/session-modules", view_func=SessionModules.as_view("session_modules"), methods=["GET"])
+session_user.add_url_rule("/session-user", view_func=SessionUser.as_view("session_user"), methods=["GET"])

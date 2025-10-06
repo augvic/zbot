@@ -7,6 +7,7 @@ from .routes.page_bundle import page_bundle
 from .routes.permissions import permissions
 from .routes.session_modules import session_modules
 from .routes.users import users
+from .routes.session_user import session_user
 from os import path, getenv
 from dotenv import load_dotenv
 
@@ -27,6 +28,7 @@ class Api:
         self.app.register_blueprint(permissions)
         self.app.register_blueprint(session_modules)
         self.app.register_blueprint(users)
+        self.app.register_blueprint(session_user)
         self.app.run(debug=True)
 
 Api()
