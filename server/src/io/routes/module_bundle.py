@@ -10,8 +10,7 @@ class ModuleBundle(MethodView):
     def get(self, module: str) -> Response | str | tuple[str, int]:
         task1 = VerifyIfHaveAccess()
         task2 = SendModule()
-        moduleUpperCase = (module[0] + module[1].upper() + module[2:]).replace(".js", "")
-        if not task1.execute(moduleUpperCase):
+        if not task1.execute(module):
             return "Sem autorização.", 401
         return task2.execute(module)
 
