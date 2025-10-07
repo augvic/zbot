@@ -10,6 +10,7 @@ export default class zCredRpa {
     constructor(moduleContainer: HTMLElement) {
         this.createSelf();
         this.createComponents();
+        this.startListeners();
         moduleContainer.appendChild(this.element);
     }
     
@@ -23,13 +24,23 @@ export default class zCredRpa {
         this.container = new Container(this.element)
     }
     
+    private startListeners() {
+        socket.on("zcredrpa_notification", (response: {[key: string]: string | boolean}) => {
+            if (response.success) {
+                new Notification(response.message as string, "green");
+            } else {
+                new Notification(response.message as string, "red");
+            }
+        });
+    }
+    
 }
 
 class Container {
     
     element!: HTMLElement
     topBar!: ContainerTopBar
-    terminal!: ContainerTerminal
+    terminal!: Terminal
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
@@ -44,7 +55,7 @@ class Container {
     
     private createComponents() {
         this.topBar = new ContainerTopBar(this.element)
-        this.terminal = new ContainerTerminal(this.element);
+        this.terminal = new Terminal(this.element);
     }
     
 }
@@ -98,7 +109,7 @@ class TurnOnButton {
     
     private startListeners() {
         this.element.addEventListener("click", () => {
-            socket.emit("start_credit_rpa");
+            socket.emit("zcredrpa_start");
         });
     }
     
@@ -127,7 +138,7 @@ class TurnOffButton {
     
     private startListeners() {
         this.element.addEventListener("click", () => {
-            socket.emit("stop_credit_rpa");
+            socket.emit("zcredrpa_stop");
         });
     }
     
@@ -139,6 +150,7 @@ class RpaStatus {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
@@ -146,25 +158,52 @@ class RpaStatus {
         this.element = document.createElement("p");
         this.element.className = "cursor-default text-black dark:text-white transition-colors duration-300";
         this.element.innerText = "Status:";
-        socket.on("update_status", (response: {[key: string]: string}) => {
+    }
+
+    private startListeners() {
+        socket.on("zcredrpa_status", (response: {[key: string]: string}) => {
             this.element.innerText = `Status: ${response.status}`;
         });
     }
     
 }
 
-class ContainerTerminal {
+class Terminal {
     
     element!: HTMLElement
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("div");
-        this.element.className = "w-full h-[95%] flex bg-black text-white rounded-md";
+        this.element.className = "w-full h-[95%] flex flex-col gap-y-1 bg-black text-white rounded-md overflow-y-auto";
+    }
+    
+    private startListeners() {
+        socket.on("zcredrpa_terminal", (response: {[key: string]: string}) => {
+            new TerminalText(this.element, response.message);
+        });
+    }
+
+}
+
+class TerminalText {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, text: string) {
+        this.createSelf(text);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(text: string) {
+        this.element = document.createElement("p");
+        this.element.className = "cursor-default text-white";
+        this.element.innerText = text;
     }
     
 }
