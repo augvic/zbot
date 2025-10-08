@@ -10,8 +10,14 @@ class RunCreditRpa:
     
     def execute(self, rpa: Any) -> None:
         self._setup(rpa)
-        self.thread.start()
-        
+        try:
+            self.thread.start()
+            self.rpa.socketio.emit("zcredrpa_notification", {"success": True, "message": "RPA iniciado."}) # type: ignore
+            self.rpa.socketio.emit("zcredrpa_status", {"status": "Em processamento."}) # type: ignore
+            self.rpa.is_running = True
+        except:
+            self.rpa.socketio.emit("zcredrpa_status", {"status": "Desligado."}) # type: ignore
+            self.rpa.socketio.emit("zcredrpa_notification", {"success": False, "message": "Erro ao iniciar RPA."}) # type: ignore
     
     def loop(self) -> None:
         while True:
@@ -21,5 +27,6 @@ class RunCreditRpa:
                 self.rpa.stop = False
                 self.rpa.is_running = False
                 break
+            self.rpa.memory += "Em execução.\n" 
             self.rpa.socketio.emit("zcredrpa_terminal", {"message": "Em execução."}) # type: ignore
             sleep(3)

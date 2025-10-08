@@ -1,16 +1,12 @@
-import { io } from "socket.io-client";
-
-const socket = io(`${window.location.origin}`);
-
 export default class zCredRpa {
     
     element!: HTMLElement
     container!: Container
     
-    constructor(moduleContainer: HTMLElement) {
+    constructor(moduleContainer: HTMLElement, socket: any) {
         this.createSelf();
-        this.createComponents();
-        this.startListeners();
+        this.createComponents(socket);
+        this.startListeners(socket);
         moduleContainer.appendChild(this.element);
     }
     
@@ -20,11 +16,13 @@ export default class zCredRpa {
         this.element.className = "w-full h-full opacity-fade-in bg-gray-300 dark:bg-gray-900 transition-colors duration-300 flex items-center justify-center";
     }
     
-    private createComponents() {
-        this.container = new Container(this.element)
+    private createComponents(socket: any) {
+        this.container = new Container(this.element, socket)
     }
     
-    private startListeners() {
+    private startListeners(socket: any) {
+        socket.emit("zcredrpa_refresh");
+        socket.off("zcredrpa_notification");
         socket.on("zcredrpa_notification", (response: {[key: string]: string | boolean}) => {
             if (response.success) {
                 new Notification(response.message as string, "green");
@@ -42,9 +40,9 @@ class Container {
     topBar!: ContainerTopBar
     terminal!: Terminal
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, socket: any) {
         this.createSelf();
-        this.createComponents();
+        this.createComponents(socket);
         appendTo.appendChild(this.element);
     }
     
@@ -53,9 +51,9 @@ class Container {
         this.element.className = "w-[95%] h-[95%] p-3 gap-y-2 bg-white dark:bg-gray-700 transition-colors duration-300 flex flex-col items-center justify-center rounded-lg";
     }
     
-    private createComponents() {
-        this.topBar = new ContainerTopBar(this.element)
-        this.terminal = new Terminal(this.element);
+    private createComponents(socket: any) {
+        this.topBar = new ContainerTopBar(this.element, socket)
+        this.terminal = new Terminal(this.element, socket);
     }
     
 }
@@ -67,9 +65,9 @@ class ContainerTopBar {
     turnOffButton!: TurnOffButton
     status!: RpaStatus
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, socket: any) {
         this.createSelf();
-        this.createComponents();
+        this.createComponents(socket);
         appendTo.appendChild(this.element);
     }
     
@@ -78,10 +76,10 @@ class ContainerTopBar {
         this.element.className = "w-full h-[5%] flex items-center gap-x-2";
     }
     
-    private createComponents() {
-        this.turnOnButton = new TurnOnButton(this.element);
-        this.turnOffButton = new TurnOffButton(this.element);
-        this.status = new RpaStatus(this.element);
+    private createComponents(socket: any) {
+        this.turnOnButton = new TurnOnButton(this.element, socket);
+        this.turnOffButton = new TurnOffButton(this.element, socket);
+        this.status = new RpaStatus(this.element, socket);
     }
     
 }
@@ -91,10 +89,10 @@ class TurnOnButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, socket: any) {
         this.createSelf();
         this.createComponents();
-        this.startListeners();
+        this.startListeners(socket);
         appendTo.appendChild(this.element);
     }
     
@@ -107,7 +105,7 @@ class TurnOnButton {
         this.icon = new Icon("static/images/play.png", this.element);
     }
     
-    private startListeners() {
+    private startListeners(socket: any) {
         this.element.addEventListener("click", () => {
             socket.emit("zcredrpa_start");
         });
@@ -120,10 +118,10 @@ class TurnOffButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, socket: any) {
         this.createSelf();
         this.createComponents();
-        this.startListeners();
+        this.startListeners(socket);
         appendTo.appendChild(this.element);
     }
     
@@ -136,7 +134,7 @@ class TurnOffButton {
         this.icon = new Icon("static/images/stop.png", this.element);
     }
     
-    private startListeners() {
+    private startListeners(socket: any) {
         this.element.addEventListener("click", () => {
             socket.emit("zcredrpa_stop");
         });
@@ -148,21 +146,25 @@ class RpaStatus {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, socket: any) {
         this.createSelf();
-        this.startListeners();
+        this.startListeners(socket);
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("p");
-        this.element.className = "cursor-default text-black dark:text-white transition-colors duration-300";
-        this.element.innerText = "Status:";
+        this.element.className = "cursor-default text-black dark:text-white transition-colors duration-300 transition-opacity duration-300";
     }
-
-    private startListeners() {
+    
+    private startListeners(socket: any) {
+        socket.off("zcredrpa_status");
         socket.on("zcredrpa_status", (response: {[key: string]: string}) => {
-            this.element.innerText = `Status: ${response.status}`;
+            this.element.style.opacity = "0";
+            setTimeout(() => {
+                this.element.innerText = `Status: ${response.status}`;
+                this.element.style.opacity = "1";                
+            }, 300);
         });
     }
     
@@ -172,23 +174,28 @@ class Terminal {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, socket: any) {
         this.createSelf();
-        this.startListeners();
+        this.startListeners(socket);
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("div");
-        this.element.className = "w-full h-[95%] flex flex-col gap-y-1 bg-black text-white rounded-md overflow-y-auto";
+        this.element.className = "w-full h-[95%] flex flex-col gap-y-1 p-3 bg-black text-white rounded-md overflow-y-auto custom-scroll scroll-smooth";
     }
     
-    private startListeners() {
+    private startListeners(socket: any) {
+        socket.off("zcredrpa_terminal");
         socket.on("zcredrpa_terminal", (response: {[key: string]: string}) => {
+            const distanceFromBottom = this.element.scrollHeight - (this.element.scrollTop + this.element.clientHeight);
             new TerminalText(this.element, response.message);
+            if (distanceFromBottom <= 20) {
+                this.element.scrollTop = this.element.scrollHeight;
+            }
         });
     }
-
+    
 }
 
 class TerminalText {

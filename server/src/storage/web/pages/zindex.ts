@@ -1,3 +1,7 @@
+import { io } from "socket.io-client";
+
+const socket = io(`${window.location.origin}`);
+
 export default class zIndex {
     
     element!: HTMLElement
@@ -5,9 +9,9 @@ export default class zIndex {
     titleBar!: TitleBar
     module!: Module
     
-    constructor(loginPage: HTMLElement) {
+    constructor() {
         this.createSelf();
-        this.createComponents(loginPage);
+        this.createComponents();
         document.body.appendChild(this.element);
     }
     
@@ -17,10 +21,10 @@ export default class zIndex {
         this.element.className = "h-full w-full overflow-hidden flex flex-col bg-gray-300 dark:bg-gray-900 transition-colors duration-300 opacity-fade-in";
     }
     
-    private createComponents(loginPage: HTMLElement) {
+    private createComponents() {
         this.module = new Module(this.element);
         this.menu = new Menu(this.element);
-        this.titleBar = new TitleBar(this.element, loginPage);
+        this.titleBar = new TitleBar(this.element);
     }
     
 }
@@ -33,9 +37,9 @@ class TitleBar {
     logoutButton!: LogoutButton
     themeButton!: ThemeButton
     
-    constructor(appendTo: HTMLElement, loginPage: HTMLElement) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents(loginPage);
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
@@ -45,10 +49,10 @@ class TitleBar {
         this.element.className = "w-full bg-white dark:bg-gray-700 fixed z-50 h-[50px] flex items-center pl-3 transition-colors duration-300 gap-2";
     }
     
-    private createComponents(loginPage: HTMLElement) {
+    private createComponents() {
         this.menuButton = new MenuButton(this.element);
         this.user = new UserName(this.element);
-        this.logoutButton = new LogoutButton(this.element, loginPage);
+        this.logoutButton = new LogoutButton(this.element);
         this.themeButton = new ThemeButton(this.element);
     }
     
@@ -79,10 +83,10 @@ class LogoutButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement, loginPage: HTMLElement) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
         this.createComponents();
-        this.startListeners(loginPage);
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
@@ -96,7 +100,7 @@ class LogoutButton {
         this.icon = new Icon(this.element, "logout-icon", "/static/images/logout.png", "5");
     }
     
-    private startListeners(loginPage: HTMLElement) {
+    private startListeners() {
         this.element.addEventListener("click", async () => {
             const response = await fetch(`${window.location.origin}/login`, {
                 method: "DELETE"
@@ -258,7 +262,7 @@ class ModuleButton {
                 moduleContainer.innerHTML = "";
                 const bundle = await import(`${window.location.origin}/module-bundle/${moduleName.toLowerCase()}.js`);
                 const bundleClass = bundle.default;
-                new bundleClass(moduleContainer);
+                new bundleClass(moduleContainer, socket);
                 menu.classList.add("fade-out-left");
                 menu.addEventListener("animationend", () => {
                     menu.classList.remove("fade-out-left");
