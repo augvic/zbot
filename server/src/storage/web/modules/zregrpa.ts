@@ -27,6 +27,30 @@ export default class zRegRpa {
 class Container {
     
     element!: HTMLElement
+    terminalSection!: TerminalSection
+    registrationsSection!: RegistrationsSection
+    
+    constructor(appendTo: HTMLElement, socket: any) {
+        this.createSelf();
+        this.createComponents(socket);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.id = "container";
+        this.element.className = "w-[95%] h-[95%] p-3 bg-white dark:bg-gray-700 transition-colors duration-300 flex rounded-lg";
+    }
+    
+    private createComponents(socket: any) {
+        this.terminalSection = new TerminalSection(this.element, socket);
+    }
+    
+}
+
+class TerminalSection {
+    
+    element!: HTMLElement
     topBar!: ContainerTopBar
     terminal!: Terminal
     
@@ -38,7 +62,8 @@ class Container {
     
     private createSelf() {
         this.element = document.createElement("div");
-        this.element.className = "w-[95%] h-[95%] p-3 gap-y-2 bg-white dark:bg-gray-700 transition-colors duration-300 flex flex-col items-center justify-center rounded-lg";
+        this.element.id = "terminal-section";
+        this.element.className = "w-full h-full gap-y-2 flex flex-col items-center justify-center transition-opacity duration-300";
     }
     
     private createComponents(socket: any) {
@@ -54,6 +79,7 @@ class ContainerTopBar {
     turnOnButton!: TurnOnButton
     turnOffButton!: TurnOffButton
     status!: RpaStatus
+    goToRegistrationsSection!: GoToRegistrationsSection
     
     constructor(appendTo: HTMLElement, socket: any) {
         this.createSelf();
@@ -70,6 +96,7 @@ class ContainerTopBar {
         this.turnOnButton = new TurnOnButton(this.element, socket);
         this.turnOffButton = new TurnOffButton(this.element, socket);
         this.status = new RpaStatus(this.element);
+        this.goToRegistrationsSection = new GoToRegistrationsSection(this.element, socket);
     }
     
 }
@@ -150,6 +177,41 @@ class RpaStatus {
     
 }
 
+class GoToRegistrationsSection {
+    
+    wrapper!: HTMLElement
+    button!: HTMLButtonElement
+    icon!: Icon
+    
+    constructor(appendTo: HTMLElement, socket: any) {
+        this.createSelf();
+        this.startListeners(socket);
+        appendTo.appendChild(this.wrapper);
+    }
+    
+    private createSelf() {
+        this.wrapper = document.createElement("div");
+        this.wrapper.className = "w-full h-auto flex justify-end items-center";
+        this.button = document.createElement("button");
+        this.button.className = "w-auto h-auto py-1 px-2 bg-amber-700 hover:bg-amber-900 transition-colors duration-300 rounded-md cursor-pointer";
+        this.button.innerText = "Ir para cadastros.";
+        this.wrapper.appendChild(this.button);
+    }
+    
+    private startListeners(socket: any) {
+        this.button.addEventListener("click", () => {
+            let terminalSection = document.getElementById("terminal-section")!;
+            terminalSection.style.opacity = "0";
+            setTimeout(() => {
+                terminalSection.remove();
+            }, 300);
+            let registrationsSection = new RegistrationsSection(document.getElementById("container")!, socket);
+            registrationsSection.element.style.opacity = "1";
+        });
+    }
+    
+}
+
 class Terminal {
     
     element!: HTMLElement
@@ -177,7 +239,8 @@ class TerminalText {
     
     private createSelf(text: string) {
         this.element = document.createElement("p");
-        this.element.className = "cursor-default text-white";
+        this.element.className = "cursor-default text-white transition-opacity duration-300";
+        this.element.style.opacity = "0";
         this.element.innerText = text;
     }
     
@@ -256,10 +319,11 @@ class WebSocketListeners {
         socket.off("regrpa_status");
         socket.off("regrpa_terminal");
         socket.on("regrpa_terminal", (response: {[key: string]: string}) => {
-            const distanceFromBottom = page.container.terminal.element.scrollHeight - (page.container.terminal.element.scrollTop + page.container.terminal.element.clientHeight);
-            new TerminalText(page.container.terminal.element, response.message);
+            const distanceFromBottom = page.container.terminalSection.terminal.element.scrollHeight - (page.container.terminalSection.terminal.element.scrollTop + page.container.terminalSection.terminal.element.clientHeight);
+            let text = new TerminalText(page.container.terminalSection.terminal.element, response.message);
+            text.element.style.opacity = "1";
             if (distanceFromBottom <= 20) {
-                page.container.terminal.element.scrollTop = page.container.terminal.element.scrollHeight;
+                page.container.terminalSection.terminal.element.scrollTop = page.container.terminalSection.terminal.element.scrollHeight;
             }
         });
         socket.on("regrpa_notification", (response: {[key: string]: string | boolean}) => {
@@ -270,27 +334,132 @@ class WebSocketListeners {
             }
         });
         socket.on("regrpa_status", (response: {[key: string]: string}) => {
-            page.container.topBar.status.element.style.opacity = "0";
+            page.container.terminalSection.topBar.status.element.style.opacity = "0";
             setTimeout(() => {
-                page.container.topBar.status.element.innerText = `Status: ${response.status}`;
-                page.container.topBar.status.element.style.opacity = "1";   
+                page.container.terminalSection.topBar.status.element.innerText = `Status: ${response.status}`;
+                page.container.terminalSection.topBar.status.element.style.opacity = "1";   
             }, 300);
             if (response.status == "Em processamento.") {
-                page.container.topBar.turnOffButton.element.disabled = false;
-                page.container.topBar.turnOffButton.element.style.backgroundColor = "oklch(50.5% 0.213 27.518)";
-                page.container.topBar.turnOffButton.element.style.cursor = "pointer";
-                page.container.topBar.turnOnButton.element.disabled = true;
-                page.container.topBar.turnOnButton.element.style.backgroundColor = "#919191";
-                page.container.topBar.turnOnButton.element.style.cursor = "not-allowed";
+                page.container.terminalSection.topBar.turnOffButton.element.disabled = false;
+                page.container.terminalSection.topBar.turnOffButton.element.style.backgroundColor = "oklch(50.5% 0.213 27.518)";
+                page.container.terminalSection.topBar.turnOffButton.element.style.cursor = "pointer";
+                page.container.terminalSection.topBar.turnOnButton.element.disabled = true;
+                page.container.terminalSection.topBar.turnOnButton.element.style.backgroundColor = "#919191";
+                page.container.terminalSection.topBar.turnOnButton.element.style.cursor = "not-allowed";
             }
             if (response.status == "Desligado.") {
-                page.container.topBar.turnOnButton.element.disabled = false;
-                page.container.topBar.turnOnButton.element.style.backgroundColor = "oklch(52.7% 0.154 150.069)";
-                page.container.topBar.turnOnButton.element.style.cursor = "pointer";
-                page.container.topBar.turnOffButton.element.disabled = true;
-                page.container.topBar.turnOffButton.element.style.backgroundColor = "#919191";
-                page.container.topBar.turnOffButton.element.style.cursor = "not-allowed";
+                page.container.terminalSection.topBar.turnOnButton.element.disabled = false;
+                page.container.terminalSection.topBar.turnOnButton.element.style.backgroundColor = "oklch(52.7% 0.154 150.069)";
+                page.container.terminalSection.topBar.turnOnButton.element.style.cursor = "pointer";
+                page.container.terminalSection.topBar.turnOffButton.element.disabled = true;
+                page.container.terminalSection.topBar.turnOffButton.element.style.backgroundColor = "#919191";
+                page.container.terminalSection.topBar.turnOffButton.element.style.cursor = "not-allowed";
             }
+        });
+    }
+    
+}
+
+class RegistrationsSection {
+    
+    element!: HTMLElement
+    includeNewRegistrationContainer!: IncludeNewRegistrationContainer
+    registrationsContainer!: RegistrationsContainer
+    goToTerminalSection!: GoToTerminalSection
+    
+    constructor(appendTo: HTMLElement, socket: any) {
+        this.createSelf();
+        this.createComponents(socket);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.id = "registrations-section";
+        this.element.className = "w-full h-full gap-x-2 flex items-center justify-center transition-opacity duration-300";
+        this.element.style.opacity = "0";
+    }
+    
+    private createComponents(socket: any) {
+        this.goToTerminalSection = new GoToTerminalSection(this.element, socket);
+        this.includeNewRegistrationContainer = new IncludeNewRegistrationContainer(this.element, socket);
+        this.registrationsContainer = new RegistrationsContainer(this.element, socket);
+    }
+    
+}
+
+class IncludeNewRegistrationContainer {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, socket: any) {
+        this.createSelf();
+        this.createComponents(socket);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-[30%] h-full gap-y-2 p-1 flex flex-col items-center justify-center border border-gray-300 dark:border-gray-900 transition-colors duration-300";
+    }
+    
+    private createComponents(socket: any) {
+
+    }
+    
+}
+
+class RegistrationsContainer {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, socket: any) {
+        this.createSelf();
+        this.createComponents(socket);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-[70%] h-full gap-y-2 p-1 flex flex-col items-center justify-center border border-gray-300 dark:border-gray-900 transition-colors duration-300";
+    }
+    
+    private createComponents(socket: any) {
+
+    }
+    
+}
+
+class GoToTerminalSection {
+    
+    wrapper!: HTMLElement
+    button!: HTMLButtonElement
+    icon!: Icon
+    
+    constructor(appendTo: HTMLElement, socket: any) {
+        this.createSelf();
+        this.startListeners(socket);
+        appendTo.appendChild(this.wrapper);
+    }
+    
+    private createSelf() {
+        this.wrapper = document.createElement("div");
+        this.wrapper.className = "w-full h-auto flex justify-end items-center";
+        this.button = document.createElement("button");
+        this.button.className = "w-auto h-auto py-1 px-2 bg-amber-700 hover:bg-amber-900 transition-colors duration-300 rounded-md cursor-pointer";
+        this.button.innerText = "Ir para terminal.";
+        this.wrapper.appendChild(this.button);
+    }
+    
+    private startListeners(socket: any) {
+        this.button.addEventListener("click", () => {
+            let registrationsSection = document.getElementById("registrations-section")!;
+            registrationsSection.style.opacity = "0";
+            setTimeout(() => {
+                registrationsSection.remove();
+            }, 300);
+            let terminalSection = new TerminalSection(document.getElementById("container")!, socket);
+            terminalSection.element.style.opacity = "1";
         });
     }
     
