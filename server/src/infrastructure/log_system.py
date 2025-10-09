@@ -15,10 +15,10 @@ class LogSystem:
         if memory != None:
             self.memory = memory
     
-    def write(self, text: str, socket_channel: str | None = None) -> None:
+    def write(self, text: str, save_on_memory: bool, socket_channel: str | None = None) -> None:
         self.log.write(text + "\n")
         self.log.flush()
         if socket_channel and self.socket:
             self.socket.emit(socket_channel, {"message": text})
-        if self.memory != None:
+        if self.memory != None and save_on_memory:
             self.memory.append(text)

@@ -145,7 +145,7 @@ class RpaStatus {
     
     private createSelf() {
         this.element = document.createElement("p");
-        this.element.className = "cursor-default text-black dark:text-white transition-colors duration-300 transition-opacity duration-300";
+        this.element.className = "cursor-default text-black dark:text-white transition-colors transition-opacity duration-300";
     }
     
 }
@@ -274,7 +274,7 @@ class WebSocketListeners {
             setTimeout(() => {
                 page.container.topBar.status.element.innerText = `Status: ${response.status}`;
                 page.container.topBar.status.element.style.opacity = "1";   
-            });
+            }, 300);
             if (response.status == "Em processamento.") {
                 page.container.topBar.turnOffButton.element.disabled = false;
                 page.container.topBar.turnOffButton.element.style.backgroundColor = "oklch(50.5% 0.213 27.518)";

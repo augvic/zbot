@@ -25,8 +25,8 @@ class IncludeNewRegistration:
         cpf: str,
         cpf_person: str,
         tax_regime: str,
-        article_association_dir: str,
-        bank_doc_dir: str,
+        article_association_doc: str,
+        bank_doc_doc: str,
         suggested_limit: str,
         client_type: str
     ) -> dict[str, str | bool]:
@@ -83,12 +83,12 @@ class IncludeNewRegistration:
                 )
             dir_to_create = path.abspath(path.join(path.dirname(path.abspath(__file__)), f"../storage/clients_docs/{cnpj}"))
             makedirs(dir_to_create, exist_ok=True)
-            if article_association_dir:
-                article_association_destination = path.join(dir_to_create, path.basename(article_association_dir))
-                copy2(article_association_dir, article_association_destination)
-            if bank_doc_dir:
-                bank_doc_destination = path.join(dir_to_create, path.basename(bank_doc_dir))
-                copy2(bank_doc_dir, bank_doc_destination)
+            if article_association_doc:
+                article_association_destination = path.join(dir_to_create, path.basename(article_association_doc))
+                copy2(article_association_doc, article_association_destination)
+            if bank_doc_doc:
+                bank_doc_destination = path.join(dir_to_create, path.basename(bank_doc_doc))
+                copy2(bank_doc_doc, bank_doc_destination)
             return {"success": True, "message": "Cadastro incluído."}
         except Exception as error:
             print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
@@ -103,8 +103,8 @@ if __name__ == "__main__":
         cpf="123456789",
         cpf_person="DIEGO FERREIRA DE ARAUJO",
         tax_regime="SIMPLES",
-        article_association_dir="",
-        bank_doc_dir="",
+        article_association_doc="",
+        bank_doc_doc="",
         suggested_limit="15000.00",
         client_type="Revenda"
     )
