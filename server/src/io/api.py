@@ -9,7 +9,7 @@ from .routes.permissions import permissions
 from .routes.session_modules import session_modules
 from .routes.users import users
 from .routes.session_user import session_user
-from .routes.zcredrpa_websocket import ZcredrpaWebsocket
+from .routes.regrpa_websocket import RegRpaWebsocket
 from os import path, getenv
 from dotenv import load_dotenv
 
@@ -39,6 +39,6 @@ class Api:
         self.app.register_blueprint(session_user)
     
     def register_web_socket_events(self) -> None:
-        ZcredrpaWebsocket(self.socketio)
+        RegRpaWebsocket(self.socketio)
 
 Api()

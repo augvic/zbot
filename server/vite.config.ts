@@ -12,7 +12,7 @@ export default defineConfig({
                 zindex: "./src/storage/web/pages/zindex.ts",
                 zlogin: "./src/storage/web/pages/zlogin.ts",
                 zadmin: "./src/storage/web/modules/zadmin.ts",
-                zcredrpa: "./src/storage/web/modules/zcredrpa.ts"
+                zregrpa: "./src/storage/web/modules/zregrpa.ts"
             },
             output: {
                 format: "es",

@@ -1,35 +1,25 @@
-export default class zCredRpa {
+export default class zRegRpa {
     
     element!: HTMLElement
     container!: Container
+    websocketListeners!: WebSocketListeners
     
     constructor(moduleContainer: HTMLElement, socket: any) {
         this.createSelf();
         this.createComponents(socket);
-        this.startListeners(socket);
+        socket.emit("regrpa_refresh");
         moduleContainer.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("div");
-        this.element.id = "zCredRpa";
+        this.element.id = "zRegRpa";
         this.element.className = "w-full h-full opacity-fade-in bg-gray-300 dark:bg-gray-900 transition-colors duration-300 flex items-center justify-center";
     }
     
     private createComponents(socket: any) {
         this.container = new Container(this.element, socket)
-    }
-    
-    private startListeners(socket: any) {
-        socket.emit("zcredrpa_refresh");
-        socket.off("zcredrpa_notification");
-        socket.on("zcredrpa_notification", (response: {[key: string]: string | boolean}) => {
-            if (response.success) {
-                new Notification(response.message as string, "green");
-            } else {
-                new Notification(response.message as string, "red");
-            }
-        });
+        this.websocketListeners = new WebSocketListeners(this, socket);
     }
     
 }
@@ -53,7 +43,7 @@ class Container {
     
     private createComponents(socket: any) {
         this.topBar = new ContainerTopBar(this.element, socket)
-        this.terminal = new Terminal(this.element, socket);
+        this.terminal = new Terminal(this.element);
     }
     
 }
@@ -79,14 +69,14 @@ class ContainerTopBar {
     private createComponents(socket: any) {
         this.turnOnButton = new TurnOnButton(this.element, socket);
         this.turnOffButton = new TurnOffButton(this.element, socket);
-        this.status = new RpaStatus(this.element, socket);
+        this.status = new RpaStatus(this.element);
     }
     
 }
 
 class TurnOnButton {
     
-    element!: HTMLElement
+    element!: HTMLButtonElement
     icon!: Icon
     
     constructor(appendTo: HTMLElement, socket: any) {
@@ -98,6 +88,7 @@ class TurnOnButton {
     
     private createSelf() {
         this.element = document.createElement("button");
+        this.element.id = "turn-on-button";
         this.element.className = "w-auto h-auto p-1 bg-green-700 hover:bg-green-900 transition-colors duration-300 rounded-md cursor-pointer";
     }
     
@@ -107,7 +98,7 @@ class TurnOnButton {
     
     private startListeners(socket: any) {
         this.element.addEventListener("click", () => {
-            socket.emit("zcredrpa_start");
+            socket.emit("regrpa_start");
         });
     }
     
@@ -115,7 +106,7 @@ class TurnOnButton {
 
 class TurnOffButton {
     
-    element!: HTMLElement
+    element!: HTMLButtonElement
     icon!: Icon
     
     constructor(appendTo: HTMLElement, socket: any) {
@@ -127,6 +118,7 @@ class TurnOffButton {
     
     private createSelf() {
         this.element = document.createElement("button");
+        this.element.id = "turn-off-button";
         this.element.className = "w-auto h-auto p-1 bg-red-700 hover:bg-red-900 transition-colors duration-300 rounded-md cursor-pointer";
     }
     
@@ -136,7 +128,7 @@ class TurnOffButton {
     
     private startListeners(socket: any) {
         this.element.addEventListener("click", () => {
-            socket.emit("zcredrpa_stop");
+            socket.emit("regrpa_stop");
         });
     }
     
@@ -146,9 +138,8 @@ class RpaStatus {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, socket: any) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.startListeners(socket);
         appendTo.appendChild(this.element);
     }
     
@@ -157,43 +148,20 @@ class RpaStatus {
         this.element.className = "cursor-default text-black dark:text-white transition-colors duration-300 transition-opacity duration-300";
     }
     
-    private startListeners(socket: any) {
-        socket.off("zcredrpa_status");
-        socket.on("zcredrpa_status", (response: {[key: string]: string}) => {
-            this.element.style.opacity = "0";
-            setTimeout(() => {
-                this.element.innerText = `Status: ${response.status}`;
-                this.element.style.opacity = "1";                
-            }, 300);
-        });
-    }
-    
 }
 
 class Terminal {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, socket: any) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.startListeners(socket);
         appendTo.appendChild(this.element);
     }
     
     private createSelf() {
         this.element = document.createElement("div");
         this.element.className = "w-full h-[95%] flex flex-col gap-y-1 p-3 bg-black text-white rounded-md overflow-y-auto custom-scroll scroll-smooth";
-    }
-    
-    private startListeners(socket: any) {
-        socket.off("zcredrpa_terminal");
-        socket.on("zcredrpa_terminal", (response: {[key: string]: string}) => {
-            const distanceFromBottom = this.element.scrollHeight - (this.element.scrollTop + this.element.clientHeight);
-            new TerminalText(this.element, response.message);
-            if (distanceFromBottom <= 20) {
-                this.element.scrollTop = this.element.scrollHeight;
-            }
-        });
     }
     
 }
@@ -270,6 +238,58 @@ class Notification {
                     getComputedStyle(notification).bottom.replace("px", "")
                 );
                 notification.style.bottom = (currentBottom + 60) + "px";
+            }
+        });
+    }
+    
+}
+
+class WebSocketListeners {
+    
+    constructor(page: zRegRpa, socket: any) {
+        this.startListeners(page, socket);
+    }
+    
+    private startListeners(page: zRegRpa, socket: any) {
+        socket.off("regrpa_terminal");
+        socket.off("regrpa_notification");
+        socket.off("regrpa_status");
+        socket.off("regrpa_terminal");
+        socket.on("regrpa_terminal", (response: {[key: string]: string}) => {
+            const distanceFromBottom = page.container.terminal.element.scrollHeight - (page.container.terminal.element.scrollTop + page.container.terminal.element.clientHeight);
+            new TerminalText(page.container.terminal.element, response.message);
+            if (distanceFromBottom <= 20) {
+                page.container.terminal.element.scrollTop = page.container.terminal.element.scrollHeight;
+            }
+        });
+        socket.on("regrpa_notification", (response: {[key: string]: string | boolean}) => {
+            if (response.success) {
+                new Notification(response.message as string, "green");
+            } else {
+                new Notification(response.message as string, "red");
+            }
+        });
+        socket.on("regrpa_status", (response: {[key: string]: string}) => {
+            page.container.topBar.status.element.style.opacity = "0";
+            setTimeout(() => {
+                page.container.topBar.status.element.innerText = `Status: ${response.status}`;
+                page.container.topBar.status.element.style.opacity = "1";   
+            });
+            if (response.status == "Em processamento.") {
+                page.container.topBar.turnOffButton.element.disabled = false;
+                page.container.topBar.turnOffButton.element.style.backgroundColor = "oklch(50.5% 0.213 27.518)";
+                page.container.topBar.turnOffButton.element.style.cursor = "pointer";
+                page.container.topBar.turnOnButton.element.disabled = true;
+                page.container.topBar.turnOnButton.element.style.backgroundColor = "#919191";
+                page.container.topBar.turnOnButton.element.style.cursor = "not-allowed";
+            }
+            if (response.status == "Desligado.") {
+                page.container.topBar.turnOnButton.element.disabled = false;
+                page.container.topBar.turnOnButton.element.style.backgroundColor = "oklch(52.7% 0.154 150.069)";
+                page.container.topBar.turnOnButton.element.style.cursor = "pointer";
+                page.container.topBar.turnOffButton.element.disabled = true;
+                page.container.topBar.turnOffButton.element.style.backgroundColor = "#919191";
+                page.container.topBar.turnOffButton.element.style.cursor = "not-allowed";
             }
         });
     }
