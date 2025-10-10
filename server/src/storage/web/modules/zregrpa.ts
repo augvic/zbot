@@ -24,6 +24,59 @@ export default class zRegRpa {
     
 }
 
+class WebSocketListeners {
+    
+    constructor(page: zRegRpa, socket: any) {
+        this.startListeners(page, socket);
+    }
+    
+    private startListeners(page: zRegRpa, socket: any) {
+        socket.off("regrpa_terminal");
+        socket.off("regrpa_notification");
+        socket.off("regrpa_status");
+        socket.off("regrpa_terminal");
+        socket.on("regrpa_terminal", (response: {[key: string]: string}) => {
+            const distanceFromBottom = page.container.terminalSection.terminal.element.scrollHeight - (page.container.terminalSection.terminal.element.scrollTop + page.container.terminalSection.terminal.element.clientHeight);
+            let text = new TerminalText(page.container.terminalSection.terminal.element, response.message);
+            text.element.style.opacity = "1";
+            if (distanceFromBottom <= 20) {
+                page.container.terminalSection.terminal.element.scrollTop = page.container.terminalSection.terminal.element.scrollHeight;
+            }
+        });
+        socket.on("regrpa_notification", (response: {[key: string]: string | boolean}) => {
+            if (response.success) {
+                new Notification(response.message as string, "green");
+            } else {
+                new Notification(response.message as string, "red");
+            }
+        });
+        socket.on("regrpa_status", (response: {[key: string]: string}) => {
+            page.container.terminalSection.topBar.status.element.style.opacity = "0";
+            setTimeout(() => {
+                page.container.terminalSection.topBar.status.element.innerText = `Status: ${response.status}`;
+                page.container.terminalSection.topBar.status.element.style.opacity = "1";   
+            }, 300);
+            if (response.status == "Em processamento.") {
+                page.container.terminalSection.topBar.turnOffButton.element.disabled = false;
+                page.container.terminalSection.topBar.turnOffButton.element.style.backgroundColor = "oklch(50.5% 0.213 27.518)";
+                page.container.terminalSection.topBar.turnOffButton.element.style.cursor = "pointer";
+                page.container.terminalSection.topBar.turnOnButton.element.disabled = true;
+                page.container.terminalSection.topBar.turnOnButton.element.style.backgroundColor = "#919191";
+                page.container.terminalSection.topBar.turnOnButton.element.style.cursor = "not-allowed";
+            }
+            if (response.status == "Desligado.") {
+                page.container.terminalSection.topBar.turnOnButton.element.disabled = false;
+                page.container.terminalSection.topBar.turnOnButton.element.style.backgroundColor = "oklch(52.7% 0.154 150.069)";
+                page.container.terminalSection.topBar.turnOnButton.element.style.cursor = "pointer";
+                page.container.terminalSection.topBar.turnOffButton.element.disabled = true;
+                page.container.terminalSection.topBar.turnOffButton.element.style.backgroundColor = "#919191";
+                page.container.terminalSection.topBar.turnOffButton.element.style.cursor = "not-allowed";
+            }
+        });
+    }
+    
+}
+
 class Container {
     
     element!: HTMLElement
@@ -44,6 +97,7 @@ class Container {
     
     private createComponents(socket: any) {
         this.terminalSection = new TerminalSection(this.element, socket);
+        this.registrationsSection = new RegistrationsSection(this.element, socket);
     }
     
 }
@@ -96,7 +150,7 @@ class ContainerTopBar {
         this.turnOnButton = new TurnOnButton(this.element, socket);
         this.turnOffButton = new TurnOffButton(this.element, socket);
         this.status = new RpaStatus(this.element);
-        this.goToRegistrationsSection = new GoToRegistrationsSection(this.element, socket);
+        this.goToRegistrationsSection = new GoToRegistrationsSection(this.element);
     }
     
 }
@@ -183,30 +237,33 @@ class GoToRegistrationsSection {
     button!: HTMLButtonElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement, socket: any) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.startListeners(socket);
+        this.startListeners();
         appendTo.appendChild(this.wrapper);
     }
     
     private createSelf() {
         this.wrapper = document.createElement("div");
-        this.wrapper.className = "w-full h-auto flex justify-end items-center";
+        this.wrapper.className = "w-auto h-auto flex flex-1 justify-end items-center";
         this.button = document.createElement("button");
-        this.button.className = "w-auto h-auto py-1 px-2 bg-amber-700 hover:bg-amber-900 transition-colors duration-300 rounded-md cursor-pointer";
+        this.button.className = "w-auto h-auto py-1 px-2 bg-amber-700 hover:bg-amber-900 transition-colors duration-300 rounded-md cursor-pointer text-white";
         this.button.innerText = "Ir para cadastros.";
         this.wrapper.appendChild(this.button);
     }
     
-    private startListeners(socket: any) {
+    private startListeners() {
         this.button.addEventListener("click", () => {
             let terminalSection = document.getElementById("terminal-section")!;
+            let registrationsSection = document.getElementById("registrations-section")!
             terminalSection.style.opacity = "0";
             setTimeout(() => {
-                terminalSection.remove();
+                terminalSection.style.display = "none";
+                registrationsSection.style.opacity = "0";
+                registrationsSection.style.display = "flex";
+                registrationsSection.offsetHeight;
+                registrationsSection.style.opacity = "1";
             }, 300);
-            let registrationsSection = new RegistrationsSection(document.getElementById("container")!, socket);
-            registrationsSection.element.style.opacity = "1";
         });
     }
     
@@ -307,59 +364,6 @@ class Notification {
     
 }
 
-class WebSocketListeners {
-    
-    constructor(page: zRegRpa, socket: any) {
-        this.startListeners(page, socket);
-    }
-    
-    private startListeners(page: zRegRpa, socket: any) {
-        socket.off("regrpa_terminal");
-        socket.off("regrpa_notification");
-        socket.off("regrpa_status");
-        socket.off("regrpa_terminal");
-        socket.on("regrpa_terminal", (response: {[key: string]: string}) => {
-            const distanceFromBottom = page.container.terminalSection.terminal.element.scrollHeight - (page.container.terminalSection.terminal.element.scrollTop + page.container.terminalSection.terminal.element.clientHeight);
-            let text = new TerminalText(page.container.terminalSection.terminal.element, response.message);
-            text.element.style.opacity = "1";
-            if (distanceFromBottom <= 20) {
-                page.container.terminalSection.terminal.element.scrollTop = page.container.terminalSection.terminal.element.scrollHeight;
-            }
-        });
-        socket.on("regrpa_notification", (response: {[key: string]: string | boolean}) => {
-            if (response.success) {
-                new Notification(response.message as string, "green");
-            } else {
-                new Notification(response.message as string, "red");
-            }
-        });
-        socket.on("regrpa_status", (response: {[key: string]: string}) => {
-            page.container.terminalSection.topBar.status.element.style.opacity = "0";
-            setTimeout(() => {
-                page.container.terminalSection.topBar.status.element.innerText = `Status: ${response.status}`;
-                page.container.terminalSection.topBar.status.element.style.opacity = "1";   
-            }, 300);
-            if (response.status == "Em processamento.") {
-                page.container.terminalSection.topBar.turnOffButton.element.disabled = false;
-                page.container.terminalSection.topBar.turnOffButton.element.style.backgroundColor = "oklch(50.5% 0.213 27.518)";
-                page.container.terminalSection.topBar.turnOffButton.element.style.cursor = "pointer";
-                page.container.terminalSection.topBar.turnOnButton.element.disabled = true;
-                page.container.terminalSection.topBar.turnOnButton.element.style.backgroundColor = "#919191";
-                page.container.terminalSection.topBar.turnOnButton.element.style.cursor = "not-allowed";
-            }
-            if (response.status == "Desligado.") {
-                page.container.terminalSection.topBar.turnOnButton.element.disabled = false;
-                page.container.terminalSection.topBar.turnOnButton.element.style.backgroundColor = "oklch(52.7% 0.154 150.069)";
-                page.container.terminalSection.topBar.turnOnButton.element.style.cursor = "pointer";
-                page.container.terminalSection.topBar.turnOffButton.element.disabled = true;
-                page.container.terminalSection.topBar.turnOffButton.element.style.backgroundColor = "#919191";
-                page.container.terminalSection.topBar.turnOffButton.element.style.cursor = "not-allowed";
-            }
-        });
-    }
-    
-}
-
 class RegistrationsSection {
     
     element!: HTMLElement
@@ -377,11 +381,11 @@ class RegistrationsSection {
         this.element = document.createElement("div");
         this.element.id = "registrations-section";
         this.element.className = "w-full h-full gap-x-2 flex items-center justify-center transition-opacity duration-300";
-        this.element.style.opacity = "0";
+        this.element.style.display = "none";
     }
     
     private createComponents(socket: any) {
-        this.goToTerminalSection = new GoToTerminalSection(this.element, socket);
+        this.goToTerminalSection = new GoToTerminalSection(this.element);
         this.includeNewRegistrationContainer = new IncludeNewRegistrationContainer(this.element, socket);
         this.registrationsContainer = new RegistrationsContainer(this.element, socket);
     }
@@ -436,30 +440,33 @@ class GoToTerminalSection {
     button!: HTMLButtonElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement, socket: any) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.startListeners(socket);
+        this.startListeners();
         appendTo.appendChild(this.wrapper);
     }
     
     private createSelf() {
         this.wrapper = document.createElement("div");
-        this.wrapper.className = "w-full h-auto flex justify-end items-center";
+        this.wrapper.className = "w-auto h-auto flex flex-1 justify-end items-center";
         this.button = document.createElement("button");
-        this.button.className = "w-auto h-auto py-1 px-2 bg-amber-700 hover:bg-amber-900 transition-colors duration-300 rounded-md cursor-pointer";
+        this.button.className = "w-auto h-auto py-1 px-2 bg-amber-700 hover:bg-amber-900 transition-colors duration-300 rounded-md cursor-pointer text-white";
         this.button.innerText = "Ir para terminal.";
         this.wrapper.appendChild(this.button);
     }
     
-    private startListeners(socket: any) {
+    private startListeners() {
         this.button.addEventListener("click", () => {
-            let registrationsSection = document.getElementById("registrations-section")!;
+            let terminalSection = document.getElementById("terminal-section")!;
+            let registrationsSection = document.getElementById("registrations-section")!
             registrationsSection.style.opacity = "0";
             setTimeout(() => {
-                registrationsSection.remove();
+                registrationsSection.style.display = "none";
+                terminalSection.style.opacity = "0";
+                terminalSection.style.display = "flex";
+                terminalSection.offsetHeight;
+                terminalSection.style.opacity = "1";
             }, 300);
-            let terminalSection = new TerminalSection(document.getElementById("container")!, socket);
-            terminalSection.element.style.opacity = "1";
         });
     }
     
