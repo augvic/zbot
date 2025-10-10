@@ -16,11 +16,11 @@ class OrderInteractor(GoDeepBrowser):
         search_input.send_keys(cnpj)
         search_input.send_keys(Keys.ENTER)
         sleep(1)
-        client_link = self.find_elements(by=By.XPATH, value="//table/tbody/tr")[1].find_elements(By.XPATH, value=".//td")[10].find_element(By.XPATH, value=".//a")  # type: ignore
-        client_link = client_link.get_attribute(name="href") # type: ignore
+        client_link = self.find_elements(by=By.XPATH, value="//table/tbody/tr")[1].find_elements(By.XPATH, value=".//td")[10].find_element(By.XPATH, value=".//a") 
+        client_link = client_link.get_attribute(name="href")
         self.get(url=str(client_link))
         sleep(1)
-        wallet = self.find_element(by=By.XPATH, value="//section").find_elements(by=By.XPATH, value=".//ul/li")[10].find_element(by=By.XPATH, value=".//a") # type: ignore
+        wallet = self.find_element(by=By.XPATH, value="//section").find_elements(by=By.XPATH, value=".//ul/li")[10].find_element(by=By.XPATH, value=".//a")
         wallet.click()
         sleep(1)
         wallet = self.find_element(by=By.XPATH, value="(//select[@class='form-control select-multiple side2side-selected-options side2side-select-taller'])[1]")
@@ -42,20 +42,21 @@ class OrderInteractor(GoDeepBrowser):
         flag.click()
         search_input.send_keys(Keys.ENTER)
         sleep(1)
-        client_link = self.find_elements(by=By.XPATH, value="//table/tbody/tr")[1].find_element(by=By.XPATH, value="//td[contains(@data-title, 'Ações')]/a").get_attribute(name="href") # type: ignore
+        client_link = self.find_elements(by=By.XPATH, value="//table/tbody/tr")[1].find_element(by=By.XPATH, value="//td[contains(@data-title, 'Ações')]/a").get_attribute(name="href")
         self.get(url=str(client_link))
-        cnpj = self.find_element(by=By.ID, value="resale_cnpj").get_attribute(name="value") # type: ignore
+        resale_cnpj = self.find_element(by=By.ID, value="resale_cnpj").get_attribute(name="value")
         self.get("https://www.revendedorpositivo.com.br/admin/clients")
         search_input = self.find_element(by=By.ID, value="keyword")
         search_input.clear()
-        search_input.send_keys(cnpj) 
+        if resale_cnpj:
+            search_input.send_keys(resale_cnpj) 
         search_input.send_keys(Keys.ENTER)
         sleep(1)
-        client_link = self.find_elements(by=By.XPATH, value="//table/tbody/tr")[1].find_elements(by=By.XPATH, value=".//td")[10].find_element(by=By.XPATH, value=".//a")  # type: ignore
-        client_link = client_link.get_attribute(name="href")  # type: ignore
+        client_link = self.find_elements(by=By.XPATH, value="//table/tbody/tr")[1].find_elements(by=By.XPATH, value=".//td")[10].find_element(by=By.XPATH, value=".//a") 
+        client_link = client_link.get_attribute(name="href") 
         self.get(url=str(client_link)) 
         sleep(1)
-        wallet = self.find_element(by=By.XPATH, value="//section").find_elements(by=By.XPATH, value=".//ul/li")[10].find_element(by=By.XPATH, value=".//a")  # type: ignore
+        wallet = self.find_element(by=By.XPATH, value="//section").find_elements(by=By.XPATH, value=".//ul/li")[10].find_element(by=By.XPATH, value=".//a") 
         wallet.click() 
         wallet = self.find_element(by=By.XPATH, value="(//select[@class='form-control select-multiple side2side-selected-options side2side-select-taller'])[1]") 
         wallet = Select(wallet) 
@@ -147,7 +148,7 @@ class OrderInteractor(GoDeepBrowser):
         centers: list[str] = []
         for i in range(1, 4):
             try:
-                centers.append(self.find_element(by=By.XPATH, value=f"(//div[@class='panel distribution-center']/div[@class='panel-heading'])[{i}]").text) # type: ignore
+                centers.append(self.find_element(by=By.XPATH, value=f"(//div[@class='panel distribution-center']/div[@class='panel-heading'])[{i}]").text)
             except:
                 pass
         return centers
@@ -166,7 +167,7 @@ class OrderInteractor(GoDeepBrowser):
                 order_element = self.find_element(by=By.ID, value="distribution_centers-2-external_id")
             except:
                 order_element = self.find_element(by=By.ID, value="distribution_centers-1-external_id")
-        order_element = order_element.get_attribute(name="value") # type: ignore
+        order_element = order_element.get_attribute(name="value")
         if order_element == "" or order_element == None:
             order_element = "-"
         return order_element
@@ -180,7 +181,7 @@ class OrderInteractor(GoDeepBrowser):
         return over
     
     def _extract_order_items(self) -> list[Item]:
-        self.execute_script("document.body.style.zoom='50%'") # type: ignore
+        self.execute_script("document.body.style.zoom='50%'")
         items: list[Item] = []
         tables = self.find_elements(by=By.XPATH, value="//div[@class='panel distribution-center']")
         for table in tables:
@@ -190,13 +191,13 @@ class OrderInteractor(GoDeepBrowser):
                 center = "1910"
             else:
                 center = "1099"
-            footer = table.find_element(by=By.XPATH, value="./div[@class='panel-footer']/table[@class='table table-striped']") # type: ignore
-            items_footer = footer.find_elements(by=By.XPATH, value=".//tbody/tr") # type: ignore
+            footer = table.find_element(by=By.XPATH, value="./div[@class='panel-footer']/table[@class='table table-striped']")
+            items_footer = footer.find_elements(by=By.XPATH, value=".//tbody/tr")
             for item in items_footer:
                 center = center
-                sku = item.find_elements(by=By.XPATH, value=".//td")[2].text # type: ignore
+                sku = item.find_elements(by=By.XPATH, value=".//td")[2].text
                 sku = sku.lstrip("0")
-                value = item.find_elements(by=By.XPATH, value=".//td")[17].text # type: ignore
+                value = item.find_elements(by=By.XPATH, value=".//td")[17].text
                 value = value.replace("R$", "").replace(".", "").replace(",", ".").strip()
                 item_element = Item(sku=sku, center=center, unit_value=value)
                 items.append(item_element)

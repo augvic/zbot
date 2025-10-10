@@ -110,6 +110,7 @@ class LogoutButton {
                 new Notification("Erro ao deslogar.", "red");
                 return;
             }
+            socket.removeAllListeners();
             const page = document.getElementById("zIndex")!;
             page.classList.remove("opacity-fade-in");
             page.classList.add("opacity-fade-out");
@@ -262,6 +263,7 @@ class ModuleButton {
                 moduleContainer.innerHTML = "";
                 const bundle = await import(`${window.location.origin}/module-bundle/${moduleName.toLowerCase()}.js`);
                 const bundleClass = bundle.default;
+                socket.removeAllListeners();
                 new bundleClass(moduleContainer, socket);
                 menu.classList.add("fade-out-left");
                 menu.addEventListener("animationend", () => {

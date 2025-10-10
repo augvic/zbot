@@ -25,9 +25,9 @@ class ValidateLogin:
             for module in modules:
                 modules_descriptions[module.module] = module.description
             user_permissions = self.permissions_client.read_all_from_user(user.user)
-            permissions_list: list[str] = []
+            permissions_list: list[dict[str, str]] = []
             for user_permission in user_permissions:
-                permissions_list.append({"module": user_permission.module, "description": modules_descriptions[user_permission.module]}) # type: ignore
+                permissions_list.append({"module": user_permission.module, "description": modules_descriptions[user_permission.module]})
             self.session_manager.save_in_session("user", login_data["user"])
             self.session_manager.save_in_session("session_modules", permissions_list)
             return {"success": True, "message": "Logado com sucesso."}

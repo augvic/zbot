@@ -14,7 +14,7 @@ class PositivoFederalRevenueApi:
     
     def _requisition_to_api(self, cnpj: str) -> ResponseData:
         load_dotenv()
-        disable_warnings(InsecureRequestWarning) # type: ignore
+        disable_warnings(InsecureRequestWarning)
         url = f"https://comercial.cnpj.ws/cnpj/{cnpj}"
         headers = {
             "x_api_token": getenv("API_KEY")

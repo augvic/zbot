@@ -20,12 +20,12 @@ class GoDeepBrowser(Chrome):
         options.add_argument(argument="--log-level=3")
         options.add_argument(argument="--silent")
         options.add_argument(argument="--v=0")
-        options.add_experimental_option(name="useAutomationExtension", value=False) # type: ignore
-        options.add_experimental_option(name="excludeSwitches", value=["enable-automation", "enable-logging"]) # type: ignore
+        options.add_experimental_option(name="useAutomationExtension", value=False)
+        options.add_experimental_option(name="excludeSwitches", value=["enable-automation", "enable-logging"])
         if headless:
             options.add_argument(argument="--headless=new")
         else:
-            options.add_experimental_option(name="detach", value=True) # type: ignore
+            options.add_experimental_option(name="detach", value=True)
         super().__init__(options=options)
     
     def _login(self) -> None:
@@ -34,8 +34,11 @@ class GoDeepBrowser(Chrome):
         user = self.find_element(by=By.ID, value="username")
         password = self.find_element(by=By.ID, value="password")
         login_button = self.find_element(by=By.XPATH, value="//div[@id='action-login']/div[@class='col-md-12 pad-right0 pad-left0']/button[@class=' col-md-12 btn btn-primary button-login-home pad-bottom10']")
-        user.send_keys(getenv("GODEEP_EMAIL")) # type: ignore
-        password.send_keys(getenv("GODEEP_PASSWORD")) # type: ignore
+        user_env = getenv("GODEEP_EMAIL")
+        password_env = getenv("GODEEP_PASSWORD")
+        if user_env and password_env:
+            user.send_keys(user_env)
+            password.send_keys(password_env)
         login_button.click()
         sleep(1)
         body = self.find_element(by=By.TAG_NAME, value="body").text

@@ -18,8 +18,8 @@ class RunRegistrationsRpa:
     def execute(self, rpa_websocket: "RegRpaWebsocket") -> None:
         self._setup(rpa_websocket)
         self.thread.start()
-        self.rpa_websocket.socketio.emit("regrpa_notification", {"success": True, "message": "RPA iniciado."}) # type: ignore
-        self.rpa_websocket.socketio.emit("regrpa_status", {"status": "Em processamento."}) # type: ignore
+        self.rpa_websocket.socketio.emit("regrpa_notification", {"success": True, "message": "RPA iniciado."})
+        self.rpa_websocket.socketio.emit("regrpa_status", {"status": "Em processamento."})
         self.rpa_websocket.is_running = True
     
     def loop(self) -> None:
@@ -29,8 +29,8 @@ class RunRegistrationsRpa:
                     self.rpa_websocket.memory.clear()
                     self.day = datetime.now().date()
                 if self.rpa_websocket.stop == True:
-                    self.rpa_websocket.socketio.emit("regrpa_notification", {"success": True, "message": "RPA desligado."}) # type: ignore
-                    self.rpa_websocket.socketio.emit("regrpa_status", {"status": "Desligado."}) # type: ignore
+                    self.rpa_websocket.socketio.emit("regrpa_notification", {"success": True, "message": "RPA desligado."})
+                    self.rpa_websocket.socketio.emit("regrpa_status", {"status": "Desligado."})
                     self.rpa_websocket.stop = False
                     self.rpa_websocket.is_running = False
                     break
@@ -38,5 +38,5 @@ class RunRegistrationsRpa:
                 sleep(2)
         except Exception as error:
             self.log_system.write(f"Erro durante execução: {error}", False, None)
-            self.rpa_websocket.socketio.emit("regrpa_status", {"status": "Desligado."}) # type: ignore
-            self.rpa_websocket.socketio.emit("regrpa_notification", {"success": False, "message": "Erro durante execução do RPA."}) # type: ignore
+            self.rpa_websocket.socketio.emit("regrpa_status", {"status": "Desligado."})
+            self.rpa_websocket.socketio.emit("regrpa_notification", {"success": False, "message": "Erro durante execução do RPA."})

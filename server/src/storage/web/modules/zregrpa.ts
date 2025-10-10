@@ -31,10 +31,6 @@ class WebSocketListeners {
     }
     
     private startListeners(page: zRegRpa, socket: any) {
-        socket.off("regrpa_terminal");
-        socket.off("regrpa_notification");
-        socket.off("regrpa_status");
-        socket.off("regrpa_terminal");
         socket.on("regrpa_terminal", (response: {[key: string]: string}) => {
             const distanceFromBottom = page.container.terminalSection.terminal.element.scrollHeight - (page.container.terminalSection.terminal.element.scrollTop + page.container.terminalSection.terminal.element.clientHeight);
             let text = new TerminalText(page.container.terminalSection.terminal.element, response.message);

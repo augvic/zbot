@@ -25,7 +25,7 @@ class Api:
         self.register_routes()
         self.socketio = SocketIO(self.app)
         self.register_web_socket_events()
-        self.socketio.run(self.app, host="127.0.0.1", debug=True) # type: ignore
+        self.socketio.run(self.app, host="127.0.0.1", debug=True)
     
     def register_routes(self) -> None:
         self.app.register_blueprint(login)

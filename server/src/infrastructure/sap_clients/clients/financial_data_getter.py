@@ -119,7 +119,7 @@ class FinancialDataGetter(SapGui):
             except:
                 continue
             if account != "":
-                accounts.append(account) # type: ignore
+                accounts.append(account)
             else:
                 break
         self.press_button("wnd[1]/tbar[0]/btn[0]")
@@ -228,15 +228,15 @@ class FinancialDataGetter(SapGui):
         total_sum = df.loc[df["SITUAÇÃO"] != "Outros", "VALOR"].sum()
         in_open = float(total_sum)
         in_open_str = f"R$ {in_open:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-        df["VALOR"] = df["VALOR"].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")) # type: ignore
+        df["VALOR"] = df["VALOR"].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
         new_line = DataFrame({"CONTA": [""], "SITUAÇÃO": [""], "FRM_PAGAMENTO": [""], "CND_PAGAMENTO": [""], "VENCIMENTO": [""], "NF": ["TOTAL"], "VALOR": [in_open_str]})
         df = concat([df, new_line])
         return df
     
     def _get_in_open_from_df(self, df: DataFrame) -> float:
-        df["VALOR"] = df["VALOR"].apply(lambda x: float(x.replace("R$", "").replace(".", "").replace(",", "."))) # type: ignore
+        df["VALOR"] = df["VALOR"].apply(lambda x: float(x.replace("R$", "").replace(".", "").replace(",", ".")))
         in_open = float(df.loc[df["SITUAÇÃO"] != "Outros", "VALOR"].iloc[:-1].sum())
-        df["VALOR"] = df["VALOR"].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")) # type: ignore
+        df["VALOR"] = df["VALOR"].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
         return in_open
     
     def _get_overdue_nfs_from_df(self, df: DataFrame) -> str:
