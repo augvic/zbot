@@ -8,6 +8,6 @@ class Main(MethodView):
     
     def get(self) -> str:
         task = RenderTemplate()
-        return task.execute("base.html")
+        return task.execute("main.html")
 
 main.add_url_rule("/", view_func=Main.as_view("main"), methods=["GET"])

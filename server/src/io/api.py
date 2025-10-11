@@ -19,7 +19,7 @@ class Api:
         load_dotenv()
         BASE_DIR = path.dirname(path.abspath(__file__))
         STATIC = path.abspath(path.join(BASE_DIR, "../storage/.web_output/static"))
-        TEMPLATE = path.abspath(path.join(BASE_DIR, "../storage/.web_output/template"))
+        TEMPLATE = path.abspath(path.join(BASE_DIR, "../storage/.web_output"))
         self.app = Flask(__name__, template_folder=TEMPLATE, static_folder=STATIC)
         self.app.secret_key = getenv("FLASK")
         self.register_routes()
@@ -40,5 +40,3 @@ class Api:
     
     def register_web_socket_events(self) -> None:
         RegRpaWebsocket(self.socketio)
-
-Api()

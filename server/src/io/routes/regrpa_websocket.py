@@ -13,7 +13,7 @@ class RegRpaWebsocket:
         self.socketio.on_event("regrpa_start", self.update_status_to_on)
         self.socketio.on_event("regrpa_stop", self.update_status_to_off)
     
-    def update_status_to_on(self, data: Any) -> None:
+    def update_status_to_on(self, data: Any = None) -> None:
         if self.is_running == True:
             self.socketio.emit("regrpa_notification", {"success": False, "message": "RPA já está em processamento."})
             return
@@ -21,14 +21,14 @@ class RegRpaWebsocket:
         task = RunRegistrationsRpa()
         task.execute(self)
     
-    def update_status_to_off(self, data: Any) -> None:
+    def update_status_to_off(self, data: Any = None) -> None:
         if self.is_running == False:
             self.socketio.emit("regrpa_notification", {"message": "RPA já está desligado."})    
             return
         self.socketio.emit("regrpa_status", {"status": "Desligando..."})
         self.stop = True
     
-    def refresh(self, data: Any) -> None:
+    def refresh(self, data: Any = None) -> None:
         if self.is_running == True:
             self.socketio.emit("regrpa_status", {"status": "Em processamento."})
         else:

@@ -1,12 +1,12 @@
 {
-  "name": "zbot_server",
+  "name": "zbot",
   "version": "1.0.0",
   "description": "🤖 Automation software.",
   "main": "",
   "scripts": {
     "build": "vite build && npm run tailwindcss && npm run copy-files",
     "tailwindcss": "npx @tailwindcss/cli -i ./src/storage/web/static/css/input.css -o ./src/storage/web/static/css/output.css",
-    "copy-files": "xcopy .\\src\\storage\\web\\static\\css .\\src\\storage\\.web_output\\static\\css /E /I /Y && xcopy .\\src\\storage\\web\\static\\images .\\src\\storage\\.web_output\\static\\images /E /I /Y && xcopy .\\src\\storage\\web\\template .\\src\\storage\\.web_output\\template /E /I /Y"
+    "copy-files": "xcopy .\\src\\storage\\web\\static\\css .\\src\\storage\\.web_output\\static\\css /E /I /Y && xcopy .\\src\\storage\\web\\static\\images .\\src\\storage\\.web_output\\static\\images /E /I /Y && copy .\\src\\storage\\web\\main.html .\\src\\storage\\.web_output\\main.html /Y"
   },
   "repository": {
     "type": "git",
