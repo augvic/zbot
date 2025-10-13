@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
     build: {
         outDir: "src/storage/.web_output",
+        emptyOutDir: true,
         lib: {
             entry: {},
             formats: ["es"]
@@ -15,7 +16,6 @@ export default defineConfig({
                 zregrpa: "./src/storage/web/modules/zregrpa.ts"
             },
             output: {
-                format: "es",
                 entryFileNames: (chunkInfo) => {
                     if (["zindex", "zlogin"].includes(chunkInfo.name)) {
                         return "pages/[name].js";
@@ -23,8 +23,7 @@ export default defineConfig({
                         return "modules/[name].js";
                     }
                 },
-            },
-        },
-        emptyOutDir: true
+            }
+        }
     }
 });

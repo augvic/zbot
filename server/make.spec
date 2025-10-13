@@ -2,7 +2,7 @@ from PyInstaller.building.build_main import Analysis
 from PyInstaller.building.api import EXE, PYZ
 
 analysis = Analysis(
-    scripts=['./src/io/api.py'],
+    scripts=['main.py'],
     optimize=0
 )
 
