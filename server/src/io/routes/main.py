@@ -1,13 +1,11 @@
-from flask import Blueprint
-from flask.views import MethodView
+from flask import Flask
 from src.tasks.render_template import RenderTemplate
 
-main = Blueprint("main", __name__)
-
-class Main(MethodView):
+class Main:
     
-    def get(self) -> str:
-        task = RenderTemplate()
-        return task.execute("main.html")
-
-main.add_url_rule("/", view_func=Main.as_view("main"), methods=["GET"])
+    def __init__(self, app: Flask) -> None:
+        
+        @app.route("/", methods=["GET"])
+        def render_application() -> str:
+            task = RenderTemplate()
+            return task.execute("main.html")

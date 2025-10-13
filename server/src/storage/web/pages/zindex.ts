@@ -1,6 +1,4 @@
-import { io } from "socket.io-client";
-
-const socket = io(`${window.location.origin}`);
+import { io, Socket } from "socket.io-client";
 
 export default class zIndex {
     
@@ -8,6 +6,7 @@ export default class zIndex {
     menu!: Menu
     titleBar!: TitleBar
     module!: Module
+    websocket!: Socket
     
     constructor() {
         this.createSelf();
@@ -22,9 +21,12 @@ export default class zIndex {
     }
     
     private createComponents() {
+        this.websocket = io(window.location.origin, {
+            withCredentials: true
+        });
         this.module = new Module(this.element);
-        this.menu = new Menu(this.element);
-        this.titleBar = new TitleBar(this.element);
+        this.menu = new Menu(this.element, this.websocket);
+        this.titleBar = new TitleBar(this.element, this.websocket);
     }
     
 }
@@ -37,9 +39,9 @@ class TitleBar {
     logoutButton!: LogoutButton
     themeButton!: ThemeButton
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, socket: Socket) {
         this.createSelf();
-        this.createComponents();
+        this.createComponents(socket);
         appendTo.appendChild(this.element);
     }
     
@@ -49,10 +51,10 @@ class TitleBar {
         this.element.className = "w-full bg-white dark:bg-gray-700 fixed z-50 h-[50px] flex items-center pl-3 transition-colors duration-300 gap-2";
     }
     
-    private createComponents() {
+    private createComponents(socket: Socket) {
         this.menuButton = new MenuButton(this.element);
         this.user = new UserName(this.element);
-        this.logoutButton = new LogoutButton(this.element);
+        this.logoutButton = new LogoutButton(this.element, socket);
         this.themeButton = new ThemeButton(this.element);
     }
     
@@ -83,10 +85,10 @@ class LogoutButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, socket: Socket) {
         this.createSelf();
         this.createComponents();
-        this.startListeners();
+        this.startListeners(socket);
         appendTo.appendChild(this.element);
     }
     
@@ -100,7 +102,7 @@ class LogoutButton {
         this.icon = new Icon(this.element, "logout-icon", "/static/images/logout.png", "5");
     }
     
-    private startListeners() {
+    private startListeners(socket: Socket) {
         this.element.addEventListener("click", async () => {
             const response = await fetch(`${window.location.origin}/login`, {
                 method: "DELETE"
@@ -203,9 +205,9 @@ class Menu {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, socket: Socket) {
         this.createSelf();
-        this.createComponents();
+        this.createComponents(socket);
         appendTo.appendChild(this.element);
     }
     
@@ -218,14 +220,14 @@ class Menu {
         this.element.style.display = "none";
     }
     
-    private async createComponents() {
+    private async createComponents(socket: Socket) {
         const response = await fetch(`${window.location.origin}/session-modules`);
         const modulesAllowed = await response.json();
         if (modulesAllowed == null) {
             return
         }
         modulesAllowed.forEach((module: { [key: string]: string; }) => {
-            new ModuleButton(this.element, module);
+            new ModuleButton(this.element, module, socket);
         });   
     }
     
@@ -237,9 +239,9 @@ class ModuleButton {
     button!: HTMLElement
     hoverSpan!: HoverSpan
     
-    constructor(appendTo: HTMLElement, module: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, module: {[key: string]: string}, socket: Socket) {
         this.createSelf(module.module);
-        this.startListeners(module.module, module.description);
+        this.startListeners(module.module, module.description, socket);
         appendTo.appendChild(this.element);
     }
     
@@ -252,7 +254,7 @@ class ModuleButton {
         this.element.appendChild(this.button);
     }
     
-    private startListeners(moduleName:string, moduleDescription: string) {
+    private startListeners(moduleName:string, moduleDescription: string, socket: Socket) {
         this.button.addEventListener("click", () => {
             const moduleContainer = document.getElementById("module")!;
             const menu = document.getElementById("menu")!;

@@ -7,7 +7,6 @@ export default class zRegRpa {
     constructor(moduleContainer: HTMLElement, socket: any) {
         this.createSelf();
         this.createComponents(socket);
-        socket.emit("regrpa_refresh");
         moduleContainer.appendChild(this.element);
     }
     
@@ -17,8 +16,12 @@ export default class zRegRpa {
         this.element.className = "w-full h-full opacity-fade-in bg-gray-300 dark:bg-gray-900 transition-colors duration-300 flex items-center justify-center";
     }
     
-    private createComponents(socket: any) {
-        this.container = new Container(this.element, socket)
+    private async createComponents(socket: any) {
+        const response = await fetch(`${window.location.origin}/registrations-rpa`, {
+            method: "GET"
+        });
+        const data = await response.json();
+        this.container = new Container(this.element, socket, data);
         this.websocketListeners = new WebSocketListeners(this, socket);
     }
     
@@ -79,9 +82,9 @@ class Container {
     terminalSection!: TerminalSection
     registrationsSection!: RegistrationsSection
     
-    constructor(appendTo: HTMLElement, socket: any) {
+    constructor(appendTo: HTMLElement, socket: any, data: {[key: string]: string}) {
         this.createSelf();
-        this.createComponents(socket);
+        this.createComponents(socket, data);
         appendTo.appendChild(this.element);
     }
     
@@ -91,8 +94,8 @@ class Container {
         this.element.className = "w-[95%] h-[95%] p-3 bg-white dark:bg-gray-700 transition-colors duration-300 flex rounded-lg";
     }
     
-    private createComponents(socket: any) {
-        this.terminalSection = new TerminalSection(this.element, socket);
+    private createComponents(socket: any, data: {[key: string]: string}) {
+        this.terminalSection = new TerminalSection(this.element, data);
         this.registrationsSection = new RegistrationsSection(this.element, socket);
     }
     
@@ -104,9 +107,9 @@ class TerminalSection {
     topBar!: ContainerTopBar
     terminal!: Terminal
     
-    constructor(appendTo: HTMLElement, socket: any) {
+    constructor(appendTo: HTMLElement, data: {[key: string]: string}) {
         this.createSelf();
-        this.createComponents(socket);
+        this.createComponents(data);
         appendTo.appendChild(this.element);
     }
     
@@ -116,9 +119,9 @@ class TerminalSection {
         this.element.className = "w-full h-full gap-y-2 flex flex-col items-center justify-center transition-opacity duration-300";
     }
     
-    private createComponents(socket: any) {
-        this.topBar = new ContainerTopBar(this.element, socket)
-        this.terminal = new Terminal(this.element);
+    private createComponents(data: {[key: string]: string}) {
+        this.topBar = new ContainerTopBar(this.element, data)
+        this.terminal = new Terminal(this.element, data);
     }
     
 }
@@ -131,9 +134,9 @@ class ContainerTopBar {
     status!: RpaStatus
     goToRegistrationsSection!: GoToRegistrationsSection
     
-    constructor(appendTo: HTMLElement, socket: any) {
+    constructor(appendTo: HTMLElement, data: {[key: string]: string}) {
         this.createSelf();
-        this.createComponents(socket);
+        this.createComponents(data);
         appendTo.appendChild(this.element);
     }
     
@@ -142,10 +145,10 @@ class ContainerTopBar {
         this.element.className = "w-full h-[5%] flex items-center gap-x-2";
     }
     
-    private createComponents(socket: any) {
-        this.turnOnButton = new TurnOnButton(this.element, socket);
-        this.turnOffButton = new TurnOffButton(this.element, socket);
-        this.status = new RpaStatus(this.element);
+    private createComponents(data: {[key: string]: string}) {
+        this.turnOnButton = new TurnOnButton(this.element, data);
+        this.turnOffButton = new TurnOffButton(this.element, data);
+        this.status = new RpaStatus(this.element, data);
         this.goToRegistrationsSection = new GoToRegistrationsSection(this.element);
     }
     
@@ -156,26 +159,42 @@ class TurnOnButton {
     element!: HTMLButtonElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement, socket: any) {
-        this.createSelf();
+    constructor(appendTo: HTMLElement, data: {[key: string]: string}) {
+        this.createSelf(data);
         this.createComponents();
-        this.startListeners(socket);
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
-    private createSelf() {
+    private createSelf(data: {[key: string]: string}) {
         this.element = document.createElement("button");
         this.element.id = "turn-on-button";
         this.element.className = "w-auto h-auto p-1 bg-green-700 hover:bg-green-900 transition-colors duration-300 rounded-md cursor-pointer";
+        if (data.status == "Em processamento.") {
+            this.element.disabled = true;
+            this.element.style.backgroundColor = "#919191";
+            this.element.style.cursor = "not-allowed";
+        }
+        if (data.status == "Desligado.") {
+            this.element.disabled = false;
+            this.element.style.backgroundColor = "oklch(52.7% 0.154 150.069)";
+            this.element.style.cursor = "pointer";
+        }
     }
     
     private createComponents() {
         this.icon = new Icon("static/images/play.png", this.element);
     }
     
-    private startListeners(socket: any) {
-        this.element.addEventListener("click", () => {
-            socket.emit("regrpa_start");
+    private startListeners() {
+        this.element.addEventListener("click", async () => {
+            const response = await fetch(`${window.location.origin}/registrations-rpa`, {
+                method: "POST" 
+            });
+            const data = await response.json();
+            if (!data.success) {
+                new Notification(data.message, "red");
+            }
         });
     }
     
@@ -186,26 +205,42 @@ class TurnOffButton {
     element!: HTMLButtonElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement, socket: any) {
-        this.createSelf();
+    constructor(appendTo: HTMLElement, data: {[key: string]: string}) {
+        this.createSelf(data);
         this.createComponents();
-        this.startListeners(socket);
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
-    private createSelf() {
+    private createSelf(data: {[key: string]: string}) {
         this.element = document.createElement("button");
         this.element.id = "turn-off-button";
         this.element.className = "w-auto h-auto p-1 bg-red-700 hover:bg-red-900 transition-colors duration-300 rounded-md cursor-pointer";
+        if (data.status == "Em processamento.") {
+            this.element.disabled = false;
+            this.element.style.backgroundColor = "oklch(50.5% 0.213 27.518)";
+            this.element.style.cursor = "pointer";
+        }
+        if (data.status == "Desligado.") {
+            this.element.disabled = true;
+            this.element.style.backgroundColor = "#919191";
+            this.element.style.cursor = "not-allowed";
+        }
     }
     
     private createComponents() {
         this.icon = new Icon("static/images/stop.png", this.element);
     }
     
-    private startListeners(socket: any) {
-        this.element.addEventListener("click", () => {
-            socket.emit("regrpa_stop");
+    private startListeners() {
+        this.element.addEventListener("click", async () => {
+            const response = await fetch(`${window.location.origin}/registrations-rpa`, {
+                method: "DELETE" 
+            });
+            const data = await response.json();
+            if (!data.success) {
+                new Notification(data.message, "red");
+            }
         });
     }
     
@@ -215,14 +250,15 @@ class RpaStatus {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
+    constructor(appendTo: HTMLElement, data: {[key: string]: string}) {
+        this.createSelf(data);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf() {
+    private createSelf(data: {[key: string]: string}) {
         this.element = document.createElement("p");
         this.element.className = "cursor-default text-black dark:text-white transition-colors transition-opacity duration-300";
+        this.element.innerText = `Status: ${data.status}`;
     }
     
 }
@@ -269,14 +305,15 @@ class Terminal {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
+    constructor(appendTo: HTMLElement, data: {[key: string]: string}) {
+        this.createSelf(data);
         appendTo.appendChild(this.element);
     }
     
-    private createSelf() {
+    private createSelf(data: {[key: string]: string}) {
         this.element = document.createElement("div");
         this.element.className = "w-full h-[95%] flex flex-col gap-y-1 p-3 bg-black text-white rounded-md overflow-y-auto custom-scroll scroll-smooth";
+        this.element.innerText = data.memory;
     }
     
 }

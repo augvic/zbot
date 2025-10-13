@@ -1,15 +1,15 @@
 from flask import Flask
 from flask_socketio import SocketIO
-from .routes.login import login
-from .routes.main import main
-from .routes.module_bundle import module_bundle
-from .routes.modules_list import modules_list
-from .routes.page_bundle import page_bundle
-from .routes.permissions import permissions
-from .routes.session_modules import session_modules
-from .routes.users import users
-from .routes.session_user import session_user
-from .routes.regrpa_websocket import RegRpaWebsocket
+from .routes.login import Login
+from .routes.main import Main
+from .routes.module_bundle import ModuleBundle
+from .routes.modules_list import ModulesList
+from .routes.page_bundle import PageBundle
+from .routes.permissions import Permissions
+from .routes.session_modules import SessionModules
+from .routes.users import Users
+from .routes.session_user import SessionUser
+from .routes.registrations_rpa import RegistrationsRpa
 from os import path, getenv
 from dotenv import load_dotenv
 
@@ -21,22 +21,19 @@ class Api:
         STATIC = path.abspath(path.join(BASE_DIR, "../storage/.web_output/static"))
         TEMPLATE = path.abspath(path.join(BASE_DIR, "../storage/.web_output"))
         self.app = Flask(__name__, template_folder=TEMPLATE, static_folder=STATIC)
+        self.socketio = SocketIO(self.app)
         self.app.secret_key = getenv("FLASK")
         self.register_routes()
-        self.socketio = SocketIO(self.app)
-        self.register_web_socket_events()
         self.socketio.run(self.app, host="127.0.0.1", debug=True)
     
     def register_routes(self) -> None:
-        self.app.register_blueprint(login)
-        self.app.register_blueprint(main)
-        self.app.register_blueprint(module_bundle)
-        self.app.register_blueprint(modules_list)
-        self.app.register_blueprint(page_bundle)
-        self.app.register_blueprint(permissions)
-        self.app.register_blueprint(session_modules)
-        self.app.register_blueprint(users)
-        self.app.register_blueprint(session_user)
-    
-    def register_web_socket_events(self) -> None:
-        RegRpaWebsocket(self.socketio)
+        Login(self.app)
+        Main(self.app)
+        ModuleBundle(self.app)
+        ModulesList(self.app)
+        PageBundle(self.app)
+        Permissions(self.app)
+        SessionModules(self.app)
+        Users(self.app)
+        SessionUser(self.app)
+        RegistrationsRpa(self.app, self.socketio)

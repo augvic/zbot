@@ -1,25 +1,25 @@
-from flask import request, Blueprint
-from flask.views import MethodView
+from flask import request, Flask
 from src.tasks.validate_login import ValidateLogin
 from src.tasks.verify_if_logged_in import VerifyIfLoggedIn
 from src.tasks.logout import Logout
 from typing import cast
 
-login = Blueprint("login", __name__)
-
-class Login(MethodView):
+class Login:
     
-    def post(self) -> dict[str, str | bool]:
-        data = cast(dict[str, str], request.json)
-        task = ValidateLogin()
-        return task.execute(data)
-    
-    def get(self) -> dict[str, bool]:
-        task = VerifyIfLoggedIn()
-        return task.execute()
-    
-    def delete(self) -> dict[str, bool | str]:
-        task = Logout()
-        return task.execute()
-
-login.add_url_rule("/login", view_func=Login.as_view("login"), methods=["GET", "POST", "DELETE"])
+    def __init__(self, app: Flask) -> None:
+        
+        @app.route("/login", methods=["POST"])
+        def validate_login() -> dict[str, str | bool]:
+            data = cast(dict[str, str], request.json)
+            task = ValidateLogin()
+            return task.execute(data)
+        
+        @app.route("/login", methods=["GET"])
+        def verify_if_logged_in() -> dict[str, bool]:
+            task = VerifyIfLoggedIn()
+            return task.execute()
+        
+        @app.route("/login", methods=["DELETE"])
+        def logout() -> dict[str, bool | str]:
+            task = Logout()
+            return task.execute()

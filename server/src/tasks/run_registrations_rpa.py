@@ -5,17 +5,17 @@ from src.infrastructure.log_system import LogSystem
 from datetime import datetime
 
 if TYPE_CHECKING:
-    from io.routes.regrpa_websocket import RegRpaWebsocket
+    from io.routes.registrations_rpa import RegistrationsRpa
 
 class RunRegistrationsRpa:
     
-    def _setup(self, rpa_websocket: "RegRpaWebsocket") -> None:
+    def _setup(self, rpa_websocket: "RegistrationsRpa") -> None:
         self.day = datetime.now().date()
         self.rpa_websocket = rpa_websocket
         self.thread = Thread(target=self.loop)
         self.log_system = LogSystem("registrations_rpa", self.rpa_websocket.socketio, self.rpa_websocket.memory)
     
-    def execute(self, rpa_websocket: "RegRpaWebsocket") -> None:
+    def execute(self, rpa_websocket: "RegistrationsRpa") -> None:
         self._setup(rpa_websocket)
         self.thread.start()
         self.rpa_websocket.socketio.emit("regrpa_notification", {"success": True, "message": "RPA iniciado."})
@@ -40,3 +40,5 @@ class RunRegistrationsRpa:
             self.log_system.write(f"Erro durante execução: {error}", False, None)
             self.rpa_websocket.socketio.emit("regrpa_status", {"status": "Desligado."})
             self.rpa_websocket.socketio.emit("regrpa_notification", {"success": False, "message": "Erro durante execução do RPA."})
+            self.rpa_websocket.stop = False
+            self.rpa_websocket.is_running = False
