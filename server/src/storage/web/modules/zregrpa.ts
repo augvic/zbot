@@ -314,6 +314,9 @@ class Terminal {
         this.element = document.createElement("div");
         this.element.className = "w-full h-[95%] flex flex-col gap-y-1 p-3 bg-black text-white rounded-md overflow-y-auto custom-scroll scroll-smooth";
         this.element.innerText = data.memory;
+        setTimeout(() => {
+            this.element.scrollTop = this.element.scrollHeight;
+        }, 500);
     }
     
 }

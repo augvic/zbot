@@ -35,7 +35,7 @@ class Users:
                 return "Sem autorização.", 401
             return task2.execute(user)
         
-        @app.route("/users/<user>", methods=["GET"])
+        @app.route("/users/<user>", methods=["PUT"])
         def update_user(user: str) -> tuple[str, int] | dict[str, str | bool]:
             task1 = VerifyIfHaveAccess()
             task2 = UpdateUser()
