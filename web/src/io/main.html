@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html lang="pt" class="h-full w-full">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>zBot</title>
+        <link rel="stylesheet" href="/storage/css/output.css">
+        <link rel="icon" type="image/ico" href="/storage/images/favicon.ico">
+    </head>
+    
+    <body class="h-full w-full bg-gray-300 dark:bg-gray-900 overflow-hidden">
+        <div id="application-content" class="w-full h-full"></div>
+    </body>
+    
+    <script type="module">
+        import { zIndex, zLogin } from "/storage/bundle.js";
+        if (window.localStorage.getItem("theme") == null) {
+            window.localStorage.setItem("theme", "light");
+        }
+        if (window.localStorage.getItem("theme") == "light") {
+            document.documentElement.classList.remove("dark");
+            document.documentElement.classList.add("light");
+        } else {
+            document.documentElement.classList.remove("light");
+            document.documentElement.classList.add("dark");
+        }
+        const response = await fetch(`${window.location.origin}/login`);
+        const data = await response.json();
+        if (data.logged_in) {
+            document.getElementById("application-content").innerHTML = "";
+            new zIndex();
+        } else {
+            new zLogin();
+        }
+    </script>
+    
+</html>

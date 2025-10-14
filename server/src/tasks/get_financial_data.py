@@ -1,6 +1,6 @@
-from src.infrastructure.sap_clients.clients.financial_data_getter import FinancialDataGetter
-from src.infrastructure.sap_clients.models import *
-from src.infrastructure.serializers.dataclass_serializer import DataclassSerializer
+from src.components.sap_clients.clients.financial_data_getter import FinancialDataGetter
+from src.components.sap_clients.models import *
+from src.components.dataclass_serializer import DataclassSerializer
 from typing import Any
 from datetime import datetime
 

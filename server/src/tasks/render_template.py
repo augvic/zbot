@@ -1,4 +1,4 @@
-from src.infrastructure.storage_managers.template_manager import TemplateManager
+from src.components.template_manager import TemplateManager
 from datetime import datetime
 
 class RenderTemplate:

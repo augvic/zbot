@@ -2,9 +2,7 @@ from flask import Flask
 from flask_socketio import SocketIO
 from .routes.login import Login
 from .routes.main import Main
-from .routes.module_bundle import ModuleBundle
 from .routes.modules_list import ModulesList
-from .routes.page_bundle import PageBundle
 from .routes.permissions import Permissions
 from .routes.session_modules import SessionModules
 from .routes.users import Users
@@ -18,8 +16,8 @@ class Api:
     def __init__(self):
         load_dotenv()
         BASE_DIR = path.dirname(path.abspath(__file__))
-        STATIC = path.abspath(path.join(BASE_DIR, "../storage/.web_output/static"))
-        TEMPLATE = path.abspath(path.join(BASE_DIR, "../storage/.web_output"))
+        STATIC = path.abspath(path.join(BASE_DIR, "../../storage/.web/storage"))
+        TEMPLATE = path.abspath(path.join(BASE_DIR, "../../storage/.web"))
         self.app = Flask(__name__, template_folder=TEMPLATE, static_folder=STATIC)
         self.socketio = SocketIO(self.app)
         self.app.secret_key = getenv("FLASK")
@@ -29,9 +27,7 @@ class Api:
     def register_routes(self) -> None:
         Login(self.app)
         Main(self.app)
-        ModuleBundle(self.app)
         ModulesList(self.app)
-        PageBundle(self.app)
         Permissions(self.app)
         SessionModules(self.app)
         Users(self.app)

@@ -1,6 +1,6 @@
-from src.infrastructure.databases.production.clients.users_client import UsersClient
-from src.infrastructure.databases.production.clients.permissions_client import PermissionsClient
-from src.infrastructure.session_manager import SessionManager
+from src.components.database_prd.clients.users_client import UsersClient
+from src.components.database_prd.clients.permissions_client import PermissionsClient
+from src.components.session_manager import SessionManager
 from datetime import datetime
 
 class CreatePermission:

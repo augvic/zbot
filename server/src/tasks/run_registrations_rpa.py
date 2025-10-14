@@ -1,7 +1,7 @@
 from threading import Thread
 from time import sleep
 from typing import TYPE_CHECKING
-from src.infrastructure.log_system import LogSystem
+from src.components.log_system import LogSystem
 from datetime import datetime
 
 if TYPE_CHECKING:

@@ -1,6 +1,6 @@
 from datetime import datetime
-from src.infrastructure.sap_clients.clients.order_creator import OrderCreator
-from src.infrastructure.sap_clients.models import *
+from src.components.sap_clients.clients.order_creator import OrderCreator
+from src.components.sap_clients.models import *
 
 class CreateOrder:
     

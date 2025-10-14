@@ -1,5 +1,5 @@
-from src.infrastructure.databases.production.clients.modules_client import ModulesClient
-from src.infrastructure.session_manager import SessionManager
+from src.components.database_prd.clients.modules_client import ModulesClient
+from src.components.session_manager import SessionManager
 from datetime import datetime
 
 class CreateModule:

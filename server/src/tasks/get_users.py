@@ -1,6 +1,6 @@
-from src.infrastructure.databases.production.clients.users_client import UsersClient
-from src.infrastructure.serializers.sqla_serializer import SqlaSerializer
-from src.infrastructure.session_manager import SessionManager
+from src.components.database_prd.clients.users_client import UsersClient
+from src.components.sqla_serializer import SqlaSerializer
+from src.components.session_manager import SessionManager
 from datetime import datetime
 
 class GetUsers:

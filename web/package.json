@@ -1,0 +1,29 @@
+{
+  "name": "zbot",
+  "version": "1.0.0",
+  "description": "🤖 Automation software.",
+  "main": "",
+  "scripts": {
+    "build": "vite build && npm run tailwindcss && npm run copy-files",
+    "tailwindcss": "npx @tailwindcss/cli -i ./storage/css/input.css -o ./storage/css/output.css",
+    "copy-files": "xcopy .\\storage ..\\server\\storage\\.web\\storage /E /I /Y && copy .\\src\\io\\main.html ..\\server\\storage\\.web\\main.html /Y"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/augvic/zbot"
+  },
+  "author": "Augusto Viceli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/augvic/zbot/issues"
+  },
+  "homepage": "https://github.com/augvic/zbot#readme",
+  "dependencies": {
+    "socket.io-client": "^4.8.1",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "vite": "^7.1.9"
+  }
+}

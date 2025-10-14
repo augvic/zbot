@@ -1,6 +1,6 @@
-from src.infrastructure.federal_revenue_apis.apis import PositivoFederalRevenueApi
-from src.infrastructure.federal_revenue_apis.models import *
-from src.infrastructure.serializers.dataclass_serializer import DataclassSerializer
+from src.components.pos_fr_api.api import PositivoFederalRevenueApi
+from src.components.pos_fr_api.models import *
+from src.components.dataclass_serializer import DataclassSerializer
 from typing import Any
 from datetime import datetime
 

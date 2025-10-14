@@ -1,6 +1,6 @@
 from flask import request, Flask
 from src.tasks.validate_login import ValidateLogin
-from src.tasks.verify_if_logged_in import VerifyIfLoggedIn
+from src.tasks.verify_if_user_is_in_session import VerifyIfUserIsInSession
 from src.tasks.logout import Logout
 from typing import cast
 
@@ -15,9 +15,10 @@ class Login:
             return task.execute(data)
         
         @app.route("/login", methods=["GET"])
-        def verify_if_logged_in() -> dict[str, bool]:
-            task = VerifyIfLoggedIn()
-            return task.execute()
+        def verify_if_user_is_in_session() -> dict[str, bool]:
+            task = VerifyIfUserIsInSession()
+            isInSession = task.execute()
+            return {"logged_in": isInSession}
         
         @app.route("/login", methods=["DELETE"])
         def logout() -> dict[str, bool | str]:

@@ -1,9 +1,9 @@
-from src.infrastructure.federal_revenue_apis.apis import PositivoFederalRevenueApi
-from src.infrastructure.databases.production.clients.registrations_client import RegistrationsClient
-from src.infrastructure.databases.production.clients.nceas_client import NceasClient
-from src.infrastructure.databases.production.clients.state_registrations_client import StateRegistrationsClient
-from src.infrastructure.databases.production.clients.suframa_registrations_client import SuframaRegistrationsClient
-from src.infrastructure.session_manager import SessionManager
+from src.components.pos_fr_api.api import PositivoFederalRevenueApi
+from src.components.database_prd.clients.registrations_client import RegistrationsClient
+from src.components.database_prd.clients.nceas_client import NceasClient
+from src.components.database_prd.clients.state_registrations_client import StateRegistrationsClient
+from src.components.database_prd.clients.suframa_registrations_client import SuframaRegistrationsClient
+from src.components.session_manager import SessionManager
 from datetime import datetime
 from os import path, makedirs
 from shutil import copy2

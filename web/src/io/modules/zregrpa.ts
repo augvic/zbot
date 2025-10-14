@@ -1,0 +1,509 @@
+export class zRegRpa {
+    
+    element!: HTMLElement
+    container!: Container
+    websocketListeners!: WebSocketListeners
+    
+    constructor(moduleContainer: HTMLElement, socket: any) {
+        this.createSelf();
+        this.createComponents(socket);
+        moduleContainer.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.id = "zRegRpa";
+        this.element.className = "w-full h-full opacity-fade-in bg-gray-300 dark:bg-gray-900 transition-colors duration-300 flex items-center justify-center";
+    }
+    
+    private async createComponents(socket: any) {
+        const response = await fetch(`${window.location.origin}/registrations-rpa`, {
+            method: "GET"
+        });
+        const data = await response.json();
+        this.container = new Container(this.element, socket, data);
+        this.websocketListeners = new WebSocketListeners(this, socket);
+    }
+    
+}
+
+class WebSocketListeners {
+    
+    constructor(page: zRegRpa, socket: any) {
+        this.startListeners(page, socket);
+    }
+    
+    private startListeners(page: zRegRpa, socket: any) {
+        socket.on("regrpa_terminal", (response: {[key: string]: string}) => {
+            const distanceFromBottom = page.container.terminalSection.terminal.element.scrollHeight - (page.container.terminalSection.terminal.element.scrollTop + page.container.terminalSection.terminal.element.clientHeight);
+            let text = new TerminalText(page.container.terminalSection.terminal.element, response.message);
+            text.element.style.opacity = "1";
+            if (distanceFromBottom <= 20) {
+                page.container.terminalSection.terminal.element.scrollTop = page.container.terminalSection.terminal.element.scrollHeight;
+            }
+        });
+        socket.on("regrpa_notification", (response: {[key: string]: string | boolean}) => {
+            if (response.success) {
+                new Notification(response.message as string, "green");
+            } else {
+                new Notification(response.message as string, "red");
+            }
+        });
+        socket.on("regrpa_status", (response: {[key: string]: string}) => {
+            page.container.terminalSection.topBar.status.element.style.opacity = "0";
+            setTimeout(() => {
+                page.container.terminalSection.topBar.status.element.innerText = `Status: ${response.status}`;
+                page.container.terminalSection.topBar.status.element.style.opacity = "1";   
+            }, 300);
+            if (response.status == "Em processamento.") {
+                page.container.terminalSection.topBar.turnOffButton.element.disabled = false;
+                page.container.terminalSection.topBar.turnOffButton.element.style.backgroundColor = "oklch(50.5% 0.213 27.518)";
+                page.container.terminalSection.topBar.turnOffButton.element.style.cursor = "pointer";
+                page.container.terminalSection.topBar.turnOnButton.element.disabled = true;
+                page.container.terminalSection.topBar.turnOnButton.element.style.backgroundColor = "#919191";
+                page.container.terminalSection.topBar.turnOnButton.element.style.cursor = "not-allowed";
+            }
+            if (response.status == "Desligado.") {
+                page.container.terminalSection.topBar.turnOnButton.element.disabled = false;
+                page.container.terminalSection.topBar.turnOnButton.element.style.backgroundColor = "oklch(52.7% 0.154 150.069)";
+                page.container.terminalSection.topBar.turnOnButton.element.style.cursor = "pointer";
+                page.container.terminalSection.topBar.turnOffButton.element.disabled = true;
+                page.container.terminalSection.topBar.turnOffButton.element.style.backgroundColor = "#919191";
+                page.container.terminalSection.topBar.turnOffButton.element.style.cursor = "not-allowed";
+            }
+        });
+    }
+    
+}
+
+class Container {
+    
+    element!: HTMLElement
+    terminalSection!: TerminalSection
+    registrationsSection!: RegistrationsSection
+    
+    constructor(appendTo: HTMLElement, socket: any, data: {[key: string]: string}) {
+        this.createSelf();
+        this.createComponents(socket, data);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.id = "container";
+        this.element.className = "w-[95%] h-[95%] p-3 bg-white dark:bg-gray-700 transition-colors duration-300 flex rounded-lg";
+    }
+    
+    private createComponents(socket: any, data: {[key: string]: string}) {
+        this.terminalSection = new TerminalSection(this.element, data);
+        this.registrationsSection = new RegistrationsSection(this.element, socket);
+    }
+    
+}
+
+class TerminalSection {
+    
+    element!: HTMLElement
+    topBar!: ContainerTopBar
+    terminal!: Terminal
+    
+    constructor(appendTo: HTMLElement, data: {[key: string]: string}) {
+        this.createSelf();
+        this.createComponents(data);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.id = "terminal-section";
+        this.element.className = "w-full h-full gap-y-2 flex flex-col items-center justify-center transition-opacity duration-300";
+    }
+    
+    private createComponents(data: {[key: string]: string}) {
+        this.topBar = new ContainerTopBar(this.element, data)
+        this.terminal = new Terminal(this.element, data);
+    }
+    
+}
+
+class ContainerTopBar {
+    
+    element!: HTMLElement
+    turnOnButton!: TurnOnButton
+    turnOffButton!: TurnOffButton
+    status!: RpaStatus
+    goToRegistrationsSection!: GoToRegistrationsSection
+    
+    constructor(appendTo: HTMLElement, data: {[key: string]: string}) {
+        this.createSelf();
+        this.createComponents(data);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-full h-[5%] flex items-center gap-x-2";
+    }
+    
+    private createComponents(data: {[key: string]: string}) {
+        this.turnOnButton = new TurnOnButton(this.element, data);
+        this.turnOffButton = new TurnOffButton(this.element, data);
+        this.status = new RpaStatus(this.element, data);
+        this.goToRegistrationsSection = new GoToRegistrationsSection(this.element);
+    }
+    
+}
+
+class TurnOnButton {
+    
+    element!: HTMLButtonElement
+    icon!: Icon
+    
+    constructor(appendTo: HTMLElement, data: {[key: string]: string}) {
+        this.createSelf(data);
+        this.createComponents();
+        this.startListeners();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(data: {[key: string]: string}) {
+        this.element = document.createElement("button");
+        this.element.id = "turn-on-button";
+        this.element.className = "w-auto h-auto p-1 bg-green-700 hover:bg-green-900 transition-colors duration-300 rounded-md cursor-pointer";
+        if (data.status == "Em processamento.") {
+            this.element.disabled = true;
+            this.element.style.backgroundColor = "#919191";
+            this.element.style.cursor = "not-allowed";
+        }
+        if (data.status == "Desligado.") {
+            this.element.disabled = false;
+            this.element.style.backgroundColor = "oklch(52.7% 0.154 150.069)";
+            this.element.style.cursor = "pointer";
+        }
+    }
+    
+    private createComponents() {
+        this.icon = new Icon("/storage/images/play.png", this.element);
+    }
+    
+    private startListeners() {
+        this.element.addEventListener("click", async () => {
+            const response = await fetch(`${window.location.origin}/registrations-rpa`, {
+                method: "POST" 
+            });
+            const data = await response.json();
+            if (!data.success) {
+                new Notification(data.message, "red");
+            }
+        });
+    }
+    
+}
+
+class TurnOffButton {
+    
+    element!: HTMLButtonElement
+    icon!: Icon
+    
+    constructor(appendTo: HTMLElement, data: {[key: string]: string}) {
+        this.createSelf(data);
+        this.createComponents();
+        this.startListeners();
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(data: {[key: string]: string}) {
+        this.element = document.createElement("button");
+        this.element.id = "turn-off-button";
+        this.element.className = "w-auto h-auto p-1 bg-red-700 hover:bg-red-900 transition-colors duration-300 rounded-md cursor-pointer";
+        if (data.status == "Em processamento.") {
+            this.element.disabled = false;
+            this.element.style.backgroundColor = "oklch(50.5% 0.213 27.518)";
+            this.element.style.cursor = "pointer";
+        }
+        if (data.status == "Desligado.") {
+            this.element.disabled = true;
+            this.element.style.backgroundColor = "#919191";
+            this.element.style.cursor = "not-allowed";
+        }
+    }
+    
+    private createComponents() {
+        this.icon = new Icon("/storage/images/stop.png", this.element);
+    }
+    
+    private startListeners() {
+        this.element.addEventListener("click", async () => {
+            const response = await fetch(`${window.location.origin}/registrations-rpa`, {
+                method: "DELETE" 
+            });
+            const data = await response.json();
+            if (!data.success) {
+                new Notification(data.message, "red");
+            }
+        });
+    }
+    
+}
+
+class RpaStatus {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, data: {[key: string]: string}) {
+        this.createSelf(data);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(data: {[key: string]: string}) {
+        this.element = document.createElement("p");
+        this.element.className = "cursor-default text-black dark:text-white transition-colors transition-opacity duration-300";
+        this.element.innerText = `Status: ${data.status}`;
+    }
+    
+}
+
+class GoToRegistrationsSection {
+    
+    wrapper!: HTMLElement
+    button!: HTMLButtonElement
+    icon!: Icon
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.startListeners();
+        appendTo.appendChild(this.wrapper);
+    }
+    
+    private createSelf() {
+        this.wrapper = document.createElement("div");
+        this.wrapper.className = "w-auto h-auto flex flex-1 justify-end items-center";
+        this.button = document.createElement("button");
+        this.button.className = "w-auto h-auto py-1 px-2 bg-amber-700 hover:bg-amber-900 transition-colors duration-300 rounded-md cursor-pointer text-white";
+        this.button.innerText = "Ir para cadastros.";
+        this.wrapper.appendChild(this.button);
+    }
+    
+    private startListeners() {
+        this.button.addEventListener("click", () => {
+            let terminalSection = document.getElementById("terminal-section")!;
+            let registrationsSection = document.getElementById("registrations-section")!
+            terminalSection.style.opacity = "0";
+            setTimeout(() => {
+                terminalSection.style.display = "none";
+                registrationsSection.style.opacity = "0";
+                registrationsSection.style.display = "flex";
+                registrationsSection.offsetHeight;
+                registrationsSection.style.opacity = "1";
+            }, 300);
+        });
+    }
+    
+}
+
+class Terminal {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, data: {[key: string]: string}) {
+        this.createSelf(data);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(data: {[key: string]: string}) {
+        this.element = document.createElement("div");
+        this.element.className = "w-full h-[95%] flex flex-col gap-y-1 p-3 bg-black text-white rounded-md overflow-y-auto custom-scroll scroll-smooth";
+        this.element.innerText = data.memory;
+        setTimeout(() => {
+            this.element.scrollTop = this.element.scrollHeight;
+        }, 500);
+    }
+    
+}
+
+class TerminalText {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, text: string) {
+        this.createSelf(text);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(text: string) {
+        this.element = document.createElement("p");
+        this.element.className = "cursor-default text-white transition-opacity duration-300";
+        this.element.style.opacity = "0";
+        this.element.innerText = text;
+    }
+    
+}
+
+class Icon {
+    
+    element!: HTMLImageElement
+    
+    constructor(src: string, appendTo: HTMLElement) {
+        this.createSelf(src);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf(src: string) {
+        this.element = document.createElement("img");
+        this.element.src = src;
+        this.element.className = "size-5 opacity-fade-in";
+    }
+    
+}
+
+class Notification {
+    
+    element!: HTMLElement
+    
+    constructor(message: string, color: string) {
+        this.createSelf(message, color);
+        this.pushUpExistingNotifications();
+        document.body.appendChild(this.element);
+        setTimeout(() => {
+            this.element.classList.remove("fade-in-right");
+            this.element.classList.add("fade-out-right");
+            this.element.addEventListener("animationend", () => {
+                this.element.remove()
+            }, { once: true });
+        }, 3000);
+    }
+    
+    private createSelf(message: string, color: string) {
+        this.element = document.createElement("div");
+        this.element.className = "notification fixed z-50 bottom-4 right-5 py-3 px-6 text-white rounded-md cursor-default fade-in-right transition-[bottom] duration-300 ease";
+        if (color == "green") {
+            this.element.classList.add("bg-green-400");
+        } else if (color == "orange") {
+            this.element.classList.add("bg-amber-400");
+        } else if (color == "red") {
+            this.element.classList.add("bg-red-400");
+        }
+        this.element.innerText = message;
+    }
+    
+    private pushUpExistingNotifications() {
+        const notifications = document.querySelectorAll<HTMLElement>(".notification");
+        notifications.forEach(notification => {
+            if (notification != this.element) {
+                const currentBottom = parseInt(
+                    getComputedStyle(notification).bottom.replace("px", "")
+                );
+                notification.style.bottom = (currentBottom + 60) + "px";
+            }
+        });
+    }
+    
+}
+
+class RegistrationsSection {
+    
+    element!: HTMLElement
+    includeNewRegistrationContainer!: IncludeNewRegistrationContainer
+    registrationsContainer!: RegistrationsContainer
+    goToTerminalSection!: GoToTerminalSection
+    
+    constructor(appendTo: HTMLElement, socket: any) {
+        this.createSelf();
+        this.createComponents(socket);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.id = "registrations-section";
+        this.element.className = "w-full h-full gap-x-2 flex items-center justify-center transition-opacity duration-300";
+        this.element.style.display = "none";
+    }
+    
+    private createComponents(socket: any) {
+        this.goToTerminalSection = new GoToTerminalSection(this.element);
+        this.includeNewRegistrationContainer = new IncludeNewRegistrationContainer(this.element, socket);
+        this.registrationsContainer = new RegistrationsContainer(this.element, socket);
+    }
+    
+}
+
+class IncludeNewRegistrationContainer {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, socket: any) {
+        this.createSelf();
+        this.createComponents(socket);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-[30%] h-full gap-y-2 p-1 flex flex-col items-center justify-center border border-gray-300 dark:border-gray-900 transition-colors duration-300";
+    }
+    
+    private createComponents(socket: any) {
+
+    }
+    
+}
+
+class RegistrationsContainer {
+    
+    element!: HTMLElement
+    
+    constructor(appendTo: HTMLElement, socket: any) {
+        this.createSelf();
+        this.createComponents(socket);
+        appendTo.appendChild(this.element);
+    }
+    
+    private createSelf() {
+        this.element = document.createElement("div");
+        this.element.className = "w-[70%] h-full gap-y-2 p-1 flex flex-col items-center justify-center border border-gray-300 dark:border-gray-900 transition-colors duration-300";
+    }
+    
+    private createComponents(socket: any) {
+
+    }
+    
+}
+
+class GoToTerminalSection {
+    
+    wrapper!: HTMLElement
+    button!: HTMLButtonElement
+    icon!: Icon
+    
+    constructor(appendTo: HTMLElement) {
+        this.createSelf();
+        this.startListeners();
+        appendTo.appendChild(this.wrapper);
+    }
+    
+    private createSelf() {
+        this.wrapper = document.createElement("div");
+        this.wrapper.className = "w-auto h-auto flex flex-1 justify-end items-center";
+        this.button = document.createElement("button");
+        this.button.className = "w-auto h-auto py-1 px-2 bg-amber-700 hover:bg-amber-900 transition-colors duration-300 rounded-md cursor-pointer text-white";
+        this.button.innerText = "Ir para terminal.";
+        this.wrapper.appendChild(this.button);
+    }
+    
+    private startListeners() {
+        this.button.addEventListener("click", () => {
+            let terminalSection = document.getElementById("terminal-section")!;
+            let registrationsSection = document.getElementById("registrations-section")!
+            registrationsSection.style.opacity = "0";
+            setTimeout(() => {
+                registrationsSection.style.display = "none";
+                terminalSection.style.opacity = "0";
+                terminalSection.style.display = "flex";
+                terminalSection.offsetHeight;
+                terminalSection.style.opacity = "1";
+            }, 300);
+        });
+    }
+    
+}
