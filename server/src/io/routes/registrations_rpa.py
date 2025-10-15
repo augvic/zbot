@@ -6,14 +6,11 @@ from src.tasks.verify_if_have_access import VerifyIfHaveAccess
 class RegistrationsRpa:
     
     def __init__(self, app: Flask, socketio: SocketIO) -> None:
-        self.is_running = False
-        self.stop = False
-        self.memory: list[str] = []
         self.socketio = socketio
+        self.verify_if_have_acess_task = VerifyIfHaveAccess()
         
         @app.route("/registrations-rpa", methods=["GET"])
         def refresh() -> dict[str, str] | tuple[str, int]:
-            task = VerifyIfHaveAccess()
             if not task.execute("zRegRpa"):
                 return "Sem autorização.", 401
             memory_string = ""

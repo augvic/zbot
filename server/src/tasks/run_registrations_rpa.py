@@ -1,44 +1,44 @@
 from threading import Thread
+from flask_socketio import SocketIO
 from time import sleep
-from typing import TYPE_CHECKING
 from src.components.log_system import LogSystem
 from datetime import datetime
 
-if TYPE_CHECKING:
-    from io.routes.registrations_rpa import RegistrationsRpa
-
 class RunRegistrationsRpa:
     
-    def _setup(self, rpa_websocket: "RegistrationsRpa") -> None:
+    def _setup(self, socketio: SocketIO) -> None:
+        self.is_running = False
+        self.stop = False
+        self.memory: list[str] = []
         self.day = datetime.now().date()
-        self.rpa_websocket = rpa_websocket
+        self.socketio = socketio
         self.thread = Thread(target=self.loop)
-        self.log_system = LogSystem("registrations_rpa", self.rpa_websocket.socketio, self.rpa_websocket.memory)
+        self.log_system = LogSystem("registrations_rpa")
     
-    def execute(self, rpa_websocket: "RegistrationsRpa") -> None:
-        self._setup(rpa_websocket)
+    def execute(self, socketio: SocketIO) -> None:
+        self._setup(socketio)
         self.thread.start()
-        self.rpa_websocket.socketio.emit("regrpa_notification", {"success": True, "message": "RPA iniciado."})
-        self.rpa_websocket.socketio.emit("regrpa_status", {"status": "Em processamento."})
-        self.rpa_websocket.is_running = True
+        self.socketio.emit("regrpa_notification", {"success": True, "message": "RPA iniciado."})
+        self.socketio.emit("regrpa_status", {"status": "Em processamento."})
+        self.is_running = True
     
     def loop(self) -> None:
         try:
             while True:
                 if self.day != datetime.now().date():
-                    self.rpa_websocket.memory.clear()
+                    self.memory.clear()
                     self.day = datetime.now().date()
-                if self.rpa_websocket.stop == True:
-                    self.rpa_websocket.socketio.emit("regrpa_notification", {"success": True, "message": "RPA desligado."})
-                    self.rpa_websocket.socketio.emit("regrpa_status", {"status": "Desligado."})
-                    self.rpa_websocket.stop = False
-                    self.rpa_websocket.is_running = False
+                if self.stop == True:
+                    self.socketio.emit("regrpa_notification", {"success": True, "message": "RPA desligado."})
+                    self.socketio.emit("regrpa_status", {"status": "Desligado."})
+                    self.stop = False
+                    self.is_running = False
                     break
-                self.log_system.write("Em execução", True, "regrpa_terminal")
+                self.log_system.write("Em execução")
                 sleep(2)
         except Exception as error:
-            self.log_system.write(f"Erro durante execução: {error}", False, None)
-            self.rpa_websocket.socketio.emit("regrpa_status", {"status": "Desligado."})
-            self.rpa_websocket.socketio.emit("regrpa_notification", {"success": False, "message": "Erro durante execução do RPA."})
-            self.rpa_websocket.stop = False
-            self.rpa_websocket.is_running = False
+            self.log_system.write(f"Erro durante execução: {error}")
+            self.socketio.emit("regrpa_status", {"status": "Desligado."})
+            self.socketio.emit("regrpa_notification", {"success": False, "message": "Erro durante execução do RPA."})
+            self.stop = False
+            self.is_running = False
