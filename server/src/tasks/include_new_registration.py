@@ -3,10 +3,8 @@ from src.components.database_prd.clients.registrations_client import Registratio
 from src.components.database_prd.clients.nceas_client import NceasClient
 from src.components.database_prd.clients.state_registrations_client import StateRegistrationsClient
 from src.components.database_prd.clients.suframa_registrations_client import SuframaRegistrationsClient
-from src.components.session_manager import SessionManager
 from datetime import datetime
 from os import path, makedirs
-from shutil import copy2
 
 class IncludeNewRegistration:
     
@@ -16,7 +14,6 @@ class IncludeNewRegistration:
         self.state_registrations_client = StateRegistrationsClient()
         self.suframa_registrations_client = SuframaRegistrationsClient()
         self.nceas_client = NceasClient()
-        self.session_manager = SessionManager()
     
     def execute(self,
         cnpj: str,
@@ -26,9 +23,9 @@ class IncludeNewRegistration:
         cpf_person: str,
         tax_regime: str,
         article_association_doc: str,
-        bank_doc_doc: str,
-        suggested_limit: str,
-        client_type: str
+        client_type: str,
+        suggested_limit: str = "",
+        bank_doc: str | None = None,
     ) -> dict[str, str | bool]:
         self._setup()
         try:
@@ -81,30 +78,9 @@ class IncludeNewRegistration:
                     suframa_registration=suframa_registration["suframa_registration"],
                     status=suframa_registration["status"]
                 )
-            dir_to_create = path.abspath(path.join(path.dirname(path.abspath(__file__)), f"../storage/clients_docs/{cnpj}"))
+            dir_to_create = path.abspath(path.join(path.dirname(path.abspath(__file__)), f"../../storage/clients_docs/{cnpj}"))
             makedirs(dir_to_create, exist_ok=True)
-            if article_association_doc:
-                article_association_destination = path.join(dir_to_create, path.basename(article_association_doc))
-                copy2(article_association_doc, article_association_destination)
-            if bank_doc_doc:
-                bank_doc_destination = path.join(dir_to_create, path.basename(bank_doc_doc))
-                copy2(bank_doc_doc, bank_doc_destination)
             return {"success": True, "message": "Cadastro incluído."}
         except Exception as error:
             print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
             return {"sucess": False, "message": "Erro ao incluir cadastro."}
-
-if __name__ == "__main__":
-    task = IncludeNewRegistration()
-    task.execute(
-        cnpj="31933143000180",
-        seller="ANDRE MARQUES DE SOUSA",
-        email="DIEGONEWLIFE@GMAIL.COM",
-        cpf="123456789",
-        cpf_person="DIEGO FERREIRA DE ARAUJO",
-        tax_regime="SIMPLES",
-        article_association_doc="",
-        bank_doc_doc="",
-        suggested_limit="15000.00",
-        client_type="Revenda"
-    )
