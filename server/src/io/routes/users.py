@@ -9,37 +9,34 @@ from typing import cast
 class Users:
     
     def __init__(self, app: Flask) -> None:
-        
+        self.verify_if_have_access_task = VerifyIfHaveAccess()
+        self.get_users_task = GetUsers()
+        self.create_user_task = CreateUser()
+        self.delete_user_task = DeleteUser()
+        self.update_user_task = UpdateUser()
+
         @app.route("/users/<user>", methods=["GET"])
         def get_user(user: str) -> tuple[str, int] | dict[str, str | bool | dict[str, str] | list[dict[str, str]]]:
-            task1 = VerifyIfHaveAccess()
-            task2 = GetUsers()
-            if not task1.execute("zAdmin"):
+            if not self.verify_if_have_access_task.execute("zAdmin"):
                 return "Sem autorização.", 401
-            return task2.execute(user)
+            return self.get_users_task.execute(user)
         
         @app.route("/users", methods=["POST"])
         def create_user() -> tuple[str, int] | dict[str, str | bool]:
-            task1 = VerifyIfHaveAccess()
-            task2 = CreateUser()
-            if not task1.execute("zAdmin"):
+            if not self.verify_if_have_access_task.execute("zAdmin"):
                 return "Sem autorização.", 401
             data = cast(dict[str, str], request.json)
-            return task2.execute(data)
+            return self.create_user_task.execute(data)
         
         @app.route("/users/<user>", methods=["DELETE"])
         def delete_user(user: str) -> tuple[str, int] | dict[str, str | bool]:
-            task1 = VerifyIfHaveAccess()
-            task2 = DeleteUser()
-            if not task1.execute("zAdmin"):
+            if not self.verify_if_have_access_task.execute("zAdmin"):
                 return "Sem autorização.", 401
-            return task2.execute(user)
+            return self.delete_user_task.execute(user)
         
         @app.route("/users/<user>", methods=["PUT"])
         def update_user(user: str) -> tuple[str, int] | dict[str, str | bool]:
-            task1 = VerifyIfHaveAccess()
-            task2 = UpdateUser()
-            if not task1.execute("zAdmin"):
+            if not self.verify_if_have_access_task.execute("zAdmin"):
                 return "Sem autorização.", 401
             data = cast(dict[str, str], request.json)
-            return task2.execute(user, data)
+            return self.update_user_task.execute(user, data)

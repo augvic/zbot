@@ -7,20 +7,20 @@ from typing import cast
 class Login:
     
     def __init__(self, app: Flask) -> None:
+        self.validate_login_task = ValidateLogin()
+        self.verify_if_user_is_in_session_task = VerifyIfUserIsInSession()
+        self.logout_task = Logout()
         
         @app.route("/login", methods=["POST"])
         def validate_login() -> dict[str, str | bool]:
             data = cast(dict[str, str], request.json)
-            task = ValidateLogin()
-            return task.execute(data)
+            return self.validate_login_task.execute(data)
         
         @app.route("/login", methods=["GET"])
         def verify_if_user_is_in_session() -> dict[str, bool]:
-            task = VerifyIfUserIsInSession()
-            isInSession = task.execute()
+            isInSession = self.verify_if_user_is_in_session_task.execute()
             return {"logged_in": isInSession}
         
         @app.route("/login", methods=["DELETE"])
         def logout() -> dict[str, bool | str]:
-            task = Logout()
-            return task.execute()
+            return self.logout_task.execute()

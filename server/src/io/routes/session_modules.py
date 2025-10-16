@@ -5,11 +5,11 @@ from src.tasks.get_session_modules import GetSessionModules
 class SessionModules:
     
     def __init__(self, app: Flask) -> None:
+        self.verify_if_user_is_in_session_task = VerifyIfUserIsInSession()
+        self.get_session_modules_task = GetSessionModules()
         
         @app.route("/session-modules", methods=["GET"])
         def get_session_modules() -> tuple[str, int] | list[str]:
-            task1 = VerifyIfUserIsInSession()
-            task2 = GetSessionModules()
-            if not task1.execute():
+            if not self.verify_if_user_is_in_session_task.execute():
                 return "Faça login.", 401
-            return task2.execute()
+            return self.get_session_modules_task.execute()

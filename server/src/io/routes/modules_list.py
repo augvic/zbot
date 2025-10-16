@@ -8,28 +8,26 @@ from typing import cast
 class ModulesList:
     
     def __init__(self, app: Flask) -> None:
+        self.verify_if_have_access_task = VerifyIfHaveAccess()
+        self.get_modules_list_task = GetModulesList()
+        self.create_module_task = CreateModule()
+        self.delete_module_task = DeleteModule()
         
         @app.route("/modules-list", methods=["GET"])
         def get_modules_list() -> dict[str, str | bool | list[dict[str, str]]] | tuple[str, int]:
-            task1 = VerifyIfHaveAccess()
-            task2 = GetModulesList()
-            if not task1.execute("zAdmin"):
+            if not self.verify_if_have_access_task.execute("zAdmin"):
                 return "Sem autorização.", 401
-            return task2.execute()
+            return self.get_modules_list_task.execute()
         
         @app.route("/modules-list", methods=["POST"])
         def create_module() -> tuple[str, int] | dict[str, str | bool]:
-            task1 = VerifyIfHaveAccess()
-            task2 = CreateModule()
-            if not task1.execute("zAdmin"):
+            if not self.verify_if_have_access_task.execute("zAdmin"):
                 return "Sem autorização.", 401
             data = cast(dict[str, str], request.json)
-            return task2.execute(data)
+            return self.create_module_task.execute(data)
         
         @app.route("/modules-list/<module>", methods=["DELETE"])
         def delete_module(module: str) -> tuple[str, int] | dict[str, str | bool]:
-            task1 = VerifyIfHaveAccess()
-            task2 = DeleteModule()
-            if not task1.execute("zAdmin"):
+            if not self.verify_if_have_access_task.execute("zAdmin"):
                 return "Sem autorização.", 401
-            return task2.execute(module)
+            return self.delete_module_task.execute(module)

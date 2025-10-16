@@ -15,8 +15,20 @@ class RunRegistrationsRpa:
         self.thread = Thread(target=self.loop)
         self.log_system = LogSystem("registrations_rpa")
     
+    def _message(self, text: str) -> None:
+        self.log_system.write(text)
+        self.memory.append(text)
+        self.socketio.emit("regrpa_terminal", text)
+    
+    def memory_to_str(self) -> str:
+        memory_string = ""
+        for message in self.memory:
+            memory_string += message + "\n"
+        return memory_string
+    
     def execute(self, socketio: SocketIO) -> None:
         self._setup(socketio)
+        self.socketio.emit("regrpa_status", {"status": "Iniciando..."})
         self.thread.start()
         self.socketio.emit("regrpa_notification", {"success": True, "message": "RPA iniciado."})
         self.socketio.emit("regrpa_status", {"status": "Em processamento."})
@@ -34,7 +46,7 @@ class RunRegistrationsRpa:
                     self.stop = False
                     self.is_running = False
                     break
-                self.log_system.write("Em execução")
+                self._message("Em execução")
                 sleep(2)
         except Exception as error:
             self.log_system.write(f"Erro durante execução: {error}")
