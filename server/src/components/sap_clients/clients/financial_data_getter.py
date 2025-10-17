@@ -113,9 +113,9 @@ class FinancialDataGetter(SapGui):
         self.set_text("wnd[1]/usr/tabsG_SELONETABSTRIP/tabpTAB006/ssubSUBSCR_PRESEL:SAPLSDH4:0220/sub:SAPLSDH4:0220/txtG_SELFLD_TAB-LOW[0,24]", f"{cnpj_root}*")
         self.press_enter("1")
         accounts: list[str] = []
-        for row in range(3, 50):
+        for row in range(3, 200):
             try:
-                account = self.get_text(f"wnd[1]/usr/lbl[119,{row}]")
+                account = self.get_text(f"wnd[1]/usr/lbl[1,{row}]")
             except:
                 continue
             if account != "":
@@ -126,14 +126,18 @@ class FinancialDataGetter(SapGui):
         return accounts
     
     def _fill_out_fbl5n_initial(self, account: str, company: str) -> None:
-        self.set_text("wnd[0]/usr/ctxtDD_KUNNR-LOW", account)
+        self.open_search_window("0")
+        self.select_tab("wnd[1]/usr/tabsG_SELONETABSTRIP/tabpTAB006")
+        self.set_text("wnd[1]/usr/tabsG_SELONETABSTRIP/tabpTAB006/ssubSUBSCR_PRESEL:SAPLSDH4:0220/sub:SAPLSDH4:0220/txtG_SELFLD_TAB-LOW[0,24]", account)
+        self.press_enter("1")
+        self.press_go("1")
         self.set_text("wnd[0]/usr/ctxtDD_BUKRS-LOW", company)
     
     def _get_search_way(self) -> str:
-        for row in range(10, 100):
+        for row in range(4, 150):
             try:
-                cell = self.get_text(f"wnd[0]/usr/lbl[0,{row}]")
-                if cell == " Cliente":
+                cell = self.get_text(f"wnd[0]/usr/lbl[6,{row}]")
+                if "Conta" in cell:
                     return "ESTÁTICO"
             except:
                 continue
@@ -201,7 +205,7 @@ class FinancialDataGetter(SapGui):
         for account in accounts:
             for company in companies:
                 scroll_position = 0
-                row = 10
+                row = 4
                 self._fill_out_fbl5n_initial(account=account, company=company)
                 self.press_button("wnd[0]/tbar[1]/btn[8]")
                 msg_bar = self.get_msg_bar_log("0")
