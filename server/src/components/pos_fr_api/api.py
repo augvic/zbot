@@ -17,7 +17,7 @@ class PositivoFederalRevenueApi:
         disable_warnings(InsecureRequestWarning)
         url = f"https://comercial.cnpj.ws/cnpj/{cnpj}"
         headers = {
-            "x_api_token": "0xgVRosxIokMTR5boCQZcNDXTgCwRs6mWfZ8pBNaW3qG"
+            "x_api_token": getenv("API_KEY")
         }
         try:
             response = get(url=url, headers=headers, verify=False)
