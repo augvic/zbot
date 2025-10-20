@@ -1,8 +1,10 @@
 from PyInstaller.building.build_main import Analysis
 from PyInstaller.building.api import EXE, PYZ
+import os
 
 analysis = Analysis(
     scripts=['main.py'],
+    pathex=[os.path.abspath('.')],
     optimize=0
 )
 
@@ -13,7 +15,7 @@ exe = EXE(
     analysis.scripts,
     analysis.binaries,
     analysis.datas,
-    name='zBotServer',
+    name='zBotCli',
     upx=True,
-    icon="./icon.ico"
+    icon="icon.ico"
 )

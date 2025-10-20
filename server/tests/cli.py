@@ -1,10 +1,13 @@
-from src.tasks import *
+from src.components.sap_clients.clients.financial_data_getter import FinancialDataGetter
+from src.components.sap_clients.models import FinancialData
+from src.components.pos_fr_api.api import PositivoFederalRevenueApi
+from src.components.pos_fr_api.models import FederalRevenueData
 from pandas import DataFrame, set_option
 from sys import exit
 from datetime import datetime
 from tabulate import tabulate
 
-class ZbotCli:
+class Cli:
     
     def __init__(self):
         list_to_print = [
@@ -22,10 +25,10 @@ class ZbotCli:
     
     def _printdf(self, df: DataFrame) -> None:
         set_option("display.max_rows", None)
-        table = tabulate(df, headers="keys", tablefmt="github", showindex=False)
+        table = tabulate(df.to_dict("records"), headers="keys", tablefmt="github", showindex=False)
         print(f"{table}\n")
     
-    def _print_federal_revenue_data(self, data: object) -> None:
+    def _print_federal_revenue_data(self, data: FederalRevenueData) -> None:
         list_to_print = [
             f"🟦 CNPJ: {data.cnpj}\n",
             f"🟦 Abertura: {data.opening}\n",
@@ -50,14 +53,15 @@ class ZbotCli:
             data_to_print += print_element
         print(f"{data_to_print}\n")
     
-    def _print_financial_data(self, data: object) -> None:
+    def _print_financial_data(self, data: FinancialData) -> None:
         list_to_print = []
         list_to_print.append(f"🟦 Raiz do CNPJ: {data.cnpj_root}.\n")
         if "Sem limite ativo." in [data.limit, data.maturity]:
             list_to_print.append(f"🟦 Vencimento do Limite: Sem limite ativo.\n")
             list_to_print.append(f"🟦 Limite: Sem limite ativo.\n")
         else:
-            list_to_print.append(f"🟦 Vencimento do Limite: {datetime.strftime(data.maturity, "%d/%m/%Y")}.\n")
+            if isinstance(data.maturity, datetime):
+                list_to_print.append(f"🟦 Vencimento do Limite: {datetime.strftime(data.maturity, "%d/%m/%Y")}.\n")
             list_to_print.append(f"🟦 Limite: {f"R$ {data.limit:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")}.\n")
         if data.in_open == "Sem valores em aberto.":
             list_to_print.append(f"🟦 Valor em Aberto: Nenhum.\n")
@@ -97,8 +101,8 @@ class ZbotCli:
                             print("❗ Informe um CNPJ válido.\n")
                         else:
                             break
-                    task = GetFederalRevenueData()
-                    data = task.execute(cnpj=cnpj)
+                    task = PositivoFederalRevenueApi()
+                    data = task.get_data(cnpj=cnpj)
                     self._print_federal_revenue_data(data=data)
                     break
                 elif module == "2":
@@ -114,8 +118,8 @@ class ZbotCli:
                             print("❗ Informe uma raiz de CNPJ válida.\n")
                         else:
                             break
-                    task = GetFinancialData()
-                    data = task.execute(cnpj_root=cnpj_root)
+                    task = FinancialDataGetter()
+                    data = task.get_data(cnpj_root=cnpj_root)
                     self._print_financial_data(data=data)
                     break
                 else:
@@ -124,4 +128,4 @@ class ZbotCli:
                 print(f"❌ Erro: {error}\n")
                 break
 
-ZbotCli()
+Cli()

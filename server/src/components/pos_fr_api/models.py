@@ -21,6 +21,6 @@ class FederalRevenueData:
     email: str
     state_registrations: list[dict[str, str]]
     suframa_registrations: list[dict[str, str]]
-    tax_regime: dict[str, str] | list[dict[str, str]]
+    tax_regime: dict[str, str]
     ncea: list[dict[str, str]]
     comission_receipt: str
