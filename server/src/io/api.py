@@ -8,6 +8,7 @@ from .routes.session_modules import SessionModules
 from .routes.users import Users
 from .routes.session_user import SessionUser
 from .routes.registrations_rpa import RegistrationsRpa
+from .routes.registrations import Registrations
 from os import path, getenv
 from dotenv import load_dotenv
 
@@ -33,3 +34,4 @@ class Api:
         Users(self.app)
         SessionUser(self.app)
         RegistrationsRpa(self.app, self.socketio)
+        Registrations(self.app)

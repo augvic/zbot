@@ -8,7 +8,7 @@ class RegistrationsRpa:
     def __init__(self, app: Flask, socketio: SocketIO) -> None:
         self.socketio = socketio
         self.verify_if_have_acess_task = VerifyIfHaveAccess()
-        self.run_registrations_rpa_task = RunRegistrationsRpa()
+        self.run_registrations_rpa_task = RunRegistrationsRpa(self.socketio)
         
         @app.route("/registrations-rpa", methods=["GET"])
         def refresh() -> dict[str, str] | tuple[str, int]:
@@ -26,7 +26,7 @@ class RegistrationsRpa:
                 return "Sem autorização.", 401
             if self.run_registrations_rpa_task.is_running == True:
                 return {"success": False, "message": "RPA já está em processamento."}
-            self.run_registrations_rpa_task.execute(self.socketio)
+            self.run_registrations_rpa_task.execute()
             return {"success": True, "message": "Sucesso ao ligar RPA."}
         
         @app.route("/registrations-rpa", methods=["DELETE"])

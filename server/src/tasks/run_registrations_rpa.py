@@ -6,7 +6,7 @@ from datetime import datetime
 
 class RunRegistrationsRpa:
     
-    def _setup(self, socketio: SocketIO) -> None:
+    def __init__(self, socketio: SocketIO) -> None:
         self.is_running = False
         self.stop = False
         self.memory: list[str] = []
@@ -18,7 +18,7 @@ class RunRegistrationsRpa:
     def _message(self, text: str) -> None:
         self.log_system.write(text)
         self.memory.append(text)
-        self.socketio.emit("regrpa_terminal", text)
+        self.socketio.emit("regrpa_terminal", {"message": text})
     
     def memory_to_str(self) -> str:
         memory_string = ""
@@ -26,8 +26,7 @@ class RunRegistrationsRpa:
             memory_string += message + "\n"
         return memory_string
     
-    def execute(self, socketio: SocketIO) -> None:
-        self._setup(socketio)
+    def execute(self) -> None:
         self.socketio.emit("regrpa_status", {"status": "Iniciando..."})
         self.thread.start()
         self.socketio.emit("regrpa_notification", {"success": True, "message": "RPA iniciado."})

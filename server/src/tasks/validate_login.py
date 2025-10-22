@@ -17,7 +17,7 @@ class ValidateLogin:
         try:
             user = self.users_client.read(login_data["user"])
             if user == None:
-                return {"success": False, "message": "Usuário não enviado."}
+                return {"success": False, "message": "Usuário não encontrado."}
             if user.password != login_data["password"]:
                 return {"success": False, "message": "Login inválido."}
             modules = self.modules_client.read_all()

@@ -89,9 +89,9 @@ class IncludeNewRegistration:
             dir_to_create = path.abspath(path.join(base_path, "storage", ".clients_docs", cnpj))
             makedirs(dir_to_create, exist_ok=True)
             if article_association_doc:
-                article_association_doc.save(f"{dir_to_create}/article_association.pdf")
+                article_association_doc.save(f"{dir_to_create}/{article_association_doc.filename}")
             if bank_doc:
-                bank_doc.save(f"{dir_to_create}/bank.pdf")
+                bank_doc.save(f"{dir_to_create}/{bank_doc.filename}")
             return {"success": True, "message": "Cadastro incluído."}
         except Exception as error:
             self.log_system.write_error(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}")
