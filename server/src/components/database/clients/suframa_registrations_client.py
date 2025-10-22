@@ -1,40 +1,45 @@
-from ..models import StateRegistration
+from ..models import SuframaRegistration
 from ..models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path
+import sys
 
-class StateRegistrationsClient:
+class SuframaRegistrationsClient:
     
-    def __init__(self):
-        BASE_DIR = path.abspath(path.join(path.dirname(path.abspath(__file__)), "../../../../storage/.databases"))
-        url = f"sqlite:///{BASE_DIR}/production.db"
+    def __init__(self, db: str):
+        if getattr(sys, "frozen", False):
+            base_path = path.dirname(sys.executable) 
+        else:
+            base_path = path.join(path.dirname(__file__), "..", "..", "..", "..")
+        BASE_DIR = path.abspath(path.join(base_path, "storage", ".databases"))
+        url = f"sqlite:///{BASE_DIR}/{db}.db"
         self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
         self.session_construct = sessionmaker(bind=self.engine)
         database.metadata.create_all(self.engine)
     
     def create(self,
         cnpj: str,
-        state_registration: str,
+        suframa_registration: str,
         status: str
     ) -> None:
         session = self.session_construct()
-        to_create = StateRegistration(
+        to_create = SuframaRegistration(
             cnpj=cnpj,
-            state_registration=state_registration,
+            suframa_registration=suframa_registration,
             status=status
         )
         session.add(to_create)
         session.commit()
         session.close()
     
-    def read_all(self, cnpj: str) -> list[StateRegistration]:
+    def read_all(self, cnpj: str) -> list[SuframaRegistration]:
         session = self.session_construct()
-        return session.query(StateRegistration).filter(StateRegistration.cnpj == cnpj).all()
+        return session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
     
     def delete(self, cnpj: str) -> None:
         session = self.session_construct()
-        to_delete = session.query(StateRegistration).filter(StateRegistration.cnpj == cnpj).all()
+        to_delete = session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
         for delete in to_delete:
             session.delete(delete)
         session.commit()

@@ -49,7 +49,7 @@ class RunRegistrationsRpa:
                 self._message("Em execução")
                 sleep(2)
         except Exception as error:
-            self.log_system.write(f"Erro durante execução: {error}")
+            self.log_system.write_error(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}")
             self.socketio.emit("regrpa_status", {"status": "Desligado."})
             self.socketio.emit("regrpa_notification", {"success": False, "message": "Erro durante execução do RPA."})
             self.stop = False

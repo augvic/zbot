@@ -1,11 +1,11 @@
-from src.components.database_prd.clients.users_client import UsersClient
+from src.components.database.clients.users_client import UsersClient
 from src.components.session_manager import SessionManager
 from datetime import datetime
 
 class CreateUser:
     
     def _setup(self) -> None:
-        self.users_client = UsersClient()
+        self.users_client = UsersClient("prd")
         self.session_manager = SessionManager()
     
     def execute(self, user_data: dict[str, str]) -> dict[str, str | bool]:

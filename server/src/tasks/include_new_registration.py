@@ -1,19 +1,23 @@
 from src.components.pos_fr_api.api import PositivoFederalRevenueApi
-from src.components.database_prd.clients.registrations_client import RegistrationsClient
-from src.components.database_prd.clients.nceas_client import NceasClient
-from src.components.database_prd.clients.state_registrations_client import StateRegistrationsClient
-from src.components.database_prd.clients.suframa_registrations_client import SuframaRegistrationsClient
+from src.components.database.clients.registrations_client import RegistrationsClient
+from src.components.database.clients.nceas_client import NceasClient
+from src.components.database.clients.state_registrations_client import StateRegistrationsClient
+from src.components.database.clients.suframa_registrations_client import SuframaRegistrationsClient
+from src.components.log_system import LogSystem
 from datetime import datetime
 from os import path, makedirs
+from werkzeug.datastructures import FileStorage
+import sys
 
 class IncludeNewRegistration:
     
     def _setup(self) -> None:
         self.federal_revenue_api = PositivoFederalRevenueApi()
-        self.registrations_client = RegistrationsClient()
-        self.state_registrations_client = StateRegistrationsClient()
-        self.suframa_registrations_client = SuframaRegistrationsClient()
-        self.nceas_client = NceasClient()
+        self.registrations_client = RegistrationsClient("prd")
+        self.state_registrations_client = StateRegistrationsClient("prd")
+        self.suframa_registrations_client = SuframaRegistrationsClient("prd")
+        self.nceas_client = NceasClient("prd")
+        self.log_system = LogSystem("include_new_registration")
     
     def execute(self,
         cnpj: str,
@@ -22,10 +26,10 @@ class IncludeNewRegistration:
         cpf: str,
         cpf_person: str,
         tax_regime: str,
-        article_association_doc: str,
+        article_association_doc: FileStorage | None,
         client_type: str,
         suggested_limit: str = "",
-        bank_doc: str | None = None,
+        bank_doc: FileStorage | None = None,
     ) -> dict[str, str | bool]:
         self._setup()
         try:
@@ -78,9 +82,17 @@ class IncludeNewRegistration:
                     suframa_registration=suframa_registration["suframa_registration"],
                     status=suframa_registration["status"]
                 )
-            dir_to_create = path.abspath(path.join(path.dirname(path.abspath(__file__)), f"../../storage/clients_docs/{cnpj}"))
+            if getattr(sys, 'frozen', False):
+                base_path = path.dirname(sys.executable)
+            else:
+                base_path = path.join(path.dirname(__file__), "..", "..")
+            dir_to_create = path.abspath(path.join(base_path, "storage", ".clients_docs", cnpj))
             makedirs(dir_to_create, exist_ok=True)
+            if article_association_doc:
+                article_association_doc.save(f"{dir_to_create}/article_association.pdf")
+            if bank_doc:
+                bank_doc.save(f"{dir_to_create}/bank.pdf")
             return {"success": True, "message": "Cadastro incluído."}
         except Exception as error:
-            print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
-            return {"sucess": False, "message": "Erro ao incluir cadastro."}
+            self.log_system.write_error(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}")
+            return {"success": False, "message": "Erro ao incluir cadastro."}

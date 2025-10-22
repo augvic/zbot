@@ -1,15 +1,15 @@
-from src.components.database_prd.clients.users_client import UsersClient
-from src.components.database_prd.clients.permissions_client import PermissionsClient
-from src.components.database_prd.clients.modules_client import ModulesClient
+from src.components.database.clients.users_client import UsersClient
+from src.components.database.clients.permissions_client import PermissionsClient
+from src.components.database.clients.modules_client import ModulesClient
 from src.components.session_manager import SessionManager
 from datetime import datetime
 
 class ValidateLogin:
     
     def _setup(self) -> None:
-        self.users_client = UsersClient()
-        self.permissions_client = PermissionsClient()
-        self.modules_client = ModulesClient()
+        self.users_client = UsersClient("prd")
+        self.permissions_client = PermissionsClient("prd")
+        self.modules_client = ModulesClient("prd")
         self.session_manager = SessionManager()
     
     def execute(self, login_data: dict[str, str]) -> dict[str, str | bool]:

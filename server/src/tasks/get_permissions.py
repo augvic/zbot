@@ -1,4 +1,4 @@
-from src.components.database_prd.clients.permissions_client import PermissionsClient
+from src.components.database.clients.permissions_client import PermissionsClient
 from src.components.sqla_serializer import SqlaSerializer
 from src.components.session_manager import SessionManager
 from datetime import datetime
@@ -6,7 +6,7 @@ from datetime import datetime
 class GetPermissions:
     
     def _setup(self) -> None:
-        self.permissions_client = PermissionsClient()
+        self.permissions_client = PermissionsClient("prd")
         self.session_manager = SessionManager()
         self.serializer = SqlaSerializer()
     

@@ -1,4 +1,4 @@
-from src.components.database_prd.clients.users_client import UsersClient
+from src.components.database.clients.users_client import UsersClient
 from src.components.sqla_serializer import SqlaSerializer
 from src.components.session_manager import SessionManager
 from datetime import datetime
@@ -6,7 +6,7 @@ from datetime import datetime
 class GetUsers:
     
     def _setup(self) -> None:
-        self.users_client = UsersClient()
+        self.users_client = UsersClient("prd")
         self.session_manager = SessionManager()
         self.serializer = SqlaSerializer()
     

@@ -1,13 +1,13 @@
-from src.components.database_prd.clients.modules_client import ModulesClient
-from src.components.database_prd.clients.permissions_client import PermissionsClient
+from src.components.database.clients.modules_client import ModulesClient
+from src.components.database.clients.permissions_client import PermissionsClient
 from src.components.session_manager import SessionManager
 from datetime import datetime
 
 class DeleteModule:
     
     def _setup(self) -> None:
-        self.modules_client = ModulesClient()
-        self.permisssions_client = PermissionsClient()
+        self.modules_client = ModulesClient("prd")
+        self.permisssions_client = PermissionsClient("prd")
         self.session_manager = SessionManager()
     
     def execute(self, module: str) -> dict[str, str | bool]:

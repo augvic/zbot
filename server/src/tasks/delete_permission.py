@@ -1,5 +1,5 @@
-from src.components.database_prd.clients.users_client import UsersClient
-from src.components.database_prd.clients.permissions_client import PermissionsClient
+from src.components.database.clients.users_client import UsersClient
+from src.components.database.clients.permissions_client import PermissionsClient
 from src.components.session_manager import SessionManager
 from datetime import datetime
 

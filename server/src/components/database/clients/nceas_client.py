@@ -1,40 +1,45 @@
-from ..models import SuframaRegistration
+from ..models import Ncea
 from ..models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path
+import sys
 
-class SuframaRegistrationsClient:
+class NceasClient:
     
-    def __init__(self):
-        BASE_DIR = path.abspath(path.join(path.dirname(path.abspath(__file__)), "../../../../storage/.databases"))
-        url = f"sqlite:///{BASE_DIR}/production.db"
+    def __init__(self, db: str):
+        if getattr(sys, "frozen", False):
+            base_path = path.dirname(sys.executable) 
+        else:
+            base_path = path.join(path.dirname(__file__), "..", "..", "..", "..")
+        BASE_DIR = path.abspath(path.join(base_path, "storage", ".databases"))
+        url = f"sqlite:///{BASE_DIR}/{db}.db"
         self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
         self.session_construct = sessionmaker(bind=self.engine)
         database.metadata.create_all(self.engine)
     
     def create(self,
         cnpj: str,
-        suframa_registration: str,
-        status: str
+        ncea: str,
+        description: str
     ) -> None:
         session = self.session_construct()
-        to_create = SuframaRegistration(
+        to_create = Ncea(
             cnpj=cnpj,
-            suframa_registration=suframa_registration,
-            status=status
+            ncea=ncea,
+            description=description
         )
         session.add(to_create)
         session.commit()
         session.close()
     
-    def read_all(self, cnpj: str) -> list[SuframaRegistration]:
+    def read_all(self, cnpj: str) -> list[Ncea]:
         session = self.session_construct()
-        return session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
+        return session.query(Ncea).filter(Ncea.cnpj == cnpj).all()
     
     def delete(self, cnpj: str) -> None:
         session = self.session_construct()
-        to_delete = session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
+        to_delete = session.query(Ncea).filter(Ncea.cnpj == cnpj).all()
         for delete in to_delete:
             session.delete(delete)
         session.commit()

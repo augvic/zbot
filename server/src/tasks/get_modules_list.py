@@ -1,4 +1,4 @@
-from src.components.database_prd.clients.modules_client import ModulesClient
+from src.components.database.clients.modules_client import ModulesClient
 from src.components.sqla_serializer import SqlaSerializer
 from src.components.session_manager import SessionManager
 from datetime import datetime
@@ -6,7 +6,7 @@ from datetime import datetime
 class GetModulesList:
     
     def _setup(self) -> None:
-        self.modules_client = ModulesClient()
+        self.modules_client = ModulesClient("prd")
         self.session_manager = SessionManager()
         self.serializer = SqlaSerializer()
     

@@ -3,12 +3,17 @@ from ..models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path
+import sys
 
 class PermissionsClient:
     
-    def __init__(self):
-        BASE_DIR = path.abspath(path.join(path.dirname(path.abspath(__file__)), "../../../../storage/.databases"))
-        url = f"sqlite:///{BASE_DIR}/production.db"
+    def __init__(self, db: str):
+        if getattr(sys, "frozen", False):
+            base_path = path.dirname(sys.executable) 
+        else:
+            base_path = path.join(path.dirname(__file__), "..", "..", "..", "..")
+        BASE_DIR = path.abspath(path.join(base_path, "storage", ".databases"))
+        url = f"sqlite:///{BASE_DIR}/{db}.db"
         self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
         self.session_construct = sessionmaker(bind=self.engine)
         database.metadata.create_all(self.engine)
