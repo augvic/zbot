@@ -11,7 +11,7 @@ import sys
 
 class IncludeNewRegistration:
     
-    def _setup(self) -> None:
+    def __init__(self) -> None:
         self.federal_revenue_api = PositivoFederalRevenueApi()
         self.registrations_client = RegistrationsClient("prd")
         self.state_registrations_client = StateRegistrationsClient("prd")
@@ -31,7 +31,6 @@ class IncludeNewRegistration:
         suggested_limit: str = "",
         bank_doc: FileStorage | None = None,
     ) -> dict[str, str | bool]:
-        self._setup()
         try:
             federal_revenue_data = self.federal_revenue_api.get_data(cnpj)
             self.registrations_client.create(

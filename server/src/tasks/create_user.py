@@ -4,12 +4,11 @@ from datetime import datetime
 
 class CreateUser:
     
-    def _setup(self) -> None:
+    def __init__(self) -> None:
         self.users_client = UsersClient("prd")
         self.session_manager = SessionManager()
     
     def execute(self, user_data: dict[str, str]) -> dict[str, str | bool]:
-        self._setup()
         try:
             if user_data["user"] == "":
                 return {"success": False, "message": "Preencha o usuário."}

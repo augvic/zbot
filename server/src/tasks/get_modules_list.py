@@ -5,13 +5,12 @@ from datetime import datetime
 
 class GetModulesList:
     
-    def _setup(self) -> None:
+    def __init__(self) -> None:
         self.modules_client = ModulesClient("prd")
         self.session_manager = SessionManager()
         self.serializer = SqlaSerializer()
     
     def execute(self) -> dict[str, str | bool | list[dict[str, str]]]:
-        self._setup()
         try:
             modules = self.modules_client.read_all()
             modules_serialized = self.serializer.serialize_list(modules)

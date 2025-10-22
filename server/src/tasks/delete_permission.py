@@ -5,13 +5,12 @@ from datetime import datetime
 
 class DeletePermission:
     
-    def _setup(self) -> None:
-        self.users_client = UsersClient()
-        self.permissions_client = PermissionsClient()
+    def __init__(self) -> None:
+        self.users_client = UsersClient("prd")
+        self.permissions_client = PermissionsClient("prd")
         self.session_manager = SessionManager()
     
     def execute(self, user: str, permission: str) -> dict[str, str | bool]:
-        self._setup()
         try:
             permission_exists = self.users_client.read(user)
             if permission_exists == None:

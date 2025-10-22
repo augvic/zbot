@@ -6,12 +6,11 @@ from datetime import datetime
 
 class GetFinancialData:
     
-    def _setup(self) -> None:
+    def __init__(self) -> None:
         self.financial_data_driver = FinancialDataGetter()
         self.serializer = DataclassSerializer()
     
     def execute(self, cnpj_root: str) -> dict[str, Any]:
-        self._setup()
         try:
             data = self.serializer.serialize(self.financial_data_driver.get_data(cnpj_root=cnpj_root))
             data["success"] = True

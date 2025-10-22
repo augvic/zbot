@@ -6,14 +6,13 @@ from datetime import datetime
 
 class ValidateLogin:
     
-    def _setup(self) -> None:
+    def __init__(self) -> None:
         self.users_client = UsersClient("prd")
         self.permissions_client = PermissionsClient("prd")
         self.modules_client = ModulesClient("prd")
         self.session_manager = SessionManager()
     
     def execute(self, login_data: dict[str, str]) -> dict[str, str | bool]:
-        self._setup()
         try:
             user = self.users_client.read(login_data["user"])
             if user == None:

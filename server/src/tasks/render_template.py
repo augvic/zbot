@@ -3,11 +3,10 @@ from datetime import datetime
 
 class RenderTemplate:
     
-    def _setup(self) -> None:
+    def __init__(self) -> None:
         self.template_renderer = TemplateManager()
     
     def execute(self, template: str) -> str:
-        self._setup()
         try:
             return self.template_renderer.render(template)
         except Exception as error:

@@ -6,12 +6,11 @@ from datetime import datetime
 
 class GetFederalRevenueData:
     
-    def _setup(self) -> None:
+    def __init__(self) -> None:
         self.federal_revenue_data_driver = PositivoFederalRevenueApi()
         self.serializer = DataclassSerializer()
     
     def execute(self, cnpj: str) -> dict[str, Any]:
-        self._setup()
         try:
             data = self.serializer.serialize(self.federal_revenue_data_driver.get_data(cnpj=cnpj))
             data["success"] = True

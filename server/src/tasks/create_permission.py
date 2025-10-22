@@ -5,13 +5,12 @@ from datetime import datetime
 
 class CreatePermission:
     
-    def _setup(self) -> None:
+    def __init__(self) -> None:
         self.users_client = UsersClient("prd")
         self.permissions_client = PermissionsClient("prd")
         self.session_manager = SessionManager()
     
     def execute(self, user: str, permission: str) -> dict[str, str | bool]:
-        self._setup()
         try:
             user_exists = self.users_client.read(user)
             if not user_exists:

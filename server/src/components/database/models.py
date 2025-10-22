@@ -12,6 +12,19 @@ class User(database):
     email = mapped_column(String, nullable=True)
     password = mapped_column(String, nullable=True)
 
+class UserDummy:
+    
+    def __init__(self,
+        user: str,
+        name: str,
+        email: str,
+        password: str
+    ) -> None:
+        self.user = user
+        self.name = name
+        self.email = email
+        self.password = password
+
 class Module(database):
     
     __tablename__ = "modules"
@@ -26,6 +39,15 @@ class Permission(database):
     id = mapped_column(Integer, primary_key=True)
     user = mapped_column(String, nullable=True)
     module = mapped_column(String, nullable=True)
+
+class PermissionDummy:
+    
+    def __init__(self,
+        user: str,
+        module: str    
+    ) -> None:
+        self.user = user
+        self.module = module
 
 class Registration(database):
     

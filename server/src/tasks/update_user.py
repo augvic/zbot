@@ -4,12 +4,11 @@ from datetime import datetime
 
 class UpdateUser:
     
-    def _setup(self) -> None:
+    def __init__(self) -> None:
         self.users_client = UsersClient("prd")
         self.session_manager = SessionManager()
     
     def execute(self, user: str, user_data: dict[str, str]) -> dict[str, str | bool]:
-        self._setup()
         try:
             user_exists = self.users_client.read(user)
             if user_exists == None:

@@ -5,13 +5,12 @@ from datetime import datetime
 
 class GetUsers:
     
-    def _setup(self) -> None:
+    def __init__(self) -> None:
         self.users_client = UsersClient("prd")
         self.session_manager = SessionManager()
         self.serializer = SqlaSerializer()
     
     def execute(self, user: str) -> dict[str, str | bool | dict[str, str] | list[dict[str, str]]]:
-        self._setup()
         try:
             if user == "all":
                 users = self.users_client.read_all()    

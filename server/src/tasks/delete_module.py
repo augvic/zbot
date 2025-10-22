@@ -5,13 +5,12 @@ from datetime import datetime
 
 class DeleteModule:
     
-    def _setup(self) -> None:
+    def __init__(self) -> None:
         self.modules_client = ModulesClient("prd")
         self.permisssions_client = PermissionsClient("prd")
         self.session_manager = SessionManager()
     
     def execute(self, module: str) -> dict[str, str | bool]:
-        self._setup()
         try:
             module_exists = self.modules_client.read(module)
             if module_exists == None:

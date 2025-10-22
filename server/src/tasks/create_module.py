@@ -4,12 +4,11 @@ from datetime import datetime
 
 class CreateModule:
     
-    def _setup(self) -> None:
+    def __init__(self) -> None:
         self.modules_client = ModulesClient("prd")
         self.session_manager = SessionManager()
     
     def execute(self, data: dict[str, str]) -> dict[str, str | bool]:
-        self._setup()
         try:
             if data["module"] == "":
                 return {"success": False, "message": "Preencha o módulo."}
