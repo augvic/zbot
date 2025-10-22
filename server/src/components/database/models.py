@@ -108,3 +108,60 @@ class SuframaRegistration(database):
     cnpj = mapped_column(String, nullable=True)
     suframa_registration = mapped_column(String, nullable=True)
     status = mapped_column(String, nullable=True)
+
+class PartnerQueue(database):
+    
+    __tablename__ = "partners_queue"
+    
+    id = mapped_column(Integer, primary_key=True)
+    order_ref = mapped_column(String, nullable=True)
+    key = mapped_column(String, nullable=True)
+    code = mapped_column(String, nullable=True)
+
+class ComissionQueue(database):
+    
+    __tablename__ = "comissions_queue"
+    
+    id = mapped_column(Integer, primary_key=True)
+    order_ref = mapped_column(String, nullable=True)
+    key = mapped_column(String, nullable=True)
+    code = mapped_column(String, nullable=True)
+    percentage = mapped_column(String, nullable=True)
+
+class ItemQueue(database):
+    
+    __tablename__ = "items_queue"
+    
+    id = mapped_column(Integer, primary_key=True)
+    order_ref = mapped_column(String, nullable=True)
+    sku = mapped_column(String, nullable=True)
+    quantity = mapped_column(String, nullable=True)
+    center = mapped_column(String, nullable=True)
+    deposit = mapped_column(String, nullable=True)
+    guarantee = mapped_column(String, nullable=True)
+    over = mapped_column(String, nullable=True)
+    unit_value = mapped_column(String, nullable=True)
+    total_value = mapped_column(String, nullable=True)
+    is_parent_item = mapped_column(String, nullable=True)
+
+class OrderQueue(database):
+    
+    __tablename__ = "orders_queue"
+    
+    order = mapped_column(String, nullable=True, primary_key=True)
+    doc_type = mapped_column(String, nullable=True)
+    organization = mapped_column(String, nullable=True)
+    channel = mapped_column(String, nullable=True)
+    office = mapped_column(String, nullable=True)
+    team = mapped_column(String, nullable=True)
+    order_name = mapped_column(String, nullable=True)
+    issuer = mapped_column(String, nullable=True)
+    receiver = mapped_column(String, nullable=True)
+    payment_condition = mapped_column(String, nullable=True)
+    incoterm = mapped_column(String, nullable=True)
+    reason = mapped_column(String, nullable=True)
+    table = mapped_column(String, nullable=True)
+    expedition = mapped_column(String, nullable=True)
+    payment_way = mapped_column(String, nullable=True)
+    additional_data = mapped_column(String, nullable=True)
+    status = mapped_column(String, nullable=True)
