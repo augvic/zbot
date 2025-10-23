@@ -16,7 +16,7 @@ class RunRegistrationsRpa:
         self.log_system = LogSystem("registrations_rpa")
     
     def _message(self, text: str) -> None:
-        self.log_system.write(text)
+        self.log_system.write_text(text)
         self.memory.append(text)
         self.socketio.emit("regrpa_terminal", {"message": text})
     

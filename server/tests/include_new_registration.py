@@ -1,20 +1,28 @@
-import requests
+from requests import Session
+import json
 
-url = "http://127.0.0.1:5000/registrations"
-
+url = "http://127.0.0.1:5000/"
+login_headers = {
+    "Content-Type": "application/json"
+}
+login_body = {
+    "user": "72776",
+    "password": "AHVH#72776"
+}
 files = {
     "article_association_doc": open(r"C:\Users\72776\Downloads\doc.pdf", "rb"),
+    "bank_doc": "-"
 }
-
-data = {
-    "cnpj": "23414622000161",
+new_registration_data = {
+    "cnpj": "36761251000136",
     "seller": "RAQUEL",
     "email": "jaimesp79@hotmail.com",
     "cpf": "957.992.146-68",
     "cpf_person": "Jaime",
     "tax_regime": "Simples",
-    "suggested_limit": "",
+    "suggested_limit": "-",
     "client_type": "Revenda"
 }
-
-response = requests.post(url, data=data, files=files)
+session = Session()
+session.post(f"{url}/login", headers=login_headers, data=json.dumps(login_body))
+response = session.post(f"{url}/registrations", data=new_registration_data, files=files)

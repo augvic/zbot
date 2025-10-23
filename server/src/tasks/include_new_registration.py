@@ -4,10 +4,11 @@ from src.components.database.clients.nceas_client import NceasClient
 from src.components.database.clients.state_registrations_client import StateRegistrationsClient
 from src.components.database.clients.suframa_registrations_client import SuframaRegistrationsClient
 from src.components.log_system import LogSystem
-from datetime import datetime
-from os import path, makedirs
-from werkzeug.datastructures import FileStorage
-import sys
+from src.components.date_utility import DateUtility
+from src.components.registrations_docs_handler import RegistrationsDocsHandler
+from src.components.session_manager import SessionManager
+
+from src.io.models import NewRegistration
 
 class IncludeNewRegistration:
     
@@ -18,23 +19,15 @@ class IncludeNewRegistration:
         self.suframa_registrations_client = SuframaRegistrationsClient("prd")
         self.nceas_client = NceasClient("prd")
         self.log_system = LogSystem("include_new_registration")
+        self.date_utility = DateUtility()
+        self.docs_handler = RegistrationsDocsHandler()
+        self.session_manager = SessionManager()
     
-    def execute(self,
-        cnpj: str,
-        seller: str,
-        email: str,
-        cpf: str,
-        cpf_person: str,
-        tax_regime: str,
-        article_association_doc: FileStorage | None,
-        client_type: str,
-        suggested_limit: str = "",
-        bank_doc: FileStorage | None = None,
-    ) -> dict[str, str | bool]:
+    def execute(self, new_registration: NewRegistration) -> dict[str, str | bool]:
         try:
-            federal_revenue_data = self.federal_revenue_api.get_data(cnpj)
+            federal_revenue_data = self.federal_revenue_api.get_data(new_registration.cnpj)
             self.registrations_client.create(
-                cnpj=cnpj,
+                cnpj=new_registration.cnpj,
                 opening=federal_revenue_data.opening,
                 company_name=federal_revenue_data.company_name,
                 trade_name=federal_revenue_data.trade_name,
@@ -49,49 +42,44 @@ class IncludeNewRegistration:
                 city=federal_revenue_data.city,
                 state=federal_revenue_data.state,
                 fone=federal_revenue_data.fone,
-                email=email,
-                tax_regime=tax_regime,
+                email=new_registration.email,
+                tax_regime=new_registration.tax_regime,
                 comission_receipt=federal_revenue_data.comission_receipt,
                 status="Cadastrar",
-                registration_date_hour="",
-                charge_date_hour="",
-                federal_revenue_consult_date=datetime.now().strftime("%d/%m/%Y"),
-                doc_resent="",
-                client_type=client_type,
-                suggested_limit=suggested_limit,
-                seller=seller,
-                cpf=cpf,
-                cpf_person=cpf_person
+                registration_date_hour=None,
+                charge_date_hour=None,
+                federal_revenue_consult_date=self.date_utility.get_today(),
+                doc_resent=None,
+                client_type=new_registration.client_type,
+                suggested_limit=new_registration.suggested_limit,
+                seller=new_registration.seller,
+                cpf=new_registration.cpf,
+                cpf_person=new_registration.cpf_person
             )
             for ncea in federal_revenue_data.ncea:
                 self.nceas_client.create(
-                    cnpj=cnpj,
+                    cnpj=new_registration.cnpj,
                     ncea=ncea["code"],
                     description=ncea["description"]
                 )
             for state_registration in federal_revenue_data.state_registrations:
                 self.state_registrations_client.create(
-                    cnpj=cnpj,
+                    cnpj=new_registration.cnpj,
                     state_registration=state_registration["state_registration"],
                     status=state_registration["status"]
                 )
             for suframa_registration in federal_revenue_data.suframa_registrations:
                 self.suframa_registrations_client.create(
-                    cnpj=cnpj,
+                    cnpj=new_registration.cnpj,
                     suframa_registration=suframa_registration["suframa_registration"],
                     status=suframa_registration["status"]
                 )
-            if getattr(sys, 'frozen', False):
-                base_path = path.dirname(sys.executable)
-            else:
-                base_path = path.join(path.dirname(__file__), "..", "..")
-            dir_to_create = path.abspath(path.join(base_path, "storage", ".clients_docs", cnpj))
-            makedirs(dir_to_create, exist_ok=True)
-            if article_association_doc:
-                article_association_doc.save(f"{dir_to_create}/{article_association_doc.filename}")
-            if bank_doc:
-                bank_doc.save(f"{dir_to_create}/{bank_doc.filename}")
+            doc_list = [new_registration.article_association_doc]
+            if new_registration.bank_doc:
+                doc_list.append(new_registration.bank_doc)
+            self.docs_handler.save_docs(cnpj=new_registration.cnpj, docs=doc_list)
+            self.log_system.write_text(f"✅ Novo cadastro incluído com sucesso: {new_registration.cnpj}.\nUsuário: {self.session_manager.get_from_session("user")}.")
             return {"success": True, "message": "Cadastro incluído."}
         except Exception as error:
-            self.log_system.write_error(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}")
-            return {"success": False, "message": "Erro ao incluir cadastro."}
+            self.log_system.write_error(f"Usuário: {self.session_manager.get_from_session("user")}.\n{error}")
+            return {"success": False, "message": f"Erro ao incluir cadastro: {error}."}

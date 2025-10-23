@@ -2,7 +2,7 @@ from ..models import SuframaRegistration
 from ..models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from os import path
+from os import path, makedirs
 import sys
 
 class SuframaRegistrationsClient:
@@ -13,6 +13,7 @@ class SuframaRegistrationsClient:
         else:
             base_path = path.join(path.dirname(__file__), "..", "..", "..", "..")
         BASE_DIR = path.abspath(path.join(base_path, "storage", ".databases"))
+        makedirs(BASE_DIR, exist_ok=True)
         url = f"sqlite:///{BASE_DIR}/{db}.db"
         self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
         self.session_construct = sessionmaker(bind=self.engine)

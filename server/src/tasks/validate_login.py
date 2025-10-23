@@ -2,7 +2,9 @@ from src.components.database.clients.users_client import UsersClient
 from src.components.database.clients.permissions_client import PermissionsClient
 from src.components.database.clients.modules_client import ModulesClient
 from src.components.session_manager import SessionManager
-from datetime import datetime
+from src.components.log_system import LogSystem
+
+from src.io.models import LoginData
 
 class ValidateLogin:
     
@@ -11,13 +13,14 @@ class ValidateLogin:
         self.permissions_client = PermissionsClient("prd")
         self.modules_client = ModulesClient("prd")
         self.session_manager = SessionManager()
+        self.log_system = LogSystem("login")
     
-    def execute(self, login_data: dict[str, str]) -> dict[str, str | bool]:
+    def execute(self, login: LoginData) -> dict[str, str | bool]:
         try:
-            user = self.users_client.read(login_data["user"])
+            user = self.users_client.read(login.user)
             if user == None:
                 return {"success": False, "message": "Usuário não encontrado."}
-            if user.password != login_data["password"]:
+            if user.password != login.password:
                 return {"success": False, "message": "Login inválido."}
             modules = self.modules_client.read_all()
             modules_descriptions = {}
@@ -27,9 +30,10 @@ class ValidateLogin:
             permissions_list: list[dict[str, str]] = []
             for user_permission in user_permissions:
                 permissions_list.append({"module": user_permission.module, "description": modules_descriptions[user_permission.module]})
-            self.session_manager.save_in_session("user", login_data["user"])
+            self.session_manager.save_in_session("user", login.user)
             self.session_manager.save_in_session("session_modules", permissions_list)
+            self.log_system.write_text(f"Usuário logado: {login.user}.\nMódulos disponíveis: {permissions_list}.")
             return {"success": True, "message": "Logado com sucesso."}
         except Exception as error:
-            print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n{error}\n")
+            self.log_system.write_error(f"Usuário identificado como: {login.user}\n{error}")
             return {"success": False, "message": "Erro ao processar login."}
