@@ -1,4 +1,5 @@
 import { zIndex } from "./zindex";
+export { zIndex } from "./zindex";
 
 export class zLogin {
     
@@ -21,7 +22,7 @@ export class zLogin {
     private createComponents() {
         this.loginContainer = new LoginContainer(this.element);
     }
-
+    
     private startListeners() {
         this.element.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {

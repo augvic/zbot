@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import pool
 from alembic import context
 from os import path
-from models import *
+from src.components.database_clients.models import *
 
 BASE_DIR = path.abspath(path.join(path.dirname(path.abspath(__file__)), "../../../../storage/.databases"))
 URL = f"sqlite:///{BASE_DIR}/production.db"

@@ -1,4 +1,4 @@
-from src.components.database.clients.users_client import UsersClient
+from src.components.database_clients.clients.users_client import UsersClient
 from src.components.session_manager import SessionManager
 from datetime import datetime
 

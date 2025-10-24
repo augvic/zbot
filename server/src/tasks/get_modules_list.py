@@ -1,4 +1,4 @@
-from src.components.database.clients.modules_client import ModulesClient
+from src.components.database_clients.clients.modules_client import ModulesClient
 from src.components.sqla_serializer import SqlaSerializer
 from src.components.session_manager import SessionManager
 from datetime import datetime

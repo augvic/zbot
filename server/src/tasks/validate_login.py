@@ -1,6 +1,6 @@
-from src.components.database.clients.users_client import UsersClient
-from src.components.database.clients.permissions_client import PermissionsClient
-from src.components.database.clients.modules_client import ModulesClient
+from src.components.database_clients.clients.users_client import UsersClient
+from src.components.database_clients.clients.permissions_client import PermissionsClient
+from src.components.database_clients.clients.modules_client import ModulesClient
 from src.components.session_manager import SessionManager
 from src.components.log_system import LogSystem
 

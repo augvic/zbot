@@ -1,4 +1,4 @@
-from src.components.database.clients.permissions_client import PermissionsClient
+from src.components.database_clients.clients.permissions_client import PermissionsClient
 from src.components.sqla_serializer import SqlaSerializer
 from src.components.session_manager import SessionManager
 from datetime import datetime
