@@ -1,4 +1,4 @@
-from src.components.request_processor.component import RequestProcessor
+from src.components.request_processor import RequestProcessor
 from src.components.log_system import LogSystem
 from src.components.session_manager import SessionManager
 from src.components.request_manager import RequestManager
@@ -24,10 +24,11 @@ class ProcessRequest:
         try:
             request_processed = self.request_processor.process(content_type, expected_data, expected_files, optional)
             if request_processed.success:
-                self.log_system.write_text(f"Por usuário: {user}.\n✅ Requisição bem sucedida:\n- Content-Type: {content_type}\n- Expected Data: {expected_data}\n- Expected Files: {expected_files}")
+                self.log_system.write_text(f"👤 Por usuário: {user}.\n✅ Requisição bem sucedida:\n{request_processed.message}")
+                return Response(success=True, message=f"✅ Requisição bem sucedida:\n{request_processed.message}", data=request_processed.data, files=request_processed.files)
             else:
-                self.log_system.write_error(f"Por usuário: {user}.\n❌ Requisição inválida: {request_processed.message}")
-            return Response(success=True, message="Sucesso ao processar requisição.", data=request_processed.data, files=request_processed.files)
+                self.log_system.write_text(f"👤 Por usuário: {user}.\n❌ Requisição inválida: {request_processed.message}")
+                return Response(success=False, message=f"❌ Requisição inválida: {request_processed.message}")
         except Exception as error:
-            self.log_system.write_error(f"Por usuário: {user}.\n❌ Erro: {error}")
-            return Response(success=False, message="Erro ao processar requisição.")
+            self.log_system.write_error(f"👤 Por usuário: {user}.\n❌ Erro:\n{error}")
+            raise Exception("❌ Erro interno ao processar requisição. Contate o administrador.")

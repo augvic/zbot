@@ -18,24 +18,27 @@ class Login:
         
         @app.route("/login", methods=["POST"])
         def validate_login() -> tuple[dict[str, str | bool], int] | dict[str, str | bool]:
-            response = self.process_request_task.execute(
-                content_type="application/json",
-                expected_data=[
-                    "user",
-                    "password"
-                ],
-                expected_files=[],
-                optional=[]
-            )
-            if not response.success:
-                return {"success": False, "message": f"Erro: {response.message}"}, 415
-            response =  self.validate_login_task.execute(
-                LoginData(
-                    user=cast(str, response.data.get("user")),
-                    password=cast(str, response.data.get("password"))
+            try:
+                response = self.process_request_task.execute(
+                    content_type="application/json",
+                    expected_data=[
+                        "user",
+                        "password"
+                    ],
+                    expected_files=[],
+                    optional=[]
                 )
-            )
-            return {"success": True, "message": "Logado com sucesso."}
+                if not response.success:
+                    return {"success": False, "message": f"Erro: {response.message}"}, 415
+                response =  self.validate_login_task.execute(
+                    LoginData(
+                        user=cast(str, response.data.get("user")),
+                        password=cast(str, response.data.get("password"))
+                    )
+                )
+                return {"success": True, "message": "Logado com sucesso."}
+            except Exception as error:
+                return {"success": False, "message": f"{error}"}
         
         @app.route("/login", methods=["GET"])
         def verify_if_user_is_in_session() -> dict[str, bool]:

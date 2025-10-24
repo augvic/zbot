@@ -13,7 +13,7 @@ files = {
     "article_association_doc": open(r"C:\Users\72776\Downloads\doc.pdf", "rb"),
 }
 new_registration_data = {
-    "cnpj": "12219334000130",
+    "cnpj": "39581101000139",
     "seller": "RAQUEL",
     "email": "jaimesp79@hotmail.com",
     "cpf": "957.992.146-68",

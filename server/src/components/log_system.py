@@ -19,5 +19,5 @@ class LogSystem:
         self.log.flush()
     
     def write_error(self, error: str) -> None:
-        self.log_errors.write(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n " + error + "\n\n")
+        self.log_errors.write(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n" + error + "\n\n")
         self.log_errors.flush()

@@ -8,6 +8,8 @@ from src.components.date_utility import DateUtility
 from src.components.registrations_docs_handler import RegistrationsDocsHandler
 from src.components.session_manager import SessionManager
 
+from .models import Response
+
 from src.io.models import NewRegistration
 
 class IncludeNewRegistration:
@@ -23,13 +25,13 @@ class IncludeNewRegistration:
         self.docs_handler = RegistrationsDocsHandler()
         self.session_manager = SessionManager()
     
-    def execute(self, new_registration: NewRegistration) -> dict[str, str | bool]:
+    def execute(self, new_registration: NewRegistration) -> Response:
         try:
             federal_revenue_data = self.federal_revenue_api.get_data(new_registration.cnpj)
             registration_exists = self.registrations_client.read(new_registration.cnpj)
             if registration_exists:
-                self.log_system.write_text(f"Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Tentativa de inclusão de cadastro já existente: {new_registration.cnpj}.")
-                return {"success": False, "message": "Cadastro já existe."}    
+                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Tentativa de inclusão de cadastro já existente: {new_registration.cnpj}.")
+                return Response(success=False, message="❌ Tentativa de inclusão de cadastro já existente: {new_registration.cnpj}.")    
             self.registrations_client.create(
                 cnpj=new_registration.cnpj,
                 opening=federal_revenue_data.opening,
@@ -82,8 +84,8 @@ class IncludeNewRegistration:
             if new_registration.bank_doc:
                 doc_list.append(new_registration.bank_doc)
             self.docs_handler.save_docs(cnpj=new_registration.cnpj, docs=doc_list)
-            self.log_system.write_text(f"Por usuário: {self.session_manager.get_from_session("user")}.\n✅ Novo cadastro incluído com sucesso: {new_registration.cnpj}.")
-            return {"success": True, "message": "Cadastro incluído."}
+            self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n✅ Novo cadastro incluído com sucesso: {new_registration.cnpj}.")
+            return Response(success=True, message=f"✅ Novo cadastro incluído com sucesso: {new_registration.cnpj}.")
         except Exception as error:
-            self.log_system.write_error(f"Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Erro: {error}")
-            return {"success": False, "message": f"Erro ao incluir cadastro: {error}."}
+            self.log_system.write_error(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Erro:\n{error}")
+            raise Exception("❌ Erro interno ao incluir novo cadastro. Contate o administrador.")
