@@ -44,7 +44,7 @@ class RegistrationsClient:
         federal_revenue_consult_date: str,
         doc_resent: str | None,
         client_type: str,
-        suggested_limit: str,
+        suggested_limit: str | None,
         seller: str,
         cpf: str,
         cpf_person: str,

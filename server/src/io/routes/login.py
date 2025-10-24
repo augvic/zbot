@@ -2,9 +2,11 @@ from src.tasks.validate_login import ValidateLogin
 from src.tasks.verify_if_user_is_in_session import VerifyIfUserIsInSession
 from src.tasks.logout import Logout
 from src.tasks.process_request import ProcessRequest
+
 from ..models import LoginData
 
 from flask import Flask
+from typing import cast
 
 class Login:
     
@@ -16,24 +18,24 @@ class Login:
         
         @app.route("/login", methods=["POST"])
         def validate_login() -> tuple[dict[str, str | bool], int] | dict[str, str | bool]:
-            request_processed = self.process_request_task.execute(
+            response = self.process_request_task.execute(
                 content_type="application/json",
                 expected_data=[
                     "user",
                     "password"
                 ],
                 expected_files=[],
-                not_expected_data=[],
-                not_expected_files=[]
+                optional=[]
             )
-            if not request_processed.success:
-                return {"success": False, "message": f"Erro: {request_processed.message}"}, 415
-            return self.validate_login_task.execute(
+            if not response.success:
+                return {"success": False, "message": f"Erro: {response.message}"}, 415
+            response =  self.validate_login_task.execute(
                 LoginData(
-                    user=request_processed.data["user"],
-                    password=request_processed.data["password"]
+                    user=cast(str, response.data.get("user")),
+                    password=cast(str, response.data.get("password"))
                 )
             )
+            return {"success": True, "message": "Logado com sucesso."}
         
         @app.route("/login", methods=["GET"])
         def verify_if_user_is_in_session() -> dict[str, bool]:

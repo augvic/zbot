@@ -11,16 +11,14 @@ login_body = {
 }
 files = {
     "article_association_doc": open(r"C:\Users\72776\Downloads\doc.pdf", "rb"),
-    "bank_doc": "-"
 }
 new_registration_data = {
-    "cnpj": "36761251000136",
+    "cnpj": "12219334000130",
     "seller": "RAQUEL",
     "email": "jaimesp79@hotmail.com",
     "cpf": "957.992.146-68",
     "cpf_person": "Jaime",
     "tax_regime": "Simples",
-    "suggested_limit": "-",
     "client_type": "Revenda"
 }
 session = Session()

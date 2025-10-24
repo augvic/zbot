@@ -12,7 +12,7 @@ class NewRegistration:
     tax_regime: str
     article_association_doc: FileStorage
     client_type: str
-    suggested_limit: str
+    suggested_limit: str | None
     bank_doc: FileStorage | None
 
 @dataclass

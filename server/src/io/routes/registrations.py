@@ -19,7 +19,7 @@ class Registrations:
         def include_registration() -> tuple[dict[str, bool | str], int] | dict[str, str | bool]:
             if not self.verify_if_have_access_task.execute("zRegRpa"):
                 return {"success": False, "message": "Sem autorização."}, 401
-            request_processed = self.process_request_task.execute(
+            response = self.process_request_task.execute(
                 content_type="multipart/form-data",
                 expected_data=[
                     "cnpj",
@@ -33,26 +33,24 @@ class Registrations:
                 expected_files=[
                     "article_association_doc",
                 ],
-                not_expected_data=[
-                    "suggested_limit"
-                ],
-                not_expected_files=[
+                optional=[
+                    "suggested_limit",
                     "bank_doc"
                 ]
             )
-            if not request_processed.success:
-                return {"success": False, "message": f"Erro: {request_processed.message}"}, 415
+            if not response.success:
+                return {"success": False, "message": f"{response.message}"}, 415
             return self.include_new_registration_task.execute(
                 NewRegistration(
-                    cnpj=cast(str, request_processed.data["cnpj"]),
-                    seller=cast(str, request_processed.data["seller"]),
-                    email=cast(str, request_processed.data["email"]),
-                    cpf=cast(str, request_processed.data["cpf"]),
-                    cpf_person=cast(str, request_processed.data["cpf_person"]),
-                    tax_regime=cast(str, request_processed.data["tax_regime"]),
-                    article_association_doc=cast(FileStorage, request_processed.files["article_association_doc"]),
-                    bank_doc=cast(FileStorage, request_processed.files["bank_doc"]),
-                    suggested_limit=cast(str, request_processed.data["suggested_limit"]),
-                    client_type=cast(str, request_processed.data["client_type"])
+                    cnpj=cast(str, response.data.get("cnpj")),
+                    seller=cast(str, response.data.get("seller")),
+                    email=cast(str, response.data.get("email")),
+                    cpf=cast(str, response.data.get("cpf")),
+                    cpf_person=cast(str, response.data.get("cpf_person")),
+                    tax_regime=cast(str, response.data.get("tax_regime")),
+                    article_association_doc=cast(FileStorage, response.files.get("article_association_doc")),
+                    bank_doc=response.files.get("bank_doc"),
+                    suggested_limit=response.data.get("suggested_limit"),
+                    client_type=cast(str, response.data.get("client_type"))
                 )
             )
