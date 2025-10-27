@@ -1,9 +1,10 @@
 from sqlalchemy import Integer, String
-from sqlalchemy.orm import declarative_base, mapped_column
+from sqlalchemy.orm import mapped_column, DeclarativeBase
 
-database = declarative_base()
+class Base(DeclarativeBase):
+    pass
 
-class User(database):
+class User(Base):
     
     __tablename__ = "users"
     
@@ -12,27 +13,14 @@ class User(database):
     email = mapped_column(String, nullable=True)
     password = mapped_column(String, nullable=True)
 
-class UserDummy:
-    
-    def __init__(self,
-        user: str,
-        name: str,
-        email: str,
-        password: str
-    ) -> None:
-        self.user = user
-        self.name = name
-        self.email = email
-        self.password = password
-
-class Module(database):
+class Module(Base):
     
     __tablename__ = "modules"
     
     module = mapped_column(String, nullable=True, primary_key=True)
     description = mapped_column(String, nullable=True)
 
-class Permission(database):
+class Permission(Base):
     
     __tablename__ = "permissions"
     
@@ -40,16 +28,7 @@ class Permission(database):
     user = mapped_column(String, nullable=True)
     module = mapped_column(String, nullable=True)
 
-class PermissionDummy:
-    
-    def __init__(self,
-        user: str,
-        module: str    
-    ) -> None:
-        self.user = user
-        self.module = module
-
-class Registration(database):
+class Registration(Base):
     
     __tablename__ = "registrations"
     
@@ -82,7 +61,7 @@ class Registration(database):
     cpf = mapped_column(String, nullable=True)
     cpf_person = mapped_column(String, nullable=True)
 
-class Ncea(database):
+class Ncea(Base):
     
     __tablename__ = "nceas"
     
@@ -91,7 +70,7 @@ class Ncea(database):
     ncea = mapped_column(String, nullable=True)
     description = mapped_column(String, nullable=True)
 
-class StateRegistration(database):
+class StateRegistration(Base):
     
     __tablename__ = "state_registrations"
     
@@ -100,7 +79,7 @@ class StateRegistration(database):
     state_registration = mapped_column(String, nullable=True)
     status = mapped_column(String, nullable=True)
 
-class SuframaRegistration(database):
+class SuframaRegistration(Base):
     
     __tablename__ = "suframa_registrations"
     
@@ -109,7 +88,7 @@ class SuframaRegistration(database):
     suframa_registration = mapped_column(String, nullable=True)
     status = mapped_column(String, nullable=True)
 
-class PartnerQueue(database):
+class PartnerQueue(Base):
     
     __tablename__ = "partners_queue"
     
@@ -118,7 +97,7 @@ class PartnerQueue(database):
     key = mapped_column(String, nullable=True)
     code = mapped_column(String, nullable=True)
 
-class ComissionQueue(database):
+class ComissionQueue(Base):
     
     __tablename__ = "comissions_queue"
     
@@ -128,7 +107,7 @@ class ComissionQueue(database):
     code = mapped_column(String, nullable=True)
     percentage = mapped_column(String, nullable=True)
 
-class ItemQueue(database):
+class ItemQueue(Base):
     
     __tablename__ = "items_queue"
     
@@ -144,7 +123,7 @@ class ItemQueue(database):
     total_value = mapped_column(String, nullable=True)
     is_parent_item = mapped_column(String, nullable=True)
 
-class OrderQueue(database):
+class OrderQueue(Base):
     
     __tablename__ = "orders_queue"
     

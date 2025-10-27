@@ -1,8 +1,8 @@
-from .sap_gui import SapGui
-from ..models import *
 from datetime import datetime, timedelta, date
 from re import sub
 from pandas import DataFrame, concat
+from .sap_gui import SapGui
+from ..models import *
 from ..types import *
 
 class FinancialDataGetter(SapGui):

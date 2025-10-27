@@ -1,11 +1,11 @@
-from ..models import SuframaRegistration
-from ..models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path, makedirs
 import sys
+from ..models.database_models import ComissionQueue
+from ..models.database_models import Base
 
-class SuframaRegistrationsClient:
+class ComissionsQueueClient:
     
     def __init__(self, db: str):
         if getattr(sys, "frozen", False):
@@ -17,31 +17,33 @@ class SuframaRegistrationsClient:
         url = f"sqlite:///{BASE_DIR}/{db}.db"
         self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
         self.session_construct = sessionmaker(bind=self.engine)
-        database.metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine)
     
     def create(self,
-        cnpj: str,
-        suframa_registration: str,
-        status: str
+        order_ref: str,
+        key: str,
+        code: str,
+        percentage: str
     ) -> None:
         session = self.session_construct()
-        to_create = SuframaRegistration(
-            cnpj=cnpj,
-            suframa_registration=suframa_registration,
-            status=status
+        to_create = ComissionQueue(
+            order_ref=order_ref,
+            key=key,
+            code=code,
+            percentage=percentage
         )
         session.add(to_create)
         session.commit()
+        session.refresh(to_create)
         session.close()
     
-    def read_all(self, cnpj: str) -> list[SuframaRegistration]:
+    def read(self, order: str) -> list[ComissionQueue]:
         session = self.session_construct()
-        return session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
+        return session.query(ComissionQueue).filter(ComissionQueue.order_ref == order).all()
     
-    def delete(self, cnpj: str) -> None:
+    def delete(self, order: str) -> None:
         session = self.session_construct()
-        to_delete = session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
-        for delete in to_delete:
-            session.delete(delete)
+        to_delete = session.query(ComissionQueue).filter(ComissionQueue.order_ref == order).all()
+        for delete_element in to_delete:
+            session.delete(delete_element)
         session.commit()
-        session.close()

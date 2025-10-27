@@ -1,6 +1,6 @@
 from src.components.sap_clients.clients.financial_data_getter import FinancialDataGetter
 from src.components.sap_clients.models import FinancialData
-from src.components.pos_fr_api.api import PositivoFederalRevenueApi
+from src.components.pos_fr_api.component import PositivoFederalRevenueApi
 from src.components.pos_fr_api.models import FederalRevenueData
 from pandas import DataFrame, set_option
 from sys import exit

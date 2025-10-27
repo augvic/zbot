@@ -1,5 +1,3 @@
-from .models import *
-from .errors import RequestError, RequestResponseError
 from datetime import datetime
 from requests import get
 from urllib3 import disable_warnings
@@ -8,6 +6,8 @@ from os import getenv
 from re import sub
 from unicodedata import normalize
 from dotenv import load_dotenv
+from .models import *
+from .errors import RequestError, RequestResponseError
 from .types import *
 
 class PositivoFederalRevenueApi:

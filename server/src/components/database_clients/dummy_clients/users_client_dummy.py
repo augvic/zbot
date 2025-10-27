@@ -1,4 +1,4 @@
-from ..models import UserDummy
+from ..models.dummy_models import UserDummy
 
 class UsersClientDummy:
     

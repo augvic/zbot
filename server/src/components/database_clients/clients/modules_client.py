@@ -1,11 +1,11 @@
-from ..models import StateRegistration
-from ..models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path, makedirs
 import sys
+from ..models.database_models import Module
+from ..models.database_models import Base
 
-class StateRegistrationsClient:
+class ModulesClient:
     
     def __init__(self, db: str):
         if getattr(sys, "frozen", False):
@@ -17,31 +17,29 @@ class StateRegistrationsClient:
         url = f"sqlite:///{BASE_DIR}/{db}.db"
         self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
         self.session_construct = sessionmaker(bind=self.engine)
-        database.metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine)
     
-    def create(self,
-        cnpj: str,
-        state_registration: str,
-        status: str
-    ) -> None:
+    def create(self, module: str, description: str) -> None:
         session = self.session_construct()
-        to_create = StateRegistration(
-            cnpj=cnpj,
-            state_registration=state_registration,
-            status=status
+        to_create = Module(
+            module=module,
+            description=description
         )
         session.add(to_create)
         session.commit()
         session.close()
     
-    def read_all(self, cnpj: str) -> list[StateRegistration]:
+    def read(self, module: str) -> Module | None:
         session = self.session_construct()
-        return session.query(StateRegistration).filter(StateRegistration.cnpj == cnpj).all()
+        return session.query(Module).filter(Module.module == module).first()
     
-    def delete(self, cnpj: str) -> None:
+    def read_all(self) -> list[Module]:
         session = self.session_construct()
-        to_delete = session.query(StateRegistration).filter(StateRegistration.cnpj == cnpj).all()
-        for delete in to_delete:
-            session.delete(delete)
+        return session.query(Module).all()
+    
+    def delete(self, module: str) -> None:
+        session = self.session_construct()
+        to_delete = session.query(Module).filter(Module.module == module).first()
+        session.delete(to_delete)
         session.commit()
         session.close()

@@ -1,11 +1,11 @@
-from ..models import PartnerQueue
-from ..models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path, makedirs
 import sys
+from ..models.database_models import StateRegistration
+from ..models.database_models import Base
 
-class PartnersQueueClient:
+class StateRegistrationsClient:
     
     def __init__(self, db: str):
         if getattr(sys, "frozen", False):
@@ -17,31 +17,31 @@ class PartnersQueueClient:
         url = f"sqlite:///{BASE_DIR}/{db}.db"
         self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
         self.session_construct = sessionmaker(bind=self.engine)
-        database.metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine)
     
     def create(self,
-        order_ref: str,
-        key: str,
-        code: str
+        cnpj: str,
+        state_registration: str,
+        status: str
     ) -> None:
         session = self.session_construct()
-        to_create = PartnerQueue(
-            order_ref=order_ref,
-            key=key,
-            code=code,
+        to_create = StateRegistration(
+            cnpj=cnpj,
+            state_registration=state_registration,
+            status=status
         )
         session.add(to_create)
         session.commit()
-        session.refresh(to_create)
         session.close()
     
-    def read(self, order: str) -> list[PartnerQueue]:
+    def read_all(self, cnpj: str) -> list[StateRegistration]:
         session = self.session_construct()
-        return session.query(PartnerQueue).filter(PartnerQueue.order_ref == order).all()
+        return session.query(StateRegistration).filter(StateRegistration.cnpj == cnpj).all()
     
-    def delete(self, order: str) -> None:
+    def delete(self, cnpj: str) -> None:
         session = self.session_construct()
-        to_delete = session.query(PartnerQueue).filter(PartnerQueue.order_ref == order).all()
-        for delete_element in to_delete:
-            session.delete(delete_element)
+        to_delete = session.query(StateRegistration).filter(StateRegistration.cnpj == cnpj).all()
+        for delete in to_delete:
+            session.delete(delete)
         session.commit()
+        session.close()

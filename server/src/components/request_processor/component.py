@@ -1,9 +1,8 @@
 from flask import request
-
 from .models import RequestProcessed
 
 class RequestProcessor:
-
+    
     def process(self, content_type: str, expected_data: list[str], expected_files: list[str], optional: list[str]) -> RequestProcessed:
         data_dict = {}
         files_dict = {}

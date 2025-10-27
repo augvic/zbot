@@ -1,6 +1,5 @@
-from ..errors import *
-
 from win32com.client import GetObject
+from ..errors import *
 
 class SapGui:
     

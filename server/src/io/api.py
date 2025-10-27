@@ -1,5 +1,5 @@
-from flask import Flask
-from flask_socketio import SocketIO
+from src.tasks.get_wsgi_application import GetWsgiApplication
+from src.tasks.get_socketio_application import GetSocketIoApplication
 from .routes.login import Login
 from .routes.main import Main
 from .routes.modules_list import ModulesList
@@ -9,19 +9,14 @@ from .routes.users import Users
 from .routes.session_user import SessionUser
 from .routes.registrations_rpa import RegistrationsRpa
 from .routes.registrations import Registrations
-from os import path, getenv
-from dotenv import load_dotenv
 
 class Api:
     
     def __init__(self):
-        load_dotenv()
-        BASE_DIR = path.dirname(path.abspath(__file__))
-        STATIC = path.abspath(path.join(BASE_DIR, "../../storage/.web/storage"))
-        TEMPLATE = path.abspath(path.join(BASE_DIR, "../../storage/.web"))
-        self.app = Flask(__name__, template_folder=TEMPLATE, static_folder=STATIC)
-        self.socketio = SocketIO(self.app)
-        self.app.secret_key = getenv("FLASK")
+        self.get_wsgi_application_task = GetWsgiApplication()
+        self.get_socketio_application_task = GetSocketIoApplication()
+        self.app = self.get_wsgi_application_task.execute()
+        self.socketio = self.get_socketio_application_task.execute(self.app)
         self.register_routes()
         self.socketio.run(self.app, host="127.0.0.1", debug=True)
     

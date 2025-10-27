@@ -1,4 +1,4 @@
-from ..models import PermissionDummy
+from ..models.dummy_models import PermissionDummy
 
 class PermissionsClientDummy:
     

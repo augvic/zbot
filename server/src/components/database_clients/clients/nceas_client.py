@@ -1,11 +1,11 @@
-from ..models import Permission
-from ..models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path, makedirs
 import sys
+from ..models.database_models import Ncea
+from ..models.database_models import Base
 
-class PermissionsClient:
+class NceasClient:
     
     def __init__(self, db: str):
         if getattr(sys, "frozen", False):
@@ -17,32 +17,30 @@ class PermissionsClient:
         url = f"sqlite:///{BASE_DIR}/{db}.db"
         self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
         self.session_construct = sessionmaker(bind=self.engine)
-        database.metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine)
     
-    def create(self, user: str, module: str) -> None:
+    def create(self,
+        cnpj: str,
+        ncea: str,
+        description: str
+    ) -> None:
         session = self.session_construct()
-        to_create = Permission(
-            user=user,
-            module=module
+        to_create = Ncea(
+            cnpj=cnpj,
+            ncea=ncea,
+            description=description
         )
         session.add(to_create)
         session.commit()
         session.close()
     
-    def read_all_from_user(self, user: str) -> list[Permission]:
+    def read_all(self, cnpj: str) -> list[Ncea]:
         session = self.session_construct()
-        return session.query(Permission).filter(Permission.user == user).all()
+        return session.query(Ncea).filter(Ncea.cnpj == cnpj).all()
     
-    def delete_from_user(self, user: str, module: str) -> None:
+    def delete(self, cnpj: str) -> None:
         session = self.session_construct()
-        to_delete = session.query(Permission).filter(Permission.user == user).filter(Permission.module == module).first()
-        session.delete(to_delete)
-        session.commit()
-        session.close()
-    
-    def delete_all(self, module: str) -> None:
-        session = self.session_construct()
-        to_delete = session.query(Permission).filter(Permission.module == module).all()
+        to_delete = session.query(Ncea).filter(Ncea.cnpj == cnpj).all()
         for delete in to_delete:
             session.delete(delete)
         session.commit()

@@ -1,11 +1,11 @@
-from ..models import ComissionQueue
-from ..models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path, makedirs
 import sys
+from ..models.database_models import PartnerQueue
+from ..models.database_models import Base
 
-class ComissionsQueueClient:
+class PartnersQueueClient:
     
     def __init__(self, db: str):
         if getattr(sys, "frozen", False):
@@ -17,33 +17,31 @@ class ComissionsQueueClient:
         url = f"sqlite:///{BASE_DIR}/{db}.db"
         self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
         self.session_construct = sessionmaker(bind=self.engine)
-        database.metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine)
     
     def create(self,
         order_ref: str,
         key: str,
-        code: str,
-        percentage: str
+        code: str
     ) -> None:
         session = self.session_construct()
-        to_create = ComissionQueue(
+        to_create = PartnerQueue(
             order_ref=order_ref,
             key=key,
             code=code,
-            percentage=percentage
         )
         session.add(to_create)
         session.commit()
         session.refresh(to_create)
         session.close()
     
-    def read(self, order: str) -> list[ComissionQueue]:
+    def read(self, order: str) -> list[PartnerQueue]:
         session = self.session_construct()
-        return session.query(ComissionQueue).filter(ComissionQueue.order_ref == order).all()
+        return session.query(PartnerQueue).filter(PartnerQueue.order_ref == order).all()
     
     def delete(self, order: str) -> None:
         session = self.session_construct()
-        to_delete = session.query(ComissionQueue).filter(ComissionQueue.order_ref == order).all()
+        to_delete = session.query(PartnerQueue).filter(PartnerQueue.order_ref == order).all()
         for delete_element in to_delete:
             session.delete(delete_element)
         session.commit()

@@ -1,4 +1,4 @@
-from src.components.pos_fr_api.api import PositivoFederalRevenueApi
+from src.components.pos_fr_api.component import PositivoFederalRevenueApi
 from src.components.pos_fr_api.models import *
 from src.components.dataclass_serializer import DataclassSerializer
 from typing import Any

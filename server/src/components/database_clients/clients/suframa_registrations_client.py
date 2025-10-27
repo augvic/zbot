@@ -1,11 +1,11 @@
-from ..models import Ncea
-from ..models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path, makedirs
 import sys
+from ..models.database_models import SuframaRegistration
+from ..models.database_models import Base
 
-class NceasClient:
+class SuframaRegistrationsClient:
     
     def __init__(self, db: str):
         if getattr(sys, "frozen", False):
@@ -17,30 +17,30 @@ class NceasClient:
         url = f"sqlite:///{BASE_DIR}/{db}.db"
         self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
         self.session_construct = sessionmaker(bind=self.engine)
-        database.metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine)
     
     def create(self,
         cnpj: str,
-        ncea: str,
-        description: str
+        suframa_registration: str,
+        status: str
     ) -> None:
         session = self.session_construct()
-        to_create = Ncea(
+        to_create = SuframaRegistration(
             cnpj=cnpj,
-            ncea=ncea,
-            description=description
+            suframa_registration=suframa_registration,
+            status=status
         )
         session.add(to_create)
         session.commit()
         session.close()
     
-    def read_all(self, cnpj: str) -> list[Ncea]:
+    def read_all(self, cnpj: str) -> list[SuframaRegistration]:
         session = self.session_construct()
-        return session.query(Ncea).filter(Ncea.cnpj == cnpj).all()
+        return session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
     
     def delete(self, cnpj: str) -> None:
         session = self.session_construct()
-        to_delete = session.query(Ncea).filter(Ncea.cnpj == cnpj).all()
+        to_delete = session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
         for delete in to_delete:
             session.delete(delete)
         session.commit()

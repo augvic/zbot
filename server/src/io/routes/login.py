@@ -2,15 +2,13 @@ from src.tasks.validate_login import ValidateLogin
 from src.tasks.verify_if_user_is_in_session import VerifyIfUserIsInSession
 from src.tasks.logout import Logout
 from src.tasks.process_request import ProcessRequest
-
 from ..models import LoginData
-
-from flask import Flask
+from src.components.wsgi_application import WsgiApplication
 from typing import cast
 
 class Login:
     
-    def __init__(self, app: Flask) -> None:
+    def __init__(self, app: WsgiApplication) -> None:
         self.validate_login_task = ValidateLogin()
         self.verify_if_user_is_in_session_task = VerifyIfUserIsInSession()
         self.logout_task = Logout()

@@ -1,10 +1,10 @@
-from ..models import *
-from ..errors import *
-from .go_deep_browser import GoDeepBrowser
 from time import sleep
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from ..models import *
+from ..errors import *
+from .go_deep_browser import GoDeepBrowser
 
 class OrderInteractor(GoDeepBrowser):
     

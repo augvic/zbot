@@ -1,4 +1,4 @@
-from src.components.pos_fr_api.api import PositivoFederalRevenueApi
+from src.components.pos_fr_api.component import PositivoFederalRevenueApi
 from src.components.database_clients.clients.registrations_client import RegistrationsClient
 from src.components.database_clients.clients.nceas_client import NceasClient
 from src.components.database_clients.clients.state_registrations_client import StateRegistrationsClient

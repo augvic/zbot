@@ -1,9 +1,9 @@
-from flask import Flask
 from src.tasks.render_template import RenderTemplate
+from src.components.wsgi_application import WsgiApplication
 
 class Main:
     
-    def __init__(self, app: Flask) -> None:
+    def __init__(self, app: WsgiApplication) -> None:
         self.render_template_task = RenderTemplate()
         
         @app.route("/", methods=["GET"])

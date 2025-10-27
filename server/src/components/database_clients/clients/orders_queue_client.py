@@ -1,9 +1,9 @@
-from ..models import OrderQueue
-from ..models import database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path, makedirs
 import sys
+from ..models.database_models import OrderQueue
+from ..models.database_models import Base
 
 class OrdersQueueClient:
     
@@ -17,7 +17,7 @@ class OrdersQueueClient:
         url = f"sqlite:///{BASE_DIR}/{db}.db"
         self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
         self.session_construct = sessionmaker(bind=self.engine)
-        database.metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine)
     
     def create(self,
         doc_type: str,
