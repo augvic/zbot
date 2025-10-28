@@ -1,5 +1,5 @@
-from src.tasks.get_wsgi_application import GetWsgiApplication
-from src.tasks.get_socketio_application import GetSocketIoApplication
+from src.tasks.application.get_wsgi_application import GetWsgiApplication
+from src.tasks.application.get_socketio_application import GetSocketIoApplication
 from .routes.login import Login
 from .routes.main import Main
 from .routes.modules_list import ModulesList

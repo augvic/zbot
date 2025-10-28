@@ -5,4 +5,5 @@ class Response:
     
     success: bool
     message: str
-    data: list
+    data: dict
+    files: dict

@@ -5,4 +5,4 @@ class Response:
     
     success: bool
     message: str
-    data: list
+    data: list[dict]

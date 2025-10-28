@@ -1,6 +1,6 @@
 from src.tasks.verify_if_have_access import VerifyIfHaveAccess
 from src.tasks.include_new_registration import IncludeNewRegistration
-from src.tasks.process_request import ProcessRequest
+from src.tasks.application.process_request.process_request import ProcessRequest
 
 from ..models import NewRegistration
 

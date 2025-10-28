@@ -2,7 +2,7 @@ from src.components.session_manager import SessionManager
 from src.components.log_system import LogSystem
 from .models import Response
 
-class GetSessionModules:
+class GetSessionUser:
     
     def __init__(self) -> None:
         self.session_manager = SessionManager()
@@ -10,9 +10,9 @@ class GetSessionModules:
     
     def execute(self) -> Response:
         try:
-            session_modules = self.session_manager.get_from_session("session_modules")
-            self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}. ✅ Módulos de sessão coletados: {session_modules}.")
-            return Response(success=True, message="✅ Módulos de sessão coletados.", data=session_modules)
+            session_user = self.session_manager.get_from_session("user")
+            self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}. ✅ Usuário de sessão coletado: {session_user}.")
+            return Response(success=True, message="✅ Usuário da sessão coletado.", data=session_user)
         except Exception as error:
             self.log_system.write_error(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Erro:\n{error}")
-            raise Exception("❌ Erro interno ao coletar módulos da sessão.")
+            raise Exception("❌ Erro interno ao coletar usuário de sessão. Contate o administrador.")
