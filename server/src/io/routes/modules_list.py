@@ -1,8 +1,8 @@
 from flask import Flask, request
-from src.tasks.get_modules_list import GetModulesList
+from src.tasks.get_data.get_modules_list.task import GetModulesList
 from src.tasks.verify_if_have_access import VerifyIfHaveAccess
-from src.tasks.create_module import CreateModule
-from src.tasks.delete_module import DeleteModule
+from src.tasks.module_related.create_module.task import CreateModule
+from src.tasks.module_related.delete_module.task import DeleteModule
 from typing import cast
 
 class ModulesList:

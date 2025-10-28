@@ -1,33 +1,26 @@
 from dataclasses import dataclass
-from datetime import date
-from pandas import DataFrame
 
 @dataclass
-class FinancialData:
+class Response:
     
-    cnpj_root: str = ""
-    limit: str | float = ""
-    maturity: str | date = ""
-    in_open: str | float = ""
-    margin: str | float = ""
-    overdue_nfs: str = ""
-    fbl5n_table: DataFrame | None = None
+    success: bool
+    message: str
 
 @dataclass
-class Partner:
+class PartnerModel:
     
     key: str
     code: str
 
 @dataclass
-class Comission:
+class ComissionModel:
     
     key: str
     code: str
     percentage: str
 
 @dataclass
-class Item:
+class ItemModel:
     
     sku: str
     quantity: str
@@ -40,7 +33,7 @@ class Item:
     is_parent_item: bool
 
 @dataclass
-class Order:
+class OrderModel:
     
     doc_type: str
     organization: str
@@ -57,6 +50,6 @@ class Order:
     expedition: str
     payment_way: str
     additional_data: str
-    items: list[Item]
-    partners: list[Partner]
-    comissions: list[Comission]
+    items: list[ItemModel]
+    partners: list[PartnerModel]
+    comissions: list[ComissionModel]

@@ -1,7 +1,7 @@
 from flask import Flask, request
 from src.tasks.get_users import GetUsers
-from src.tasks.create_user import CreateUser
-from src.tasks.delete_user import DeleteUser
+from src.tasks.admin.user.create_user.task import CreateUser
+from src.tasks.admin.user.delete_user.task import DeleteUser
 from src.tasks.update_user import UpdateUser
 from src.tasks.verify_if_have_access import VerifyIfHaveAccess
 from typing import cast

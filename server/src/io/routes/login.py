@@ -39,10 +39,23 @@ class Login:
                 return {"success": False, "message": f"{error}"}
         
         @app.route("/login", methods=["GET"])
-        def verify_if_user_is_in_session() -> dict[str, bool]:
-            isInSession = self.verify_if_user_is_in_session_task.execute()
-            return {"logged_in": isInSession}
+        def verify_if_user_is_in_session() -> dict[str, bool | str]:
+            try:
+                response = self.verify_if_user_is_in_session_task.execute()
+                if response.success:
+                    return {"success": True, "message": True}
+                else:
+                    return {"success": False, "message": response.message}
+            except Exception as error:
+                return {"success": False, "message": f"{error}"}
         
         @app.route("/login", methods=["DELETE"])
         def logout() -> dict[str, bool | str]:
-            return self.logout_task.execute()
+            try:
+                response = self.logout_task.execute()
+                if response.success:
+                    return {"success": True, "message": response.message}
+                else:
+                    return {"success": False, "message": response.message}
+            except Exception as error:
+                return {"success": False, "message": f"{error}"}
