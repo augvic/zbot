@@ -1,7 +1,7 @@
 from src.components.database_clients.clients.users_client import UsersClient
 from src.components.database_clients.clients.permissions_client import PermissionsClient
-from src.components.session_manager import SessionManager
-from src.components.log_system import LogSystem
+from src.components.infra.session_manager import SessionManager
+from src.components.file_system.log_system import LogSystem
 from .models import Response
 
 class CreatePermission:

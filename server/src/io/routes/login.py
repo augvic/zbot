@@ -1,9 +1,9 @@
 from src.tasks.validate_login import ValidateLogin
 from src.tasks.verify_if_user_is_in_session import VerifyIfUserIsInSession
-from src.tasks.logout import Logout
+from src.tasks.auth.logout.task import Logout
 from src.tasks.application.process_request.process_request import ProcessRequest
 from ..models import LoginData
-from src.components.wsgi_application import WsgiApplication
+from src.components.infra.wsgi_application import WsgiApplication
 from typing import cast
 
 class Login:

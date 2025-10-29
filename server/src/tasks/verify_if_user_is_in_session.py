@@ -1,4 +1,4 @@
-from src.components.session_manager import SessionManager
+from src.components.infra.session_manager import SessionManager
 
 class VerifyIfUserIsInSession:
     

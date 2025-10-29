@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_socketio import SocketIO
-from src.tasks.run_registrations_rpa import RunRegistrationsRpa
+from src.tasks.rpa.run_registrations_rpa.task import RunRegistrationsRpa
 from src.tasks.verify_if_have_access import VerifyIfHaveAccess
 
 class RegistrationsRpa:

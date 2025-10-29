@@ -1,5 +1,5 @@
-from src.tasks.render_template import RenderTemplate
-from src.components.wsgi_application import WsgiApplication
+from src.tasks.application.render_template.task import RenderTemplate
+from src.components.infra.wsgi_application import WsgiApplication
 
 class Main:
     

@@ -1,4 +1,4 @@
-from src.components.wsgi_application import WsgiApplication
+from src.components.infra.wsgi_application import WsgiApplication
 
 class GetWsgiApplication:
     

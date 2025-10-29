@@ -3,14 +3,11 @@ from src.components.database_clients.clients.registrations_client import Registr
 from src.components.database_clients.clients.nceas_client import NceasClient
 from src.components.database_clients.clients.state_registrations_client import StateRegistrationsClient
 from src.components.database_clients.clients.suframa_registrations_client import SuframaRegistrationsClient
-from src.components.log_system import LogSystem
-from src.components.date_utility import DateUtility
-from src.components.registrations_docs_handler import RegistrationsDocsHandler
-from src.components.session_manager import SessionManager
-
-from .models import Response
-
-from src.io.models import NewRegistration
+from src.components.file_system.log_system import LogSystem
+from src.components.gear.date_utility import DateUtility
+from src.components.file_system.registrations_docs_handler import RegistrationsDocsHandler
+from src.components.infra.session_manager import SessionManager
+from .models import Response, NewRegistration
 
 class IncludeNewRegistration:
     
@@ -54,7 +51,7 @@ class IncludeNewRegistration:
                 status="Cadastrar",
                 registration_date_hour=None,
                 charge_date_hour=None,
-                federal_revenue_consult_date=self.date_utility.get_today(),
+                federal_revenue_consult_date=self.date_utility.get_today_str(),
                 doc_resent=None,
                 client_type=new_registration.client_type,
                 suggested_limit=new_registration.suggested_limit,

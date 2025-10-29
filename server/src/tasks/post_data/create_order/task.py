@@ -1,7 +1,7 @@
 from src.components.sap_clients.clients.order_creator import OrderCreator
 from src.components.sap_clients.models import *
-from src.components.session_manager import SessionManager
-from src.components.log_system import LogSystem
+from src.components.infra.session_manager import SessionManager
+from src.components.file_system.log_system import LogSystem
 from .models import *
 
 class CreateOrder:

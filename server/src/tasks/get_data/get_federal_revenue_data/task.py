@@ -1,8 +1,8 @@
 from src.components.pos_fr_api.component import PositivoFederalRevenueApi
 from src.components.pos_fr_api.models import *
-from src.components.dataclass_serializer import DataclassSerializer
-from src.components.log_system import LogSystem
-from src.components.session_manager import SessionManager
+from src.components.adapter.dataclass_serializer import DataclassSerializer
+from src.components.file_system.log_system import LogSystem
+from src.components.infra.session_manager import SessionManager
 from .models import Response
 
 class GetFederalRevenueData:

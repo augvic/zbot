@@ -1,7 +1,7 @@
 from src.components.request_processor.component import RequestProcessor
-from src.components.log_system import LogSystem
-from src.components.session_manager import SessionManager
-from src.components.request_manager import RequestManager
+from src.components.file_system.log_system import LogSystem
+from src.components.infra.session_manager import SessionManager
+from src.components.infra.request_manager import RequestManager
 from .models import Response
 from typing import cast
 

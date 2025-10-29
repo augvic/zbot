@@ -1,7 +1,7 @@
 from src.components.database_clients.clients.modules_client import ModulesClient
-from src.components.sqla_serializer import SqlaSerializer
-from src.components.session_manager import SessionManager
-from src.components.log_system import LogSystem
+from src.components.adapter.sqla_serializer import SqlaSerializer
+from src.components.infra.session_manager import SessionManager
+from src.components.file_system.log_system import LogSystem
 from .models import Response
 
 class GetModulesList:
