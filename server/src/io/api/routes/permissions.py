@@ -1,4 +1,3 @@
-from flask import Flask
 from src.tasks.auth.get_permissions.task import GetPermissions
 from src.tasks.admin.permission.create_permission.task import CreatePermission
 from src.tasks.admin.permission.delete_permission.task import DeletePermission

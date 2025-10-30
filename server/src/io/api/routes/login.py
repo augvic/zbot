@@ -1,8 +1,7 @@
 from src.tasks.auth.validate_login.task import ValidateLogin
 from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
 from src.tasks.auth.logout.task import Logout
-from src.tasks.application.process_request.process_request import ProcessRequest
-from ..models import LoginData
+from src.tasks.application.process_request.task import ProcessRequest
 from src.components.infra.wsgi_application import WsgiApplication
 from typing import cast
 
@@ -24,17 +23,16 @@ class Login:
                         "password"
                     ],
                     expected_files=[],
-                    optional=[]
+                    optional_data=[],
+                    optional_files=[]
                 )
                 if not response.success:
-                    return {"success": False, "message": f"Erro: {response.message}"}, 415
+                    return {"success": False, "message": response.message}, 415
                 response =  self.validate_login_task.execute(
-                    LoginData(
-                        user=cast(str, response.data.get("user")),
-                        password=cast(str, response.data.get("password"))
-                    )
+                    user=cast(str, response.data.get("user")),
+                    password=cast(str, response.data.get("password"))
                 )
-                return {"success": True, "message": "Logado com sucesso."}
+                return {"success": response.success, "message": response.message}
             except Exception as error:
                 return {"success": False, "message": f"{error}"}
         
@@ -42,10 +40,7 @@ class Login:
         def verify_if_user_is_in_session() -> dict[str, bool | str]:
             try:
                 response = self.verify_if_user_is_in_session_task.execute()
-                if response.success:
-                    return {"success": True, "message": True}
-                else:
-                    return {"success": False, "message": response.message}
+                return {"success": response.success, "message": response.message}
             except Exception as error:
                 return {"success": False, "message": f"{error}"}
         
@@ -53,9 +48,6 @@ class Login:
         def logout() -> dict[str, bool | str]:
             try:
                 response = self.logout_task.execute()
-                if response.success:
-                    return {"success": True, "message": response.message}
-                else:
-                    return {"success": False, "message": response.message}
+                return {"success": response.success, "message": response.message}
             except Exception as error:
                 return {"success": False, "message": f"{error}"}
