@@ -1,4 +1,4 @@
-from src.components.sap_clients.clients.financial_data_getter import FinancialDataGetter
+from src.components.infra.sap_clients.clients.financial_data_getter import FinancialDataGetter
 from datetime import datetime
 from pandas import DataFrame, set_option
 from tabulate import tabulate

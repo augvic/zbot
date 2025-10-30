@@ -29,9 +29,12 @@ class PositivoFederalRevenueApi:
             raise RequestResponseError(response)
     
     def _clean_str(self, string: str) -> str:
-        cleaned_string = normalize("NFKD", string).encode("ASCII", "ignore").decode("ASCII")
-        cleaned_string = cleaned_string.upper()
-        return cleaned_string
+        try:
+            cleaned_string = normalize("NFKD", string).encode("ASCII", "ignore").decode("ASCII")
+            cleaned_string = cleaned_string.upper()
+            return cleaned_string
+        except:
+            return "-"
     
     def _clean_response_data(self, response: ResponseData) -> CleanedResponse:
         try:
