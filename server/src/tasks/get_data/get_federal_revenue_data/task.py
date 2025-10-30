@@ -1,5 +1,5 @@
-from src.components.pos_fr_api.component import PositivoFederalRevenueApi
-from src.components.pos_fr_api.models import *
+from src.components.infra.pos_fr_api.component import PositivoFederalRevenueApi
+from src.components.infra.pos_fr_api.models import *
 from src.components.adapter.dataclass_serializer import DataclassSerializer
 from src.components.file_system.log_system import LogSystem
 from src.components.infra.session_manager import SessionManager
@@ -10,7 +10,7 @@ class GetFederalRevenueData:
     def __init__(self) -> None:
         self.federal_revenue_data_driver = PositivoFederalRevenueApi()
         self.serializer = DataclassSerializer()
-        self.log_system = LogSystem("get_federal_revenue_data")
+        self.log_system = LogSystem("get_data/federal_revenue_data")
         self.session_manager = SessionManager()
     
     def execute(self, cnpj: str) -> Response:

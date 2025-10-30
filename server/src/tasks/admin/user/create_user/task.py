@@ -1,4 +1,4 @@
-from src.components.database_clients.clients.users_client import UsersClient
+from src.components.infra.database_clients.clients.users_client import UsersClient
 from src.components.infra.session_manager import SessionManager
 from src.components.file_system.log_system import LogSystem
 from .models import Response
@@ -8,7 +8,7 @@ class CreateUser:
     def __init__(self) -> None:
         self.users_client = UsersClient("prd")
         self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin")
+        self.log_system = LogSystem("admin/user")
     
     def execute(self, user: str, name: str, email: str, password: str) -> Response:
         try:

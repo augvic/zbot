@@ -1,5 +1,5 @@
-from src.components.database_clients.clients.modules_client import ModulesClient
-from src.components.database_clients.clients.permissions_client import PermissionsClient
+from src.components.infra.database_clients.clients.modules_client import ModulesClient
+from src.components.infra.database_clients.clients.permissions_client import PermissionsClient
 from src.components.infra.session_manager import SessionManager
 from src.components.file_system.log_system import LogSystem
 from .models import Response
@@ -10,7 +10,7 @@ class DeleteModule:
         self.modules_client = ModulesClient("prd")
         self.permisssions_client = PermissionsClient("prd")
         self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin")
+        self.log_system = LogSystem("admin/modules")
     
     def execute(self, module: str) -> Response:
         try:

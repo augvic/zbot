@@ -2,7 +2,7 @@ from flask import Flask
 from src.tasks.auth.get_permissions.task import GetPermissions
 from src.tasks.admin.permission.create_permission.task import CreatePermission
 from src.tasks.admin.permission.delete_permission.task import DeletePermission
-from src.tasks.verify_if_have_access import VerifyIfHaveAccess
+from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
 
 class Permissions:
     

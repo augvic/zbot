@@ -1,6 +1,6 @@
 from flask import Flask, request
 from src.tasks.get_data.get_modules_list.task import GetModulesList
-from src.tasks.verify_if_have_access import VerifyIfHaveAccess
+from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
 from src.tasks.module_related.create_module.task import CreateModule
 from src.tasks.module_related.delete_module.task import DeleteModule
 from typing import cast

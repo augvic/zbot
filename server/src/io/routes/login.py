@@ -1,5 +1,5 @@
-from src.tasks.validate_login import ValidateLogin
-from src.tasks.verify_if_user_is_in_session import VerifyIfUserIsInSession
+from src.tasks.auth.validate_login.task import ValidateLogin
+from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
 from src.tasks.auth.logout.task import Logout
 from src.tasks.application.process_request.process_request import ProcessRequest
 from ..models import LoginData

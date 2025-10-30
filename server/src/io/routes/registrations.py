@@ -1,4 +1,4 @@
-from src.tasks.verify_if_have_access import VerifyIfHaveAccess
+from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
 from src.tasks.post_data.include_new_registration.task import IncludeNewRegistration
 from src.tasks.application.process_request.process_request import ProcessRequest
 

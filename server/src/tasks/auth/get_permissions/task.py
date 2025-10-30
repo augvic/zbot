@@ -1,4 +1,4 @@
-from src.components.database_clients.clients.permissions_client import PermissionsClient
+from src.components.infra.database_clients.clients.permissions_client import PermissionsClient
 from src.components.adapter.sqla_serializer import SqlaSerializer
 from src.components.infra.session_manager import SessionManager
 from src.components.file_system.log_system import LogSystem
@@ -10,7 +10,7 @@ class GetPermissions:
         self.permissions_client = PermissionsClient("prd")
         self.session_manager = SessionManager()
         self.serializer = SqlaSerializer()
-        self.log_system = LogSystem("auth")
+        self.log_system = LogSystem("auth/get_permissions")
     
     def execute(self, user: str) -> Response:
         try:

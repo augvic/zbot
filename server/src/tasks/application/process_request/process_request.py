@@ -1,4 +1,4 @@
-from src.components.request_processor.component import RequestProcessor
+from src.components.logic.request_processor.component import RequestProcessor
 from src.components.file_system.log_system import LogSystem
 from src.components.infra.session_manager import SessionManager
 from src.components.infra.request_manager import RequestManager
@@ -9,7 +9,7 @@ class ProcessRequest:
     
     def __init__(self) -> None:
         self.request_processor = RequestProcessor()
-        self.log_system = LogSystem("process_request")
+        self.log_system = LogSystem("application/process_request")
         self.session_manager = SessionManager()
         self.request_manager = RequestManager()
     

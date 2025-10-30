@@ -1,5 +1,5 @@
-from src.components.sap_clients.clients.order_creator import OrderCreator
-from src.components.sap_clients.models import *
+from src.components.infra.sap_clients.clients.order_creator import OrderCreator
+from src.components.infra.sap_clients.models import *
 from src.components.infra.session_manager import SessionManager
 from src.components.file_system.log_system import LogSystem
 from .models import *
@@ -8,7 +8,7 @@ class CreateOrder:
     
     def __init__(self) -> None:
         self.order_creator = OrderCreator()
-        self.log_system = LogSystem("")
+        self.log_system = LogSystem("post_data/create_order")
         self.session_manager = SessionManager()
     
     def execute(self, order_model: OrderModel) -> Response:

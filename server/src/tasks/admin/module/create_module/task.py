@@ -1,4 +1,4 @@
-from src.components.database_clients.clients.modules_client import ModulesClient
+from src.components.infra.database_clients.clients.modules_client import ModulesClient
 from src.components.infra.session_manager import SessionManager
 from src.components.file_system.log_system import LogSystem
 from .models import Response
@@ -8,7 +8,7 @@ class CreateModule:
     def __init__(self) -> None:
         self.modules_client = ModulesClient("prd")
         self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin")
+        self.log_system = LogSystem("admin/modules")
     
     def execute(self, module: str, description: str) -> Response:
         try:

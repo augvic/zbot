@@ -1,5 +1,5 @@
-from src.components.database_clients.clients.users_client import UsersClient
-from src.components.database_clients.clients.permissions_client import PermissionsClient
+from src.components.infra.database_clients.clients.users_client import UsersClient
+from src.components.infra.database_clients.clients.permissions_client import PermissionsClient
 from src.components.infra.session_manager import SessionManager
 from src.components.file_system.log_system import LogSystem
 from .models import Response
@@ -10,7 +10,7 @@ class DeletePermission:
         self.users_client = UsersClient("prd")
         self.permissions_client = PermissionsClient("prd")
         self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin")
+        self.log_system = LogSystem("admin/permission")
     
     def execute(self, user: str, permission: str) -> Response:
         try:

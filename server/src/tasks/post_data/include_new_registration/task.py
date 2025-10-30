@@ -1,8 +1,8 @@
-from src.components.pos_fr_api.component import PositivoFederalRevenueApi
-from src.components.database_clients.clients.registrations_client import RegistrationsClient
-from src.components.database_clients.clients.nceas_client import NceasClient
-from src.components.database_clients.clients.state_registrations_client import StateRegistrationsClient
-from src.components.database_clients.clients.suframa_registrations_client import SuframaRegistrationsClient
+from src.components.infra.pos_fr_api.component import PositivoFederalRevenueApi
+from src.components.infra.database_clients.clients.registrations_client import RegistrationsClient
+from src.components.infra.database_clients.clients.nceas_client import NceasClient
+from src.components.infra.database_clients.clients.state_registrations_client import StateRegistrationsClient
+from src.components.infra.database_clients.clients.suframa_registrations_client import SuframaRegistrationsClient
 from src.components.file_system.log_system import LogSystem
 from src.components.gear.date_utility import DateUtility
 from src.components.file_system.registrations_docs_handler import RegistrationsDocsHandler
@@ -17,7 +17,7 @@ class IncludeNewRegistration:
         self.state_registrations_client = StateRegistrationsClient("prd")
         self.suframa_registrations_client = SuframaRegistrationsClient("prd")
         self.nceas_client = NceasClient("prd")
-        self.log_system = LogSystem("include_new_registration")
+        self.log_system = LogSystem("post_data/include_new_registration")
         self.date_utility = DateUtility()
         self.docs_handler = RegistrationsDocsHandler()
         self.session_manager = SessionManager()

@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_socketio import SocketIO
 from src.tasks.rpa.run_registrations_rpa.task import RunRegistrationsRpa
-from src.tasks.verify_if_have_access import VerifyIfHaveAccess
+from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
 
 class RegistrationsRpa:
     
@@ -24,17 +24,12 @@ class RegistrationsRpa:
         def turn_on() -> dict[str, str | bool] | tuple[str, int]:
             if not self.verify_if_have_acess_task.execute("zRegRpa"):
                 return "Sem autorização.", 401
-            if self.run_registrations_rpa_task.is_running == True:
-                return {"success": False, "message": "RPA já está em processamento."}
-            self.run_registrations_rpa_task.execute()
-            return {"success": True, "message": "Sucesso ao ligar RPA."}
+            response = self.run_registrations_rpa_task.execute()
+            return {"success": response.success, "message": response.message}
         
         @app.route("/registrations-rpa", methods=["DELETE"])
         def turn_off() -> dict[str, str | bool] | tuple[str, int]:
             if not self.verify_if_have_acess_task.execute("zRegRpa"):
                 return "Sem autorização.", 401
-            if self.run_registrations_rpa_task.is_running == False:
-                return {"success": False,  "message": "RPA já está desligado."}
-            self.socketio.emit("regrpa_status", {"status": "Desligando..."})
-            self.run_registrations_rpa_task.stop = True
-            return {"success": True,  "message": "Sucesso ao desligar RPA."}
+            response = self.run_registrations_rpa_task.stop_rpa()
+            return {"success": response.success, "message": response.message}

@@ -1,5 +1,5 @@
 from flask import Flask
-from src.tasks.verify_if_user_is_in_session import VerifyIfUserIsInSession
+from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
 from src.tasks.auth.get_session_modules.task import GetSessionModules
 
 class SessionModules:

@@ -6,7 +6,7 @@ class GetSessionModules:
     
     def __init__(self) -> None:
         self.session_manager = SessionManager()
-        self.log_system = LogSystem("auth")
+        self.log_system = LogSystem("auth/get_session_modules")
     
     def execute(self) -> Response:
         try:

@@ -1,4 +1,4 @@
-from src.components.database_clients.clients.modules_client import ModulesClient
+from src.components.infra.database_clients.clients.modules_client import ModulesClient
 from src.components.adapter.sqla_serializer import SqlaSerializer
 from src.components.infra.session_manager import SessionManager
 from src.components.file_system.log_system import LogSystem
@@ -10,7 +10,7 @@ class GetModulesList:
         self.modules_client = ModulesClient("prd")
         self.session_manager = SessionManager()
         self.serializer = SqlaSerializer()
-        self.log_system = LogSystem("get_modules_list")
+        self.log_system = LogSystem("get_data/modules_list")
     
     def execute(self) -> Response:
         try:

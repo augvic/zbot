@@ -7,7 +7,7 @@ class RenderTemplate:
     
     def __init__(self) -> None:
         self.template_renderer = TemplateManager()
-        self.log_system = LogSystem("application")
+        self.log_system = LogSystem("application/render_template")
         self.session_manager = SessionManager()
     
     def execute(self, template: str) -> Response:
