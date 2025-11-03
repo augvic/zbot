@@ -4,24 +4,42 @@ from typing import Any
 class SessionManager:
     
     def save_in_session(self, key: str, value: Any) -> None:
-        session[key] = value
+        try:
+            session[key] = value
+        except Exception as error:
+            raise Exception(f"Error on (SessionManager) component on (save_in_session) method: {error}")
     
     def get_from_session(self, key: str) -> Any:
-        return session[key]
+        try:
+            return session[key]
+        except Exception as error:
+            raise Exception(f"Error on (SessionManager) component on (get_from_session) method: {error}")
     
     def is_user_in_session(self) -> bool:
-        if "user" in session:
-            return True
-        return False
+        try:
+            if "user" in session:
+                return True
+            return False
+        except Exception as error:
+            raise Exception(f"Error on (SessionManager) component on (is_user_in_session) method: {error}")
     
     def have_user_module_access(self, module: str) -> bool:
-        for module_allowed in session["session_modules"]:
-            if str(module_allowed["module"]).lower() == str(module).replace(".js", "").lower():
-                return True
-        return False
+        try:
+            for module_allowed in session["session_modules"]:
+                if str(module_allowed["module"]).lower() == str(module).replace(".js", "").lower():
+                    return True
+            return False
+        except Exception as error:
+            raise Exception(f"Error on (SessionManager) component on (have_user_module_access) method: {error}")
     
     def remove_from_session(self, key: str) -> None:
-        session.pop(key)
+        try:
+            session.pop(key)
+        except Exception as error:
+            raise Exception(f"Error on (SessionManager) component on (remove_from_session) method: {error}")
     
     def clear_session(self) -> None:
-        session.clear()
+        try:
+            session.clear()
+        except Exception as error:
+            raise Exception(f"Error on (SessionManager) component on (clear_session) method: {error}")

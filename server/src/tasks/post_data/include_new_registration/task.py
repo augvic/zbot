@@ -81,8 +81,8 @@ class IncludeNewRegistration:
             if new_registration.bank_doc:
                 doc_list.append(new_registration.bank_doc)
             self.docs_handler.save_docs(cnpj=new_registration.cnpj, docs=doc_list)
-            self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n✅ Novo cadastro incluído com sucesso: {new_registration.cnpj}.")
-            return Response(success=True, message=f"✅ Novo cadastro incluído com sucesso: {new_registration.cnpj}.")
+            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}). ✅ Novo cadastro incluído com sucesso ({new_registration.cnpj}).")
+            return Response(success=True, message=f"✅ Novo cadastro incluído com sucesso ({new_registration.cnpj}).")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Erro:\n{error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}")
             raise Exception("❌ Erro interno ao incluir novo cadastro. Contate o administrador.")

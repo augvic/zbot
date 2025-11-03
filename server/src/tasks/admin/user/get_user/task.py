@@ -22,8 +22,8 @@ class GetUser:
                 users_serialized = self.serializer.serialize_list(users)
             else:
                 users_serialized = [self.serializer.serialize(users)]
-            self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}. ✅ Usuário coletado com sucesso: {users_serialized}.")
+            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Usuário coletado com sucesso: {users_serialized}.")
             return Response(success=True, message="✅ Usuário coletado com sucesso: {users_serialized}.", data=users_serialized)
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Erro:\n{error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}")
             raise Exception("❌ Erro interno ao coletar usuários. Contate o administrador.")

@@ -19,32 +19,32 @@ class UpdateUser:
         try:
             user_exists = self.users_client.read(user)
             if user_exists == None:
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Usuário não existe.")
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Usuário não existe.")
                 return Response(success=False, message="❌ Usuário não existe.")
             if user == "":
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Preencha o usuário.")
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o usuário.")
                 return Response(success=False, message="❌ Preencha o usuário.")
             if not str(user).isdigit():
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Usuário deve ser somente números.")
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Usuário deve ser somente números.")
                 return Response(success=False, message="❌ Usuário deve ser somente números.")
             if name == "":
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Preencha o nome.")
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o nome.")
                 return Response(success=False, message="❌ Preencha o nome.")
             if email == "":
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Preencha o e-mail.")
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o e-mail.")
                 return Response(success=False, message="❌ Preencha o e-mail.")
             if not "@" in email or not "." in email:
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Preencha um e-mail válido.")
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha um e-mail válido.")
                 return Response(success=False, message="❌ Preencha um e-mail válido.")
             if password == "":
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Preencha a senha.")
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha a senha.")
                 return Response(success=False, message="❌ Preencha a senha.")
             if user_exists.name == name and user_exists.email == email and user_exists.password == password:
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Nenhum dado do usuário modificado.")
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Nenhum dado do usuário modificado.")
                 return Response(success=False, message="❌ Nenhum dado do usuário modificado.")
             self.users_client.update(user, name, email, password)
-            self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n✅ Usuário atualizado.")
+            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Usuário atualizado.")
             return Response(success=True, message="✅ Usuário atualizado.")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Erro:\n{error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}")
             raise Exception("❌ Erro interno ao atualizar usuário. Contate o administrador.")

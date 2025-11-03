@@ -13,8 +13,8 @@ class RenderTemplate:
     def execute(self, template: str) -> Response:
         try:
             template_return = self.template_renderer.render(template)
-            self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n✅ Template coletado.")
+            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Template coletado.")
             return Response(success=True, message="✅ Template coletado.", data=template_return)
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Erro:\n{error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}")
             raise Exception("❌ Erro interno ao retornar template. Contate o administrador.")

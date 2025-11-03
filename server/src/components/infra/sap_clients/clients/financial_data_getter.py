@@ -304,17 +304,20 @@ class FinancialDataGetter(SapGui):
             return "Não vencido"
     
     def get_data(self, cnpj_root: str) -> FinancialData:
-        self.init()
-        self._set_defaults_variables()
-        data = self._get_data(cnpj_root=cnpj_root)
-        sanitized_data = self._sanitize_financial_data(data=data)
-        self.go_home()
-        return FinancialData(
-            cnpj_root = cnpj_root,
-            limit = sanitized_data["limit"],
-            maturity = sanitized_data["maturity"],
-            in_open = sanitized_data["in_open"],
-            margin = sanitized_data["margin"],
-            overdue_nfs = sanitized_data["overdue_nfs"],
-            fbl5n_table = sanitized_data["fbl5n_table"]
-        )
+        try:
+            self.init()
+            self._set_defaults_variables()
+            data = self._get_data(cnpj_root=cnpj_root)
+            sanitized_data = self._sanitize_financial_data(data=data)
+            self.go_home()
+            return FinancialData(
+                cnpj_root = cnpj_root,
+                limit = sanitized_data["limit"],
+                maturity = sanitized_data["maturity"],
+                in_open = sanitized_data["in_open"],
+                margin = sanitized_data["margin"],
+                overdue_nfs = sanitized_data["overdue_nfs"],
+                fbl5n_table = sanitized_data["fbl5n_table"]
+            )
+        except Exception as error:
+            raise Exception(f"Error on (FinancialDataGetter) component on (get_data) method: {error}")

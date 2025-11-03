@@ -309,12 +309,15 @@ class OrderCreator(SapGui):
         self._fill_out_comission(order)
     
     def create(self, order: Order) -> str:
-        self.init()
-        self._fill_out_initial_data(order)
-        self._fill_out_sales_data(order)
-        self._fill_out_header(order)
-        self._fill_out_items_summary(order)
-        self._save_order()
-        id = self._get_order_id(order)
-        self.go_home()
-        return id
+        try:
+            self.init()
+            self._fill_out_initial_data(order)
+            self._fill_out_sales_data(order)
+            self._fill_out_header(order)
+            self._fill_out_items_summary(order)
+            self._save_order()
+            id = self._get_order_id(order)
+            self.go_home()
+            return id
+        except Exception as error:
+            raise Exception(f"Error on (OrderCreator) component on (create) method: {error}")

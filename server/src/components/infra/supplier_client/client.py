@@ -23,47 +23,6 @@ class SupplierHandler:
         self.timedelta = timedelta
         self.logged_in = False
     
-    def login(self) -> None:
-        response_login_1 = self.session.post("https://ppd-back.suppliercloudapis.com/ppd/oauth/login",
-            json={
-                "app": ["ApiPpd"],
-                "codigoGrupo": "O019",
-                "codigoTokenMFA": "",
-                "email": getenv("SUPPLIER_EMAIL"),
-                "idMFARequest": "",
-                "manterConectado": False,
-                "password": getenv("SUPPLIER_PASSWORD"),
-                "termoUso": False
-            },
-            verify=False
-        )
-        response_login_dict_1 = response_login_1.json()
-        id_mfa_request = response_login_dict_1.get("idMFARequest")
-        self.session.post("https://ppd-back.suppliercloudapis.com/ppd/oauth/mfa",
-            json={
-                "canalEnvioToken": "EMAIL",
-                "idMFARequest": id_mfa_request
-            },
-            verify=False
-        )
-        mfa_token = input("Informe o token: ")
-        response_login_2 = self.session.post("https://ppd-back.suppliercloudapis.com/ppd/oauth/login",
-            json={
-                "app": ["ApiPpd"],
-                "codigoGrupo": "O019",
-                "codigoTokenMFA": mfa_token,
-                "email": getenv("SUPPLIER_EMAIL"),
-                "idMFARequest": id_mfa_request,
-                "manterConectado": True,
-                "password": "",
-                "termoUso": False
-            },
-            verify=False
-        )
-        response_login_dict_2 = response_login_2.json()
-        self.access_token = response_login_dict_2.get("access_token")
-        self.logged_in = True
-    
     def _create_installments_list(self, installments: list[str], value: float) -> list[dict[str, str | int | float]]:
         installments_list = []
         date = self.datetime.now().date()
@@ -107,6 +66,50 @@ class SupplierHandler:
             fee = str(element)
         return fee
     
+    def login(self) -> None:
+        try:
+            response_login_1 = self.session.post("https://ppd-back.suppliercloudapis.com/ppd/oauth/login",
+                json={
+                    "app": ["ApiPpd"],
+                    "codigoGrupo": "O019",
+                    "codigoTokenMFA": "",
+                    "email": getenv("SUPPLIER_EMAIL"),
+                    "idMFARequest": "",
+                    "manterConectado": False,
+                    "password": getenv("SUPPLIER_PASSWORD"),
+                    "termoUso": False
+                },
+                verify=False
+            )
+            response_login_dict_1 = response_login_1.json()
+            id_mfa_request = response_login_dict_1.get("idMFARequest")
+            self.session.post("https://ppd-back.suppliercloudapis.com/ppd/oauth/mfa",
+                json={
+                    "canalEnvioToken": "EMAIL",
+                    "idMFARequest": id_mfa_request
+                },
+                verify=False
+            )
+            mfa_token = input("Informe o token: ")
+            response_login_2 = self.session.post("https://ppd-back.suppliercloudapis.com/ppd/oauth/login",
+                json={
+                    "app": ["ApiPpd"],
+                    "codigoGrupo": "O019",
+                    "codigoTokenMFA": mfa_token,
+                    "email": getenv("SUPPLIER_EMAIL"),
+                    "idMFARequest": id_mfa_request,
+                    "manterConectado": True,
+                    "password": "",
+                    "termoUso": False
+                },
+                verify=False
+            )
+            response_login_dict_2 = response_login_2.json()
+            self.access_token = response_login_dict_2.get("access_token")
+            self.logged_in = True
+        except Exception as error:
+            raise Exception(f"Error on (SupplierHandler) component on (login) method: {error}")
+    
     def order_pre_autorization(self,
         cnpj_client: str,
         cnpj_positivo: str,
@@ -114,34 +117,37 @@ class SupplierHandler:
         payment_deadline: str,
         value: float
     ) -> Response:
-        if not self.logged_in:
-            raise Exception("Necessário logar na Supplier primeiro.")
-        installments = payment_deadline.split("/")
-        response = self.session.post("https://ppd-back.suppliercloudapis.com/ppd/preautorizacoes/O019",
-            headers={
-                "Access_token": self.access_token
-            },
-            json={
-                "cnpjCpf": cnpj_client,
-                "cnpjParceiro": cnpj_positivo,
-                "codigoPreAutorizacao": "",
-                "dataPrimeiroVencimento": "",
-                "numeroPedido": order,
-                "numeroparcelas": len(installments),
-                "operacaoComJuros": False,
-                "parcelas": self._create_installments_list(installments, value),
-                "prazoRecebimentoParceiro": self._get_transfer(len(installments)),
-                "taxas": [{"tipoTaxa": "ANTECIPACAO", "valorTaxa": self._get_fee(len(installments))}],
-                "tipoRecebimentoParceiro": "3",
-                "tipoTransacao": "0",
-                "valorPreAutorizacao": value
-            },
-            verify=False
-        )
-        response_dict = response.json()
-        if response_dict["mensagemRetorno"] == "Solicitação Efetuada com sucesso!":
-            return Response(success=True, message=f"Valor: {response_dict["preAutorizacao"]["valorPreAutorizado"]}. Tempo de vigência: {self.datetime.strptime(response_dict["preAutorizacao"]["dataVigenciaPreAutorizacao"], "%Y-%m-%d").strftime("%d/%m/%Y")}.")
-        elif response_dict["mensagemRetorno"] == "Não foram encontradas condições comerciais para os parâmetros informados.":
-            return Response(success=False, message=f"Corpo da requisição é inválido.")
-        else:
-            return Response(success=False, message=f"Erro desconhecido: {response_dict}.")
+        try:
+            if not self.logged_in:
+                raise Exception("Necessário logar na Supplier primeiro.")
+            installments = payment_deadline.split("/")
+            response = self.session.post("https://ppd-back.suppliercloudapis.com/ppd/preautorizacoes/O019",
+                headers={
+                    "Access_token": self.access_token
+                },
+                json={
+                    "cnpjCpf": cnpj_client,
+                    "cnpjParceiro": cnpj_positivo,
+                    "codigoPreAutorizacao": "",
+                    "dataPrimeiroVencimento": "",
+                    "numeroPedido": order,
+                    "numeroparcelas": len(installments),
+                    "operacaoComJuros": False,
+                    "parcelas": self._create_installments_list(installments, value),
+                    "prazoRecebimentoParceiro": self._get_transfer(len(installments)),
+                    "taxas": [{"tipoTaxa": "ANTECIPACAO", "valorTaxa": self._get_fee(len(installments))}],
+                    "tipoRecebimentoParceiro": "3",
+                    "tipoTransacao": "0",
+                    "valorPreAutorizacao": value
+                },
+                verify=False
+            )
+            response_dict = response.json()
+            if response_dict["mensagemRetorno"] == "Solicitação Efetuada com sucesso!":
+                return Response(success=True, message=f"Valor: {response_dict["preAutorizacao"]["valorPreAutorizado"]}. Tempo de vigência: {self.datetime.strptime(response_dict["preAutorizacao"]["dataVigenciaPreAutorizacao"], "%Y-%m-%d").strftime("%d/%m/%Y")}.")
+            elif response_dict["mensagemRetorno"] == "Não foram encontradas condições comerciais para os parâmetros informados.":
+                return Response(success=False, message=f"Corpo da requisição é inválido.")
+            else:
+                return Response(success=False, message=f"Erro desconhecido: {response_dict}.")
+        except Exception as error:
+            raise Exception(f"Error on (SupplierHandler) component on (order_pre_authorization) method: {error}")

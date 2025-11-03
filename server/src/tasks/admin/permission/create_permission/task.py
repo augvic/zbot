@@ -16,11 +16,11 @@ class CreatePermission:
         try:
             user_exists = self.users_client.read(user)
             if not user_exists:
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")} (ao criar permissão).\n❌ Usuário não existe.")
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar permissão: ❌ Usuário não existe.")
                 return Response(success=False, message="❌ Usuário não existe.")
             self.permissions_client.create(user, permission)
-            self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")} (ao criar permissão).\n✅ Permissão ({permission}) adicionada.")
+            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar permissão: ✅ Permissão ({permission}) adicionada.")
             return Response(success=True, message=f"✅ Permissão ({permission}) adicionada.")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário: {self.session_manager.get_from_session("user")} (ao criar permissão).\n❌ Erro:\n{error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar permissão: ❌ Erro: {error}")
             raise Exception(f"❌ Erro interno ao adicionar permissão ({permission}). Contate o administrador.")

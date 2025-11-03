@@ -35,8 +35,9 @@ class CreateOrder:
                     comissions=[Comission(key=comission.key, code=comission.code, percentage=comission.percentage) for comission in order_model.comissions]
                 )
             )
-            return Response(success=True, message=f"✅ Sucesso ao criar documento no SAP: {doc_number}.")
+            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}):✅ Sucesso ao criar documento no SAP ({doc_number}).")
+            return Response(success=True, message=f"✅ Sucesso ao criar documento no SAP ({doc_number}).")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Erro:\n{error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}")
             self.order_creator.go_home()
             raise Exception("❌ Erro interno ao criar documento no SAP. Contate o administrador.")

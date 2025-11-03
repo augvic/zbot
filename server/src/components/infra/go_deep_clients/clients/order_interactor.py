@@ -294,82 +294,88 @@ class OrderInteractor(GoDeepBrowser):
         self.quit()
     
     def get_order_data_for_credit_analysis(self, headless: bool, order: str) -> Order:
-        self._init(headless=headless)
-        self._access_order(order=order)
-        value = self._extract_order_total_value()
-        cnpj_root = self._extract_order_receiver_cnpj_cpf()[:8]
-        self.quit()
-        return Order(
-            order_site = order,
-            receiver_cnpj_root = cnpj_root,
-            total_value = value
-        )
+        try:
+            self._init(headless=headless)
+            self._access_order(order=order)
+            value = self._extract_order_total_value()
+            cnpj_root = self._extract_order_receiver_cnpj_cpf()[:8]
+            self.quit()
+            return Order(
+                order_site = order,
+                receiver_cnpj_root = cnpj_root,
+                total_value = value
+            )
+        except Exception as error:
+            raise Exception(f"Error on (OrderInteractor) component on (get_order_data_for_credit_analysis) method: {error}")
     
     def get_order_data(self, headless: bool, order: str) -> Order:
-        self._init(headless=headless)
-        self._access_order(order=order)
-        date = self._extract_order_date()
-        doc_type = "ZV11"
-        centers = self._extract_order_centers()
-        organization = self._extract_order_organizations()
-        channel = "40"
-        seller, office, comission_percentage = self._extract_order_seller_office_comission()
-        team = "058"
-        order_name = order
-        order_site = order
-        order_erp = self._extract_order_sap_id()
-        resaler_name = self._extract_order_resaler()
-        receiver_name = self._extract_order_receiver()
-        resaler_erp = "-"
-        receiver_erp = self._extract_order_receiver_erp_code()
-        receiver_type = "-"
-        payment_condition = self._extract_order_payment_condition()
-        incoterm = "CIF"
-        reason = self._extract_order_reason()
-        table = "-"
-        expedition = self._extract_order_expeditions()
-        payment_way = self._extract_order_payment_way()
-        additional_data = self._extract_order_additional_data()
-        comissions = [Comission(key="-", code="-", percentage="-")]
-        partners = [Partner(key="-", code="-")]
-        items = self._extract_order_items()
-        receiver_cnpj_cpf = self._extract_order_receiver_cnpj_cpf()
-        receiver_cnpj_root = receiver_cnpj_cpf[:8]
-        total_value = self._extract_order_total_value()
-        status_site = self._extract_order_status()
-        over = self._extract_order_over()
-        self.quit()
-        return Order(
-            date = date,
-            doc_type = doc_type,
-            organization = organization,
-            channel = channel,
-            office = office,
-            team = team,
-            order_name = order_name,
-            order_site = order_site,
-            order_erp = order_erp,
-            resaler_name = resaler_name,
-            receiver_name = receiver_name,
-            resaler_erp = resaler_erp,
-            receiver_erp = receiver_erp,
-            receiver_type = receiver_type,
-            payment_condition = payment_condition,
-            incoterm = incoterm,
-            reason = reason,
-            table = table,
-            expedition = expedition,
-            payment_way = payment_way,
-            additional_data = additional_data,
-            comissions = comissions,
-            partners = partners,
-            items = items,
-            receiver_cnpj_cpf = receiver_cnpj_cpf,
-            receiver_cnpj_root = receiver_cnpj_root,
-            total_value = total_value,
-            status_site = status_site,
-            seller = seller,
-            centers = centers,
-            over = over,
-            comission_percentage = comission_percentage
-        )
+        try:
+            self._init(headless=headless)
+            self._access_order(order=order)
+            date = self._extract_order_date()
+            doc_type = "ZV11"
+            centers = self._extract_order_centers()
+            organization = self._extract_order_organizations()
+            channel = "40"
+            seller, office, comission_percentage = self._extract_order_seller_office_comission()
+            team = "058"
+            order_name = order
+            order_site = order
+            order_erp = self._extract_order_sap_id()
+            resaler_name = self._extract_order_resaler()
+            receiver_name = self._extract_order_receiver()
+            resaler_erp = "-"
+            receiver_erp = self._extract_order_receiver_erp_code()
+            receiver_type = "-"
+            payment_condition = self._extract_order_payment_condition()
+            incoterm = "CIF"
+            reason = self._extract_order_reason()
+            table = "-"
+            expedition = self._extract_order_expeditions()
+            payment_way = self._extract_order_payment_way()
+            additional_data = self._extract_order_additional_data()
+            comissions = [Comission(key="-", code="-", percentage="-")]
+            partners = [Partner(key="-", code="-")]
+            items = self._extract_order_items()
+            receiver_cnpj_cpf = self._extract_order_receiver_cnpj_cpf()
+            receiver_cnpj_root = receiver_cnpj_cpf[:8]
+            total_value = self._extract_order_total_value()
+            status_site = self._extract_order_status()
+            over = self._extract_order_over()
+            self.quit()
+            return Order(
+                date = date,
+                doc_type = doc_type,
+                organization = organization,
+                channel = channel,
+                office = office,
+                team = team,
+                order_name = order_name,
+                order_site = order_site,
+                order_erp = order_erp,
+                resaler_name = resaler_name,
+                receiver_name = receiver_name,
+                resaler_erp = resaler_erp,
+                receiver_erp = receiver_erp,
+                receiver_type = receiver_type,
+                payment_condition = payment_condition,
+                incoterm = incoterm,
+                reason = reason,
+                table = table,
+                expedition = expedition,
+                payment_way = payment_way,
+                additional_data = additional_data,
+                comissions = comissions,
+                partners = partners,
+                items = items,
+                receiver_cnpj_cpf = receiver_cnpj_cpf,
+                receiver_cnpj_root = receiver_cnpj_root,
+                total_value = total_value,
+                status_site = status_site,
+                seller = seller,
+                centers = centers,
+                over = over,
+                comission_percentage = comission_percentage
+            )
+        except Exception as error:
+            raise Exception(f"Error on (OrderInteractor) component on (get_order_data) method: {error}")

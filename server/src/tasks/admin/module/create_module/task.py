@@ -13,17 +13,17 @@ class CreateModule:
     def execute(self, module: str, description: str) -> Response:
         try:
             if not module:
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")} (ao criar módulo).\n❌ Preencha o módulo.")
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar módulo: ❌ Preencha o módulo.")
                 return Response(success=False, message="❌ Preencha o módulo.")
             if self.modules_client.read(module):
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")} (ao criar módulo).\n❌ Módulo ({module}) já existe.")
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar módulo: ❌ Módulo ({module}) já existe.")
                 return Response(success=False, message=f"❌ Módulo ({module}) já existe.")
             if description == "":
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")} (ao criar módulo).\n❌ Preencha a descrição.")
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar módulo: ❌ Preencha a descrição.")
                 return Response(success=False, message="❌ Preencha a descrição.")
             self.modules_client.create(module, description)
-            self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")} (ao criar módulo).\n✅ Módulo ({module}) adicionado.")
+            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar módulo: ✅ Módulo ({module}) adicionado.")
             return Response(success=True, message=f"✅ Módulo ({module}) adicionado.")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário: {self.session_manager.get_from_session("user")} (ao criar módulo: {module}).\n❌ Erro:\n{error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar módulo ({module}). ❌ Erro: {error}")
             raise Exception(f"❌ Erro interno ao criar módulo ({module}). Contate o administrador.")

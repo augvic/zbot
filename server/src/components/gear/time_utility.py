@@ -3,4 +3,7 @@ from time import sleep
 class TimeUtility:
     
     def sleep(self, seconds: float) -> None:
-        sleep(seconds)
+        try:
+            sleep(seconds)
+        except Exception as error:
+            raise Exception(f"Error on (TimeUtility) component on (sleep) method: {error}")

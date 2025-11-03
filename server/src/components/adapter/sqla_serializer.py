@@ -4,7 +4,13 @@ from typing import Any
 class SqlaSerializer:
     
     def serialize(self, object: Any) -> dict[str, str]:
-        return {attribute.key: getattr(object, attribute.key) for attribute in inspect(object).mapper.column_attrs}
+        try:
+            return {attribute.key: getattr(object, attribute.key) for attribute in inspect(object).mapper.column_attrs}
+        except Exception as error:
+            raise Exception(f"Error on (SqlaSerializer) component on (serialize) method: {error}")
     
     def serialize_list(self, objects: list[Any]):
-        return [self.serialize(object) for object in objects]
+        try:
+            return [self.serialize(object) for object in objects]
+        except Exception as error:
+            raise Exception(f"Error on (SqlaSerializer) component on (serialize_list) method: {error}")

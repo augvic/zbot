@@ -8,16 +8,19 @@ from ..models.database_models import Base
 class ItemsQueueClient:
     
     def __init__(self, db: str):
-        if getattr(sys, "frozen", False):
-            base_path = path.dirname(sys.executable) 
-        else:
-            base_path = path.join(path.dirname(__file__), "..", "..", "..", "..")
-        BASE_DIR = path.abspath(path.join(base_path, "storage", ".databases"))
-        makedirs(BASE_DIR, exist_ok=True)
-        url = f"sqlite:///{BASE_DIR}/{db}.db"
-        self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
-        self.session_construct = sessionmaker(bind=self.engine)
-        Base.metadata.create_all(self.engine)
+        try:
+            if getattr(sys, "frozen", False):
+                base_path = path.dirname(sys.executable) 
+            else:
+                base_path = path.join(path.dirname(__file__), "..", "..", "..", "..")
+            BASE_DIR = path.abspath(path.join(base_path, "storage", ".databases"))
+            makedirs(BASE_DIR, exist_ok=True)
+            url = f"sqlite:///{BASE_DIR}/{db}.db"
+            self.engine = create_engine(url, echo=True, connect_args={"timeout": 30})
+            self.session_construct = sessionmaker(bind=self.engine)
+            Base.metadata.create_all(self.engine)
+        except Exception as error:
+            raise Exception(f"Error on (ItemsQueueClient) component on (__init__) method: {error}")
     
     def create(self,
         order_ref: str,
@@ -31,31 +34,40 @@ class ItemsQueueClient:
         total_value: str,
         is_parent_item: str
     ) -> None:
-        session = self.session_construct()
-        to_create = ItemQueue(
-            order_ref=order_ref,
-            sku=sku,
-            quantity=quantity,
-            center=center,
-            deposit=deposit,
-            guarantee=guarantee,
-            over=over,
-            unit_value=unit_value,
-            total_value=total_value,
-            is_parent_item=is_parent_item
-        )
-        session.add(to_create)
-        session.commit()
-        session.refresh(to_create)
-        session.close()
+        try:
+            session = self.session_construct()
+            to_create = ItemQueue(
+                order_ref=order_ref,
+                sku=sku,
+                quantity=quantity,
+                center=center,
+                deposit=deposit,
+                guarantee=guarantee,
+                over=over,
+                unit_value=unit_value,
+                total_value=total_value,
+                is_parent_item=is_parent_item
+            )
+            session.add(to_create)
+            session.commit()
+            session.refresh(to_create)
+            session.close()
+        except Exception as error:
+            raise Exception(f"Error on (ItemsQueueClient) component on (create) method: {error}")
     
     def read(self, order: str) -> list[ItemQueue]:
-        session = self.session_construct()
-        return session.query(ItemQueue).filter(ItemQueue.order_ref == order).all()
+        try:
+            session = self.session_construct()
+            return session.query(ItemQueue).filter(ItemQueue.order_ref == order).all()
+        except Exception as error:
+            raise Exception(f"Error on (ItemsQueueClient) component on (read) method: {error}")
     
     def delete(self, order: str) -> None:
-        session = self.session_construct()
-        to_delete = session.query(ItemQueue).filter(ItemQueue.order_ref == order).all()
-        for delete_element in to_delete:
-            session.delete(delete_element)
-        session.commit()
+        try:
+            session = self.session_construct()
+            to_delete = session.query(ItemQueue).filter(ItemQueue.order_ref == order).all()
+            for delete_element in to_delete:
+                session.delete(delete_element)
+            session.commit()
+        except Exception as error:
+            raise Exception(f"Error on (ItemsQueueClient) component on (delete) method: {error}")

@@ -104,28 +104,31 @@ class PositivoFederalRevenueApi:
         return cleaned_response
     
     def get_data(self, cnpj: str) -> FederalRevenueData:
-        response = self._requisition_to_api(cnpj=cnpj)
-        response = self._clean_response_data(response=response)
-        return FederalRevenueData(
-            cnpj=response["cnpj"],
-            opening=response["data_inicio_atividade"],
-            company_name=response["razao_social"],
-            trade_name=response["nome_fantasia"],
-            legal_nature=response["natureza_juridica"],
-            legal_nature_id=response["natureza_juridica_id"],
-            registration_status=response["situacao_cadastral"],
-            street=response["logradouro"],
-            number=response["numero"],
-            complement=response["complemento"],
-            neighborhood=response["bairro"],
-            pac=response["cep"],
-            city=response["cidade"],
-            state=response["estado"],
-            fone=response["telefone"],
-            email=response["email"],
-            state_registrations=response["inscricoes_estaduais"],
-            suframa_registrations=response["inscricoes_suframa"],
-            tax_regime=response["regime_tributario"],
-            ncea=response["cnaes"],
-            comission_receipt = response["recebimento_comissao"]
-        )
+        try:
+            response = self._requisition_to_api(cnpj=cnpj)
+            response = self._clean_response_data(response=response)
+            return FederalRevenueData(
+                cnpj=response["cnpj"],
+                opening=response["data_inicio_atividade"],
+                company_name=response["razao_social"],
+                trade_name=response["nome_fantasia"],
+                legal_nature=response["natureza_juridica"],
+                legal_nature_id=response["natureza_juridica_id"],
+                registration_status=response["situacao_cadastral"],
+                street=response["logradouro"],
+                number=response["numero"],
+                complement=response["complemento"],
+                neighborhood=response["bairro"],
+                pac=response["cep"],
+                city=response["cidade"],
+                state=response["estado"],
+                fone=response["telefone"],
+                email=response["email"],
+                state_registrations=response["inscricoes_estaduais"],
+                suframa_registrations=response["inscricoes_suframa"],
+                tax_regime=response["regime_tributario"],
+                ncea=response["cnaes"],
+                comission_receipt = response["recebimento_comissao"]
+            )
+        except Exception as error:
+            raise Exception(f"Error on (PositivoFederalRevenueApi) component on (get_data) method: {error}")

@@ -24,39 +24,54 @@ class SapGui:
             raise WindowBusy()
     
     def open_transaction(self, transaction: str) -> None:
-        self.session.findById("wnd[0]/tbar[0]/okcd").text = "/N" + transaction
-        self.session.findById("wnd[0]").sendVKey(0)
-        status_bar = None
-        status_bar = self.session.findById("wnd[0]/sbar").text
-        if "Sem autorização" in status_bar:
-            raise TransactionDennied(transaction)
+        try:
+            self.session.findById("wnd[0]/tbar[0]/okcd").text = "/N" + transaction
+            self.session.findById("wnd[0]").sendVKey(0)
+            status_bar = None
+            status_bar = self.session.findById("wnd[0]/sbar").text
+            if "Sem autorização" in status_bar:
+                raise TransactionDennied(transaction)
+        except Exception as error:
+            raise Exception(f"Error on (SapGui) component on (open_transaction) method: {error}")
     
     def go_home(self) -> None:
-        while True:
-            if self.session.ActiveWindow.Text == "SAP Easy Access":
-                break
-            else:
-                try:
-                    self.session.findById("wnd[1]").close()
-                except:
-                    pass
-                try:
-                    self.session.findById("wnd[0]").sendVKey(3)
-                except:
-                    pass
-                try:
-                    self.session.findById("wnd[1]/usr/btnSPOP-OPTION2").press()
-                except:
-                    pass
+        try:
+            while True:
+                if self.session.ActiveWindow.Text == "SAP Easy Access":
+                    break
+                else:
+                    try:
+                        self.session.findById("wnd[1]").close()
+                    except:
+                        pass
+                    try:
+                        self.session.findById("wnd[0]").sendVKey(3)
+                    except:
+                        pass
+                    try:
+                        self.session.findById("wnd[1]/usr/btnSPOP-OPTION2").press()
+                    except:
+                        pass
+        except Exception as error:
+            raise Exception(f"Error on (SapGui) component on (go_home) method: {error}")
     
     def press_enter(self, index: str) -> None:
-        self.session.findById(rf"wnd[{index}]").sendVKey(0)
+        try:
+            self.session.findById(rf"wnd[{index}]").sendVKey(0)
+        except Exception as error:
+            raise Exception(f"Error on (SapGui) component on (press_enter) method: {error}")
     
     def press_back(self, index: str) -> None:
-        self.session.findById(rf"wnd[{index}]/tbar[0]/btn[3]").press()
+        try:
+            self.session.findById(rf"wnd[{index}]/tbar[0]/btn[3]").press()
+        except Exception as error:
+            raise Exception(f"Error on (SapGui) component on (press_back) method: {error}")
     
     def press_go(self, index: str) -> None:
-        self.session.findById(rf"wnd[{index}]").sendVKey(2)
+        try:
+            self.session.findById(rf"wnd[{index}]").sendVKey(2)
+        except Exception as error:
+            raise Exception(f"Error on (SapGui) component on (press_go) method: {error}")
     
     def set_text(self, id: str, text: str) -> None:
         try:
@@ -113,22 +128,43 @@ class SapGui:
             raise IdNotFound(id)
     
     def open_search_window(self, index: str) -> None:
-        self.session.findById(f"wnd[{index}]").sendVKey(4)
+        try:
+            self.session.findById(f"wnd[{index}]").sendVKey(4)
+        except Exception as error:
+            raise Exception(f"Error on (SapGui) component on (open_search_window) method: {error}")
     
     def get_msg_bar_log(self, index: str) -> str:
-        return self.session.findById(f"wnd[{index}]/sbar").text
+        try:
+            return self.session.findById(f"wnd[{index}]/sbar").text
+        except Exception as error:
+            raise Exception(f"Error on (SapGui) component on (get_msg_bar_log) method: {error}")
     
     def get_icon_name(self, id: str) -> str:
-        return self.session.findById(id).IconName
+        try:
+            return self.session.findById(id).IconName
+        except Exception as error:
+            raise Exception(f"Error on (SapGui) component on (get_icon_name) method: {error}")
     
     def set_selection_indexes(self, id: str, indexes: tuple[int, int]) -> None:
-        self.session.findById(id).setSelectionIndexes(*indexes)
+        try:
+            self.session.findById(id).setSelectionIndexes(*indexes)
+        except Exception as error:
+            raise Exception(f"Error on (SapGui) component on (set_selection_indexes) method: {error}")
     
     def select_item(self, id: str, indexes: tuple[str, str]) -> None:
-        self.session.findById(id).selectItem(*indexes)
+        try:
+            self.session.findById(id).selectItem(*indexes)
+        except Exception as error:
+            raise Exception(f"Error on (SapGui) component on (select_item) method: {error}")
     
     def ensure_visible_horizontal_item(self, id: str, indexes: tuple[str, str]) -> None:
-        self.session.findById(id).ensureVisibleHorizontalItem(*indexes)
+        try:
+            self.session.findById(id).ensureVisibleHorizontalItem(*indexes)
+        except Exception as error:
+            raise Exception(f"Error on (SapGui) component on (ensure_visible_horizontal_item) method: {error}")
     
     def double_click_item(self, id: str, indexes: tuple[str, str]) -> None:
-        self.session.findById(id).doubleClickItem(*indexes)
+        try:
+            self.session.findById(id).doubleClickItem(*indexes)
+        except Exception as error:
+            raise Exception(f"Error on (SapGui) component on (double_click_item) method: {error}")

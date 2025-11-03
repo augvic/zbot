@@ -4,4 +4,7 @@ from .wsgi_application import WsgiApplication
 class SocketIoApplication(SocketIO):
     
     def __init__(self, app: WsgiApplication):
-        super().__init__(app)
+        try:
+            super().__init__(app)
+        except Exception as error:
+            raise Exception(f"Error on (SocketIoApplication) component on (__init__) method: {error}")
