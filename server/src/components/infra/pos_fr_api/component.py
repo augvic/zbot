@@ -131,4 +131,4 @@ class PositivoFederalRevenueApi:
                 comission_receipt = response["recebimento_comissao"]
             )
         except Exception as error:
-            raise Exception(f"Error on (PositivoFederalRevenueApi) component on (get_data) method: {error}")
+            raise Exception(f"Error in (PositivoFederalRevenueApi) component in (get_data) method: {error}.")

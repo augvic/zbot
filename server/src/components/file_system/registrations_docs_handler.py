@@ -15,4 +15,4 @@ class RegistrationsDocsHandler:
             for doc in docs:
                 doc.save(f"{dir_to_create}/{doc.filename}")
         except Exception as error:
-            raise Exception(f"Error on (RegistrationsDocsHandler) component on (save_docs) method: {error}")
+            raise Exception(f"Error in (RegistrationsDocsHandler) component in (save_docs) method: {error}.")

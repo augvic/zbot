@@ -20,7 +20,7 @@ class PartnersQueueClient:
             self.session_construct = sessionmaker(bind=self.engine)
             Base.metadata.create_all(self.engine)
         except Exception as error:
-            raise Exception(f"Error on (PartnersQueueClient) component on (__init__) method: {error}")
+            raise Exception(f"Error in (PartnersQueueClient) component in (__init__) method: {error}.")
     
     def create(self,
         order_ref: str,
@@ -39,14 +39,14 @@ class PartnersQueueClient:
             session.refresh(to_create)
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (PartnersQueueClient) component on (create) method: {error}")
+            raise Exception(f"Error in (PartnersQueueClient) component in (create) method: {error}.")
     
     def read(self, order: str) -> list[PartnerQueue]:
         try:
             session = self.session_construct()
             return session.query(PartnerQueue).filter(PartnerQueue.order_ref == order).all()
         except Exception as error:
-            raise Exception(f"Error on (PartnersQueueClient) component on (read) method: {error}")
+            raise Exception(f"Error in (PartnersQueueClient) component in (read) method: {error}.")
     
     def delete(self, order: str) -> None:
         try:
@@ -56,4 +56,4 @@ class PartnersQueueClient:
                 session.delete(delete_element)
             session.commit()
         except Exception as error:
-            raise Exception(f"Error on (PartnersQueueClient) component on (delete) method: {error}")
+            raise Exception(f"Error in (PartnersQueueClient) component in (delete) method: {error}.")

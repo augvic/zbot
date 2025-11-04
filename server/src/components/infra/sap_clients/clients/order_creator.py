@@ -320,4 +320,4 @@ class OrderCreator(SapGui):
             self.go_home()
             return id
         except Exception as error:
-            raise Exception(f"Error on (OrderCreator) component on (create) method: {error}")
+            raise Exception(f"Error in (OrderCreator) component in (create) method: {error}.")

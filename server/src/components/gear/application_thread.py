@@ -7,4 +7,4 @@ class ApplicationThread(Thread):
         try:
             super().__init__(group, target, name, args, kwargs, daemon=daemon)
         except Exception as error:
-            raise Exception(f"Error on (ApplicationThread) component on (__init__) method: {error}")
+            raise Exception(f"Error in (ApplicationThread) component in (__init__) method: {error}.")

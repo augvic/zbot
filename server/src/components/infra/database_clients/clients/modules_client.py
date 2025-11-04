@@ -20,7 +20,7 @@ class ModulesClient:
             self.session_construct = sessionmaker(bind=self.engine)
             Base.metadata.create_all(self.engine)
         except Exception as error:
-            raise Exception(f"Error on (ModulesClient) component on (__init__) method: {error}")
+            raise Exception(f"Error in (ModulesClient) component in (__init__) method: {error}.")
     
     def create(self, module: str, description: str) -> None:
         try:
@@ -33,21 +33,21 @@ class ModulesClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (ModulesClient) component on (create) method: {error}")
+            raise Exception(f"Error in (ModulesClient) component in (create) method: {error}.")
     
     def read(self, module: str) -> Module | None:
         try:
             session = self.session_construct()
             return session.query(Module).filter(Module.module == module).first()
         except Exception as error:
-            raise Exception(f"Error on (ModulesClient) component on (read) method: {error}")
+            raise Exception(f"Error in (ModulesClient) component in (read) method: {error}.")
     
     def read_all(self) -> list[Module]:
         try:
             session = self.session_construct()
             return session.query(Module).all()
         except Exception as error:
-            raise Exception(f"Error on (ModulesClient) component on (read_all) method: {error}")
+            raise Exception(f"Error in (ModulesClient) component in (read_all) method: {error}.")
     
     def delete(self, module: str) -> None:
         try:
@@ -57,4 +57,4 @@ class ModulesClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (ModulesClient) component on (delete) method: {error}")
+            raise Exception(f"Error in (ModulesClient) component in (delete) method: {error}.")

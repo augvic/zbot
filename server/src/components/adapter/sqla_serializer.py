@@ -7,10 +7,10 @@ class SqlaSerializer:
         try:
             return {attribute.key: getattr(object, attribute.key) for attribute in inspect(object).mapper.column_attrs}
         except Exception as error:
-            raise Exception(f"Error on (SqlaSerializer) component on (serialize) method: {error}")
+            raise Exception(f"Error in (SqlaSerializer) component in (serialize) method: {error}.")
     
     def serialize_list(self, objects: list[Any]):
         try:
             return [self.serialize(object) for object in objects]
         except Exception as error:
-            raise Exception(f"Error on (SqlaSerializer) component on (serialize_list) method: {error}")
+            raise Exception(f"Error in (SqlaSerializer) component in (serialize_list) method: {error}.")

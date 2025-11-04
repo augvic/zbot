@@ -20,7 +20,7 @@ class NceasClient:
             self.session_construct = sessionmaker(bind=self.engine)
             Base.metadata.create_all(self.engine)
         except Exception as error:
-            raise Exception(f"Error on (NceasClient) component on (__init__) method: {error}")
+            raise Exception(f"Error in (NceasClient) component in (__init__) method: {error}.")
     
     def create(self,
         cnpj: str,
@@ -38,14 +38,14 @@ class NceasClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (NceasClient) component on (create) method: {error}")
+            raise Exception(f"Error in (NceasClient) component in (create) method: {error}.")
     
     def read_all(self, cnpj: str) -> list[Ncea]:
         try:
             session = self.session_construct()
             return session.query(Ncea).filter(Ncea.cnpj == cnpj).all()
         except Exception as error:
-            raise Exception(f"Error on (NceasClient) component on (read_all) method: {error}")
+            raise Exception(f"Error in (NceasClient) component in (read_all) method: {error}.")
     
     def delete(self, cnpj: str) -> None:
         try:
@@ -56,4 +56,4 @@ class NceasClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (NceasClient) component on (delete) method: {error}")
+            raise Exception(f"Error in (NceasClient) component in (delete) method: {error}.")

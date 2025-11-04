@@ -320,4 +320,4 @@ class FinancialDataGetter(SapGui):
                 fbl5n_table = sanitized_data["fbl5n_table"]
             )
         except Exception as error:
-            raise Exception(f"Error on (FinancialDataGetter) component on (get_data) method: {error}")
+            raise Exception(f"Error in (FinancialDataGetter) component in (get_data) method: {error}.")

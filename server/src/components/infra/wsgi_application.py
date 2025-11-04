@@ -15,4 +15,4 @@ class WsgiApplication(Flask):
             super().__init__(__name__, template_folder=TEMPLATE, static_folder=STATIC)
             self.secret_key = getenv("FLASK")
         except Exception as error:
-            raise Exception(f"Error on (WsgiApplication) component on (__init__) method: {error}")
+            raise Exception(f"Error in (WsgiApplication) component in (__init__) method: {error}.")

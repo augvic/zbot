@@ -6,4 +6,4 @@ class TemplateManager:
         try:
             return render_template(template)
         except Exception as error:
-            raise Exception(f"Error on (TemplateManager) component on (render) method: {error}")
+            raise Exception(f"Error in (TemplateManager) component in (render) method: {error}.")

@@ -6,4 +6,4 @@ class TimeUtility:
         try:
             sleep(seconds)
         except Exception as error:
-            raise Exception(f"Error on (TimeUtility) component on (sleep) method: {error}")
+            raise Exception(f"Error in (TimeUtility) component in (sleep) method: {error}.")

@@ -20,7 +20,7 @@ class OrdersQueueClient:
             self.session_construct = sessionmaker(bind=self.engine)
             Base.metadata.create_all(self.engine)
         except Exception as error:
-            raise Exception(f"Error on (OrdersQueueClient) component on (__init__) method: {error}")
+            raise Exception(f"Error in (OrdersQueueClient) component in (__init__) method: {error}.")
     
     def create(self,
         doc_type: str,
@@ -71,21 +71,21 @@ class OrdersQueueClient:
             session.refresh(to_create)
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (OrdersQueueClient) component on (create) method: {error}")
+            raise Exception(f"Error in (OrdersQueueClient) component in (create) method: {error}.")
     
     def read(self, order: str) -> OrderQueue | None:
         try:
             session = self.session_construct()
             return session.query(OrderQueue).filter(OrderQueue.order == order).first()
         except Exception as error:
-            raise Exception(f"Error on (OrdersQueueClient) component on (read) method: {error}")
+            raise Exception(f"Error in (OrdersQueueClient) component in (read) method: {error}.")
     
     def read_all(self) -> list[OrderQueue]:
         try:
             session = self.session_construct()
             return session.query(OrderQueue).all()
         except Exception as error:
-            raise Exception(f"Error on (OrdersQueueClient) component on (read_all) method: {error}")
+            raise Exception(f"Error in (OrdersQueueClient) component in (read_all) method: {error}.")
     
     def update(self,
         order: str,
@@ -142,7 +142,7 @@ class OrdersQueueClient:
                 session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (OrdersQueueClient) component on (update) method: {error}")
+            raise Exception(f"Error in (OrdersQueueClient) component in (update) method: {error}.")
     
     def delete(self, order: str) -> None:
         try:
@@ -151,4 +151,4 @@ class OrdersQueueClient:
             session.delete(to_delete)
             session.commit()
         except Exception as error:
-            raise Exception(f"Error on (OrdersQueueClient) component on (delete) method: {error}")
+            raise Exception(f"Error in (OrdersQueueClient) component in (delete) method: {error}.")

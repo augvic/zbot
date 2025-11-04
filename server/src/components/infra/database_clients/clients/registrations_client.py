@@ -20,7 +20,7 @@ class RegistrationsClient:
             self.session_construct = sessionmaker(bind=self.engine)
             Base.metadata.create_all(self.engine)
         except Exception as error:
-            raise Exception(f"Error on (RegistrationsClient) component on (__init__) method: {error}")
+            raise Exception(f"Error in (RegistrationsClient) component in (__init__) method: {error}.")
     
     def create(self,
         cnpj: str,
@@ -88,21 +88,21 @@ class RegistrationsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (RegistrationsClient) component on (create) method: {error}")
+            raise Exception(f"Error in (RegistrationsClient) component in (create) method: {error}.")
     
     def read(self, cnpj: str) -> Registration | None:
         try:
             session = self.session_construct()
             return session.query(Registration).filter(Registration.cnpj == cnpj).first()
         except Exception as error:
-            raise Exception(f"Error on (RegistrationsClient) component on (read) method: {error}")
+            raise Exception(f"Error in (RegistrationsClient) component in (read) method: {error}.")
         
     def read_all(self) -> list[Registration]:
         try:
             session = self.session_construct()
             return session.query(Registration).all()
         except Exception as error:
-            raise Exception(f"Error on (RegistrationsClient) component on (read_all) method: {error}")
+            raise Exception(f"Error in (RegistrationsClient) component in (read_all) method: {error}.")
     
     def update(self,
         cnpj: str,
@@ -195,7 +195,7 @@ class RegistrationsClient:
                 session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (RegistrationsClient) component on (update) method: {error}")
+            raise Exception(f"Error in (RegistrationsClient) component in (update) method: {error}.")
     
     def delete(self, cnpj: str) -> None:
         try:
@@ -205,4 +205,4 @@ class RegistrationsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (RegistrationsClient) component on (delete) method: {error}")
+            raise Exception(f"Error in (RegistrationsClient) component in (delete) method: {error}.")

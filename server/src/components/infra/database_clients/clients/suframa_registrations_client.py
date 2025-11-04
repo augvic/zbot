@@ -20,7 +20,7 @@ class SuframaRegistrationsClient:
             self.session_construct = sessionmaker(bind=self.engine)
             Base.metadata.create_all(self.engine)
         except Exception as error:
-            raise Exception(f"Error on (SuframaRegistrationsClient) component on (__init__) method: {error}")
+            raise Exception(f"Error in (SuframaRegistrationsClient) component in (__init__) method: {error}.")
     
     def create(self,
         cnpj: str,
@@ -38,14 +38,14 @@ class SuframaRegistrationsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (SuframaRegistrationsClient) component on (create) method: {error}")
+            raise Exception(f"Error in (SuframaRegistrationsClient) component in (create) method: {error}.")
     
     def read_all(self, cnpj: str) -> list[SuframaRegistration]:
         try:
             session = self.session_construct()
             return session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
         except Exception as error:
-            raise Exception(f"Error on (SuframaRegistrationsClient) component on (read_all) method: {error}")
+            raise Exception(f"Error in (SuframaRegistrationsClient) component in (read_all) method: {error}.")
     
     def delete(self, cnpj: str) -> None:
         try:
@@ -56,4 +56,4 @@ class SuframaRegistrationsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (SuframaRegistrationsClient) component on (delete) method: {error}")
+            raise Exception(f"Error in (SuframaRegistrationsClient) component in (delete) method: {error}.")

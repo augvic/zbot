@@ -11,13 +11,13 @@ class PermissionsClientDummy:
                 ]
             }
         except Exception as error:
-            raise Exception(f"Error on (PermissionsClientDummy) component on (__init__) method: {error}")
+            raise Exception(f"Error in (PermissionsClientDummy) component in (__init__) method: {error}.")
     
     def create(self, user: str, module: str) -> None:
         try:
             self.permissions[user].append(PermissionDummy(user=user, module=module))
         except Exception as error:
-            raise Exception(f"Error on (PermissionsClientDummy) component on (create) method: {error}")
+            raise Exception(f"Error in (PermissionsClientDummy) component in (create) method: {error}.")
     
     def read_all_from_user(self, user: str) -> list[PermissionDummy]:
         try:
@@ -27,7 +27,7 @@ class PermissionsClientDummy:
             else:
                 return []
         except Exception as error:
-            raise Exception(f"Error on (PermissionsClientDummy) component on (read_all_from_user) method: {error}")
+            raise Exception(f"Error in (PermissionsClientDummy) component in (read_all_from_user) method: {error}.")
     
     def delete_from_user(self, user: str, module: str) -> None:
         try:
@@ -35,7 +35,7 @@ class PermissionsClientDummy:
                 if permission_dummy.module == module:
                     self.permissions[user].remove(permission_dummy)
         except Exception as error:
-            raise Exception(f"Error on (PermissionsClientDummy) component on (delete_from_user) method: {error}")
+            raise Exception(f"Error in (PermissionsClientDummy) component in (delete_from_user) method: {error}.")
     
     def delete_all(self, module: str) -> None:
         try:
@@ -44,4 +44,4 @@ class PermissionsClientDummy:
                     if permission.module == module:
                         user.remove(permission)
         except Exception as error:
-            raise Exception(f"Error on (PermissionsClientDummy) component on (delete_all) method: {error}")
+            raise Exception(f"Error in (PermissionsClientDummy) component in (delete_all) method: {error}.")

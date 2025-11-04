@@ -150,4 +150,4 @@ class SupplierHandler:
             else:
                 return Response(success=False, message=f"Erro desconhecido: {response_dict}.")
         except Exception as error:
-            raise Exception(f"Error on (SupplierHandler) component on (order_pre_authorization) method: {error}")
+            raise Exception(f"Error in (SupplierHandler) component in (order_pre_authorization) method: {error}.")

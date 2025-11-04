@@ -20,7 +20,7 @@ class PermissionsClient:
             self.session_construct = sessionmaker(bind=self.engine)
             Base.metadata.create_all(self.engine)
         except Exception as error:
-            raise Exception(f"Error on (PermissionsClient) component on (__init__) method: {error}")
+            raise Exception(f"Error in (PermissionsClient) component in (__init__) method: {error}.")
     
     def create(self, user: str, module: str) -> None:
         try:
@@ -33,14 +33,14 @@ class PermissionsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (PermissionsClient) component on (create) method: {error}")
+            raise Exception(f"Error in (PermissionsClient) component in (create) method: {error}.")
     
     def read_all_from_user(self, user: str) -> list[Permission]:
         try:
             session = self.session_construct()
             return session.query(Permission).filter(Permission.user == user).all()
         except Exception as error:
-            raise Exception(f"Error on (PermissionsClient) component on (read_all_from _user) method: {error}")
+            raise Exception(f"Error in (PermissionsClient) component in (read_all_from _user) method: {error}.")
     
     def delete_from_user(self, user: str, module: str) -> None:
         try:
@@ -50,7 +50,7 @@ class PermissionsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (PermissionsClient) component on (delete_from_user) method: {error}")
+            raise Exception(f"Error in (PermissionsClient) component in (delete_from_user) method: {error}.")
     
     def delete_all(self, module: str) -> None:
         try:
@@ -61,4 +61,4 @@ class PermissionsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (PermissionsClient) component on (delete_all) method: {error}")
+            raise Exception(f"Error in (PermissionsClient) component in (delete_all) method: {error}.")

@@ -20,7 +20,7 @@ class ComissionsQueueClient:
             self.session_construct = sessionmaker(bind=self.engine)
             Base.metadata.create_all(self.engine)
         except Exception as error:
-            raise Exception(f"Error on (ComissionsQueueClient) component on (__init__) method: {error}")
+            raise Exception(f"Error in (ComissionsQueueClient) component in (__init__) method: {error}.")
     
     def create(self,
         order_ref: str,
@@ -41,14 +41,14 @@ class ComissionsQueueClient:
             session.refresh(to_create)
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (ComissionsQueueClient) component on (create) method: {error}")
+            raise Exception(f"Error in (ComissionsQueueClient) component in (create) method: {error}.")
     
     def read(self, order: str) -> list[ComissionQueue]:
         try:
             session = self.session_construct()
             return session.query(ComissionQueue).filter(ComissionQueue.order_ref == order).all()
         except Exception as error:
-            raise Exception(f"Error on (ComissionsQueueClient) component on (read) method: {error}")
+            raise Exception(f"Error in (ComissionsQueueClient) component in (read) method: {error}.")
     
     def delete(self, order: str) -> None:
         try:
@@ -58,4 +58,4 @@ class ComissionsQueueClient:
                 session.delete(delete_element)
             session.commit()
         except Exception as error:
-            raise Exception(f"Error on (ComissionsQueueClient) component on (delete) method: {error}")
+            raise Exception(f"Error in (ComissionsQueueClient) component in (delete) method: {error}.")

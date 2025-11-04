@@ -20,7 +20,7 @@ class ItemsQueueClient:
             self.session_construct = sessionmaker(bind=self.engine)
             Base.metadata.create_all(self.engine)
         except Exception as error:
-            raise Exception(f"Error on (ItemsQueueClient) component on (__init__) method: {error}")
+            raise Exception(f"Error in (ItemsQueueClient) component in (__init__) method: {error}.")
     
     def create(self,
         order_ref: str,
@@ -53,14 +53,14 @@ class ItemsQueueClient:
             session.refresh(to_create)
             session.close()
         except Exception as error:
-            raise Exception(f"Error on (ItemsQueueClient) component on (create) method: {error}")
+            raise Exception(f"Error in (ItemsQueueClient) component in (create) method: {error}.")
     
     def read(self, order: str) -> list[ItemQueue]:
         try:
             session = self.session_construct()
             return session.query(ItemQueue).filter(ItemQueue.order_ref == order).all()
         except Exception as error:
-            raise Exception(f"Error on (ItemsQueueClient) component on (read) method: {error}")
+            raise Exception(f"Error in (ItemsQueueClient) component in (read) method: {error}.")
     
     def delete(self, order: str) -> None:
         try:
@@ -70,4 +70,4 @@ class ItemsQueueClient:
                 session.delete(delete_element)
             session.commit()
         except Exception as error:
-            raise Exception(f"Error on (ItemsQueueClient) component on (delete) method: {error}")
+            raise Exception(f"Error in (ItemsQueueClient) component in (delete) method: {error}.")

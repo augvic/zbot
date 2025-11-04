@@ -7,4 +7,4 @@ class SocketIoApplication(SocketIO):
         try:
             super().__init__(app)
         except Exception as error:
-            raise Exception(f"Error on (SocketIoApplication) component on (__init__) method: {error}")
+            raise Exception(f"Error in (SocketIoApplication) component in (__init__) method: {error}.")

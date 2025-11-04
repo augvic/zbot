@@ -306,7 +306,7 @@ class OrderInteractor(GoDeepBrowser):
                 total_value = value
             )
         except Exception as error:
-            raise Exception(f"Error on (OrderInteractor) component on (get_order_data_for_credit_analysis) method: {error}")
+            raise Exception(f"Error in (OrderInteractor) component in (get_order_data_for_credit_analysis) method: {error}.")
     
     def get_order_data(self, headless: bool, order: str) -> Order:
         try:
@@ -378,4 +378,4 @@ class OrderInteractor(GoDeepBrowser):
                 comission_percentage = comission_percentage
             )
         except Exception as error:
-            raise Exception(f"Error on (OrderInteractor) component on (get_order_data) method: {error}")
+            raise Exception(f"Error in (OrderInteractor) component in (get_order_data) method: {error}.")
