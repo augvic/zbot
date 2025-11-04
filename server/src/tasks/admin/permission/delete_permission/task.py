@@ -25,5 +25,5 @@ class DeletePermission:
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao deletar permissão: ✅ Permissão ({permission}) removida.")
             return Response(success=True, message=f"✅ Permissão ({permission}) removida.")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao deletar permissão: ❌ Erro: {error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao deletar permissão: ❌ Erro: {error}.")
             raise Exception(f"❌ Erro interno ao deletar permissão ({permission}). Contate o administrador.")

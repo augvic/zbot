@@ -26,5 +26,5 @@ class DeleteModule:
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao deletar módulo:✅ Módulo ({module}) removido.")
             return Response(success=True, message=f"✅ Módulo ({module}) removido.")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao deletar módulo ({module}). Contate o administrador.")

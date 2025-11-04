@@ -22,5 +22,5 @@ class CreatePermission:
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar permissão: ✅ Permissão ({permission}) adicionada.")
             return Response(success=True, message=f"✅ Permissão ({permission}) adicionada.")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar permissão: ❌ Erro: {error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar permissão: ❌ Erro: {error}.")
             raise Exception(f"❌ Erro interno ao adicionar permissão ({permission}). Contate o administrador.")

@@ -11,5 +11,5 @@ class GetSocketIoApplication:
         try:
             return SocketIoApplication(app)
         except Exception as error:
-            self.log_system.write_error(f"❌ Error on (GetSocketIoApplication) task: {error}")
+            self.log_system.write_error(f"❌ Error in (GetSocketIoApplication) task: {error}.")
             raise Exception("❌ Erro interno ao retornar aplicações necessárias.")

@@ -22,5 +22,5 @@ class GetFinancialData:
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Dados financeiros coletados: {data}.")
             return Response(success=True, message="✅ Dados financeiros coletados.", data=data)
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao consultar dados financeiros. Contate o administrador.")

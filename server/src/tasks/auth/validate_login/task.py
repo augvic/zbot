@@ -36,5 +36,5 @@ class ValidateLogin:
             self.log_system.write_text(f"👤 Por usuário ({user}): ✅ Login realizado com sucesso. Módulos disponíveis: {permissions_list}.")
             return Response(success=True, message=f"✅ Login realizado com sucesso. Módulos disponíveis: {permissions_list}.")
         except Exception as error:
-            self.log_system.write_error(f"👤 Usuário identificado como ({user}): ❌ Erro: {error}")
+            self.log_system.write_error(f"👤 Usuário identificado como ({user}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao processar login. Contate o administrador.")

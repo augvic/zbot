@@ -16,5 +16,5 @@ class VerifyIfHaveAccess:
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Tem acesso ao módulo: ({module}).")
             return Response(success=True, message="✅ Tem acesso.")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao verificar se possui acesso. Contate o administrador.")

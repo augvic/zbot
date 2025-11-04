@@ -37,5 +37,5 @@ class CreateUser:
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar usuário: ✅ Usuário ({user}) criado.")
             return Response(success=True, message=f"✅ Usuário ({user}) criado.")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar usuário: ❌ Erro: {error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar usuário: ❌ Erro: {error}.")
             raise Exception(f"❌ Erro interno ao criar usuário ({user}). Contate o administrador.")

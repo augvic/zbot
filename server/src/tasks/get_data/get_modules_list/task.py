@@ -18,5 +18,5 @@ class GetModulesList:
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Módulos coletados.")
             return Response(success=True, message="✅ Módulos coletados.", data=modules)
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao coletar lista de módulos. Contate o administrador.")

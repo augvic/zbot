@@ -84,5 +84,5 @@ class IncludeNewRegistration:
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}). ✅ Novo cadastro incluído com sucesso ({new_registration.cnpj}).")
             return Response(success=True, message=f"✅ Novo cadastro incluído com sucesso ({new_registration.cnpj}).")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao incluir novo cadastro. Contate o administrador.")

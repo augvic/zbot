@@ -22,11 +22,11 @@ class ProcessRequest:
         try:
             request_processed = self.request_processor.process(content_type, expected_data, expected_files, optional_data, optional_files)
             if request_processed.success:
-                self.log_system.write_text(f"👤 Por usuário ({user}): ✅ Requisição bem sucedida: {request_processed.message}")
-                return Response(success=True, message=f"✅ Requisição bem sucedida: {request_processed.message}", data=request_processed.data, files=request_processed.files)
+                self.log_system.write_text(f"👤 Por usuário ({user}): ✅ Requisição bem sucedida: {request_processed.message}.")
+                return Response(success=True, message=f"✅ Requisição bem sucedida: {request_processed.message}.", data=request_processed.data, files=request_processed.files)
             else:
-                self.log_system.write_text(f"👤 Por usuário ({user}): ❌ Requisição inválida: {request_processed.message}")
-                return Response(success=False, message=f"❌ Requisição inválida: {request_processed.message}", data={}, files={})
+                self.log_system.write_text(f"👤 Por usuário ({user}): ❌ Requisição inválida: {request_processed.message}.")
+                return Response(success=False, message=f"❌ Requisição inválida: {request_processed.message}.", data={}, files={})
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({user}): ❌ Erro: {error}")
+            self.log_system.write_error(f"👤 Por usuário ({user}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao processar requisição. Contate o administrador.")

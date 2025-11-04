@@ -10,5 +10,5 @@ class GetWsgiApplication:
         try:
             return WsgiApplication()
         except Exception as error:
-            self.log_system.write_error(f"❌ Error on (GetWsgiApplication) task: {error}")
+            self.log_system.write_error(f"❌ Error on (GetWsgiApplication) task: {error}.")
             raise Exception("❌ Erro interno ao retornar aplicações necessárias.")

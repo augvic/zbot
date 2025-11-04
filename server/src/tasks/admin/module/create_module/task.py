@@ -25,5 +25,5 @@ class CreateModule:
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar módulo: ✅ Módulo ({module}) adicionado.")
             return Response(success=True, message=f"✅ Módulo ({module}) adicionado.")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar módulo ({module}). ❌ Erro: {error}")
+            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar módulo ({module}). ❌ Erro: {error}.")
             raise Exception(f"❌ Erro interno ao criar módulo ({module}). Contate o administrador.")
