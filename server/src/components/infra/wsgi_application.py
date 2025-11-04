@@ -10,8 +10,8 @@ class WsgiApplication(Flask):
             base_path = getattr(sys, "_MEIPASS", path.join(path.dirname(__file__), "..", "..", ".."))
             load_dotenv(path.abspath(path.join(base_path, ".env")))
             BASE_DIR = path.dirname(path.abspath(__file__))
-            STATIC = path.abspath(path.join(BASE_DIR, "../../storage/.web/storage"))
-            TEMPLATE = path.abspath(path.join(BASE_DIR, "../../storage/.web"))
+            STATIC = path.abspath(path.join(BASE_DIR, "../../../storage/.web/storage"))
+            TEMPLATE = path.abspath(path.join(BASE_DIR, "../../../storage/.web"))
             super().__init__(__name__, template_folder=TEMPLATE, static_folder=STATIC)
             self.secret_key = getenv("FLASK")
         except Exception as error:

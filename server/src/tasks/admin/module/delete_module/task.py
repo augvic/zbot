@@ -10,7 +10,7 @@ class DeleteModule:
         self.modules_client = ModulesClient("prd")
         self.permisssions_client = PermissionsClient("prd")
         self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin/modules")
+        self.log_system = LogSystem("admin/modules/delete_module")
     
     def execute(self, module: str) -> Response:
         try:

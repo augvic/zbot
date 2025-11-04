@@ -10,7 +10,7 @@ class GetUser:
         self.users_client = UsersClient("prd")
         self.session_manager = SessionManager()
         self.serializer = SqlaSerializer()
-        self.log_system = LogSystem("admin/user")
+        self.log_system = LogSystem("admin/user/get_user")
     
     def execute(self, user: str) -> Response:
         try:
@@ -20,6 +20,9 @@ class GetUser:
                 users = self.users_client.read(user)
             if isinstance(users, list):
                 users_serialized = self.serializer.serialize_list(users)
+            elif not users:
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Usuário ({user}) não existe.")
+                return Response(success=False, message=f"❌ Usuário ({user}) não existe.", data=[{}])
             else:
                 users_serialized = [self.serializer.serialize(users)]
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Usuário coletado com sucesso: {users_serialized}.")

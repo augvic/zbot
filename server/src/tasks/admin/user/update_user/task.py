@@ -8,7 +8,7 @@ class UpdateUser:
     def __init__(self) -> None:
         self.users_client = UsersClient("prd")
         self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin/user")
+        self.log_system = LogSystem("admin/user/update_user")
     
     def execute(self,
         user: str,

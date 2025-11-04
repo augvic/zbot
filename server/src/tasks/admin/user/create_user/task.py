@@ -8,7 +8,7 @@ class CreateUser:
     def __init__(self) -> None:
         self.users_client = UsersClient("prd")
         self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin/user")
+        self.log_system = LogSystem("admin/user/create_user")
     
     def execute(self, user: str, name: str, email: str, password: str) -> Response:
         try:

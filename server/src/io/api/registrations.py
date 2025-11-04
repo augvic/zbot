@@ -1,0 +1,68 @@
+from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
+from src.tasks.post_data.include_new_registration.task import IncludeNewRegistration
+from src.tasks.post_data.include_new_registration.models import NewRegistration
+from src.tasks.application.process_request.task import ProcessRequest
+from src.components.infra.wsgi_application import WsgiApplication
+from typing import cast
+from werkzeug.datastructures import FileStorage
+
+class Registrations:
+    
+    def __init__(self) -> None:
+        self.verify_if_have_access_task = VerifyIfHaveAccess()
+        self.include_new_registration_task = IncludeNewRegistration()
+        self.process_request_task = ProcessRequest()
+        
+    def register(self, app: WsgiApplication) -> None:
+        try:
+            @app.route("/registrations", methods=["POST"])
+            def include_registration() -> tuple[dict[str, bool | str], int]:
+                try:
+                    response = self.verify_if_have_access_task.execute("zRegRpa")
+                    if not response.success:
+                        return {"success": False, "message": "Sem autorização."}, 401
+                    response = self.process_request_task.execute(
+                        content_type="multipart/form-data",
+                        expected_data=[
+                            "cnpj",
+                            "seller",
+                            "email",
+                            "cpf",
+                            "cpf_person",
+                            "tax_regime",
+                            "client_type",
+                        ],
+                        expected_files=[
+                            "article_association_doc",
+                        ],
+                        optional_data=[
+                            "suggested_limit",
+                        ],
+                        optional_files=[
+                            "bank_doc"
+                        ]
+                    )
+                    if not response.success:
+                        return {"success": False, "message": f"{response.message}"}, 400
+                    response = self.include_new_registration_task.execute(
+                        NewRegistration(
+                            cnpj=cast(str, response.data.get("cnpj")),
+                            seller=cast(str, response.data.get("seller")),
+                            email=cast(str, response.data.get("email")),
+                            cpf=cast(str, response.data.get("cpf")),
+                            cpf_person=cast(str, response.data.get("cpf_person")),
+                            tax_regime=cast(str, response.data.get("tax_regime")),
+                            article_association_doc=cast(FileStorage, response.files.get("article_association_doc")),
+                            bank_doc=response.files.get("bank_doc"),
+                            suggested_limit=response.data.get("suggested_limit"),
+                            client_type=cast(str, response.data.get("client_type"))
+                        )
+                    )
+                    if response.success:
+                        return {"success": True, "message": f"{response.message}"}, 200
+                    else:
+                        return {"success": True, "message": f"{response.message}"}, 400
+                except Exception as error:
+                    return {"success": False, "message": f"{error}"}, 500
+        except Exception as error:
+            print(f"❌ Error in (Registratios) route: {error}.")

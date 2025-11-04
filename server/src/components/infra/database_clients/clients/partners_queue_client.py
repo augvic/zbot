@@ -12,7 +12,7 @@ class PartnersQueueClient:
             if getattr(sys, "frozen", False):
                 base_path = path.dirname(sys.executable) 
             else:
-                base_path = path.join(path.dirname(__file__), "..", "..", "..", "..")
+                base_path = path.join(path.dirname(__file__), "..", "..", "..", "..", "..")
             BASE_DIR = path.abspath(path.join(base_path, "storage", ".databases"))
             makedirs(BASE_DIR, exist_ok=True)
             url = f"sqlite:///{BASE_DIR}/{db}.db"

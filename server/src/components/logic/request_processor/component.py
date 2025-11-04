@@ -29,6 +29,6 @@ class RequestProcessor:
                     return RequestProcessed(success=False, message=f"Endpoint: '{request.endpoint}'. Dados faltantes na requisição: '{missing_data}'.", data={}, files={})
             else:
                 return RequestProcessed(success=False, message="Endpoint: '{request.endpoint}'. Enviar conteúdo da requisição como: {content_type}.", data={}, files={})
-            return RequestProcessed(success=True, message=f"- Endpoint: '{request.endpoint}'\n- Content-Type: '{content_type}'\n- Expected Data: {expected_data}\n- Expected Files: {expected_files}", data=data_dict, files=files_dict)
+            return RequestProcessed(success=True, message=f"\n- Endpoint: '{request.endpoint}'\n- Content-Type: '{content_type}'\n- Expected Data: {expected_data}\n- Expected Files: {expected_files}", data=data_dict, files=files_dict)
         except Exception as error:
-            raise Exception(f"- Endpoint: '{request.endpoint}'\n- Content-Type: '{content_type}'\n- Form: {request.form.to_dict()}\n- Files: {request.files.to_dict()}\n- JSON: {request.json}\n- Expected Data: {expected_data}\n- Expected Files: {expected_files}\nError Detailed: {error}")
+            raise Exception(f"\n- Endpoint: '{request.endpoint}'\n- Content-Type: '{content_type}'\n- Form: {request.form.to_dict()}\n- Files: {request.files.to_dict()}\n- JSON: {request.json}\n- Expected Data: {expected_data}\n- Expected Files: {expected_files}\nError Detailed: {error}")

@@ -10,8 +10,9 @@ class Logout:
     
     def execute(self) -> Response:
         try:
+            user = self.session_manager.get_from_session("user")
             self.session_manager.clear_session()
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Logout realizado.")
+            self.log_system.write_text(f"👤 Por usuário ({user}): ✅ Logout realizado.")
             return Response(success=True, message="✅ Logout realizado.")
         except Exception as error:
             self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")

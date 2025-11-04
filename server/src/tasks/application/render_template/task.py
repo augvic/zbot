@@ -1,6 +1,6 @@
 from src.components.infra.template_manager import TemplateManager
 from src.components.file_system.log_system import LogSystem
-from src.components.infra.session_manager import SessionManager
+from src.components.infra.request_manager import RequestManager
 from .models import Response
 
 class RenderTemplate:
@@ -8,13 +8,13 @@ class RenderTemplate:
     def __init__(self) -> None:
         self.template_renderer = TemplateManager()
         self.log_system = LogSystem("application/render_template")
-        self.session_manager = SessionManager()
+        self.request_manager = RequestManager()
     
     def execute(self, template: str) -> Response:
         try:
             template_return = self.template_renderer.render(template)
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Template coletado.")
+            self.log_system.write_text(f"👤 Pelo IP ({self.request_manager.get_user_ip()}): ✅ Template coletado.")
             return Response(success=True, message="✅ Template coletado.", data=template_return)
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
+            self.log_system.write_error(f"👤 Pelo IP ({self.request_manager.get_user_ip()}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao retornar template. Contate o administrador.")

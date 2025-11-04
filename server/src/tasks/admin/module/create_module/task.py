@@ -8,7 +8,7 @@ class CreateModule:
     def __init__(self) -> None:
         self.modules_client = ModulesClient("prd")
         self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin/modules")
+        self.log_system = LogSystem("admin/modules/create_module")
     
     def execute(self, module: str, description: str) -> Response:
         try:

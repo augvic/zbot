@@ -9,7 +9,7 @@ class LogSystem:
             if getattr(sys, "frozen", False):
                 base_path = path.dirname(sys.executable)
             else:
-                base_path = path.join(path.dirname(__file__), "..", "..")
+                base_path = path.join(path.dirname(__file__), "..", "..", "..")
             log_dir = path.abspath(path.join(base_path, "storage", ".logs", folder))
             makedirs(log_dir, exist_ok=True)
             self.log = open(f"{log_dir}/{datetime.now().replace(microsecond=0).strftime("%d-%m-%Y")}.txt", "a", encoding="utf-8")

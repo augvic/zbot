@@ -10,7 +10,7 @@ class CreatePermission:
         self.users_client = UsersClient("prd")
         self.permissions_client = PermissionsClient("prd")
         self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin/permission")
+        self.log_system = LogSystem("admin/permission/create_permission")
     
     def execute(self, user: str, permission: str) -> Response:
         try:
