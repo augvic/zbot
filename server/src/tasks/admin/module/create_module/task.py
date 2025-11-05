@@ -5,10 +5,14 @@ from .models import Response
 
 class CreateModule:
     
-    def __init__(self) -> None:
-        self.modules_client = ModulesClient("prd")
-        self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin/modules/create_module")
+    def __init__(self,
+        modules_client: ModulesClient,
+        session_manager: SessionManager,
+        log_system: LogSystem
+    ) -> None:
+        self.modules_client = modules_client
+        self.session_manager = session_manager
+        self.log_system = log_system
     
     def execute(self, module: str, description: str) -> Response:
         try:

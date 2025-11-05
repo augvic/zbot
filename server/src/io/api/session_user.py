@@ -5,9 +5,12 @@ from typing import Any
 
 class SessionUser:
     
-    def __init__(self) -> None:
-        self.verify_if_user_is_in_session_task = VerifyIfUserIsInSession()
-        self.get_session_user_task = GetSessionUser()
+    def __init__(self,
+        verify_if_user_is_in_session_task: VerifyIfUserIsInSession,
+        get_session_user_task: GetSessionUser
+    ) -> None:
+        self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
+        self.get_session_user_task = get_session_user_task
         
     def register(self, app: WsgiApplication) -> None:
         try:

@@ -5,9 +5,12 @@ from src.components.infra.socketio_application import SocketIoApplication
 
 class RegistrationsRpa:
     
-    def __init__(self) -> None:
-        self.verify_if_have_acess_task = VerifyIfHaveAccess()
-        self.run_registrations_rpa_task = RunRegistrationsRpa()
+    def __init__(self,
+        verify_if_have_acess_task: VerifyIfHaveAccess,
+        run_registrations_rpa_task: RunRegistrationsRpa
+    ) -> None:
+        self.verify_if_have_acess_task = verify_if_have_acess_task
+        self.run_registrations_rpa_task = run_registrations_rpa_task
     
     def register(self, app: WsgiApplication, socketio: SocketIoApplication) -> None:
         try:

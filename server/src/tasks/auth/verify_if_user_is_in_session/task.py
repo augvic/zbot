@@ -5,10 +5,14 @@ from .models import Response
 
 class VerifyIfUserIsInSession:
     
-    def __init__(self) -> None:
-        self.session_manager = SessionManager()
-        self.log_system = LogSystem("auth/verify_if_user_is_in_session")
-        self.request_manager = RequestManager()
+    def __init__(self,
+        session_manager: SessionManager,
+        log_system: LogSystem,
+        request_manager: RequestManager
+    ) -> None:
+        self.session_manager = session_manager
+        self.log_system = log_system
+        self.request_manager = request_manager
     
     def execute(self) -> Response:
         try:

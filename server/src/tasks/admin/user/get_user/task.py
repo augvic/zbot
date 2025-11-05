@@ -6,11 +6,16 @@ from .models import Response
 
 class GetUser:
     
-    def __init__(self) -> None:
-        self.users_client = UsersClient("prd")
-        self.session_manager = SessionManager()
-        self.serializer = SqlaSerializer()
-        self.log_system = LogSystem("admin/user/get_user")
+    def __init__(self,
+        users_client: UsersClient,
+        session_manager: SessionManager,
+        serializer: SqlaSerializer,
+        log_system: LogSystem
+    ) -> None:
+        self.users_client = users_client
+        self.session_manager = session_manager
+        self.serializer = serializer
+        self.log_system = log_system
     
     def execute(self, user: str) -> Response:
         try:

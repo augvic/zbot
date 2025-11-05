@@ -7,11 +7,16 @@ from .models import Response
 
 class GetFederalRevenueData:
     
-    def __init__(self) -> None:
-        self.federal_revenue_data_driver = PositivoFederalRevenueApi()
-        self.serializer = DataclassSerializer()
-        self.log_system = LogSystem("get_data/federal_revenue_data")
-        self.session_manager = SessionManager()
+    def __init__(self,
+        federal_revenue_data_driver: PositivoFederalRevenueApi,
+        serializer: DataclassSerializer,
+        log_system: LogSystem,
+        session_manager: SessionManager
+    ) -> None:
+        self.federal_revenue_data_driver = federal_revenue_data_driver
+        self.serializer = serializer
+        self.log_system = log_system
+        self.session_manager = session_manager
     
     def execute(self, cnpj: str) -> Response:
         try:

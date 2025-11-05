@@ -7,11 +7,16 @@ from typing import cast
 
 class ProcessRequest:
     
-    def __init__(self) -> None:
-        self.request_processor = RequestProcessor()
-        self.log_system = LogSystem("application/process_request")
-        self.session_manager = SessionManager()
-        self.request_manager = RequestManager()
+    def __init__(self,
+        request_processor: RequestProcessor,
+        log_system: LogSystem,
+        session_manager: SessionManager,
+        request_manager: RequestManager
+    ) -> None:
+        self.request_processor = request_processor
+        self.log_system = log_system
+        self.session_manager = session_manager
+        self.request_manager = request_manager
     
     def execute(self, content_type: str, expected_data: list[str], expected_files: list[str], optional_data: list[str], optional_files: list[str]) -> Response:
         try:

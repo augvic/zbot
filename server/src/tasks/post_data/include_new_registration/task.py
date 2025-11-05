@@ -11,16 +11,26 @@ from .models import Response, NewRegistration
 
 class IncludeNewRegistration:
     
-    def __init__(self) -> None:
-        self.federal_revenue_api = PositivoFederalRevenueApi()
-        self.registrations_client = RegistrationsClient("prd")
-        self.state_registrations_client = StateRegistrationsClient("prd")
-        self.suframa_registrations_client = SuframaRegistrationsClient("prd")
-        self.nceas_client = NceasClient("prd")
-        self.log_system = LogSystem("post_data/include_new_registration")
-        self.date_utility = DateUtility()
-        self.docs_handler = RegistrationsDocsHandler()
-        self.session_manager = SessionManager()
+    def __init__(self,
+        federal_revenue_api: PositivoFederalRevenueApi,
+        registrations_client: RegistrationsClient,
+        state_registrations_client: StateRegistrationsClient,
+        suframa_registrations_client: SuframaRegistrationsClient,
+        nceas_client: NceasClient,
+        log_system: LogSystem,
+        date_utility: DateUtility,
+        docs_handler: RegistrationsDocsHandler,
+        session_manager: SessionManager
+    ) -> None:
+        self.federal_revenue_api = federal_revenue_api
+        self.registrations_client = registrations_client
+        self.state_registrations_client = state_registrations_client
+        self.suframa_registrations_client = suframa_registrations_client
+        self.nceas_client = nceas_client
+        self.log_system = log_system
+        self.date_utility = date_utility
+        self.docs_handler = docs_handler
+        self.session_manager = session_manager
     
     def execute(self, new_registration: NewRegistration) -> Response:
         try:

@@ -7,11 +7,16 @@ from .models import Response
 
 class GetFinancialData:
     
-    def __init__(self) -> None:
-        self.financial_data_driver = FinancialDataGetter()
-        self.serializer = DataclassSerializer()
-        self.log_system = LogSystem("get_data/financial_data")
-        self.session_manager = SessionManager()
+    def __init__(self,
+        financial_data_driver: FinancialDataGetter,
+        serializer: DataclassSerializer,
+        log_system: LogSystem,
+        session_manager: SessionManager
+    ) -> None:
+        self.financial_data_driver = financial_data_driver
+        self.serializer = serializer
+        self.log_system = log_system
+        self.session_manager = session_manager
     
     def execute(self, cnpj_root: str) -> Response:
         try:

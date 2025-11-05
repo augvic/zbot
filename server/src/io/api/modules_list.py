@@ -8,12 +8,18 @@ from typing import cast
 
 class ModulesList:
     
-    def __init__(self) -> None:
-        self.verify_if_have_access_task = VerifyIfHaveAccess()
-        self.get_modules_list_task = GetModulesList()
-        self.create_module_task = CreateModule()
-        self.delete_module_task = DeleteModule()
-        self.process_request_task = ProcessRequest()
+    def __init__(self,
+        verify_if_have_access_task: VerifyIfHaveAccess,
+        get_modules_list_task: GetModulesList,
+        create_module_task: CreateModule,
+        delete_module_task: DeleteModule,
+        process_request_task: ProcessRequest
+    ) -> None:
+        self.verify_if_have_access_task = verify_if_have_access_task
+        self.get_modules_list_task = get_modules_list_task
+        self.create_module_task = create_module_task
+        self.delete_module_task = delete_module_task
+        self.process_request_task = process_request_task
     
     def register(self, app: WsgiApplication) -> None:
         try:

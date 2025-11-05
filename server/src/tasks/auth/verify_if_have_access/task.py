@@ -4,9 +4,12 @@ from .models import Response
 
 class VerifyIfHaveAccess:
     
-    def __init__(self) -> None:
-        self.session_manager = SessionManager()
-        self.log_system = LogSystem("auth/verify_if_have_access")
+    def __init__(self,
+        session_manager: SessionManager,
+        log_system: LogSystem
+    ) -> None:
+        self.session_manager = session_manager
+        self.log_system = log_system
     
     def execute(self, module: str) -> Response:
         try:

@@ -6,11 +6,16 @@ from .models import Response
 
 class DeletePermission:
     
-    def __init__(self) -> None:
-        self.users_client = UsersClient("prd")
-        self.permissions_client = PermissionsClient("prd")
-        self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin/permission/delete_permission")
+    def __init__(self,
+        users_client: UsersClient,
+        permissions_client: PermissionsClient,
+        session_manager: SessionManager,
+        log_system: LogSystem
+    ) -> None:
+        self.users_client = users_client
+        self.permissions_client = permissions_client
+        self.session_manager = session_manager
+        self.log_system = log_system
     
     def execute(self, user: str, permission: str) -> Response:
         try:

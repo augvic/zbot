@@ -6,11 +6,16 @@ from src.components.infra.wsgi_application import WsgiApplication
 
 class Permissions:
     
-    def __init__(self) -> None:
-        self.verify_if_have_access_task = VerifyIfHaveAccess()
-        self.get_permissions_task = GetPermissions()
-        self.create_permission_task = CreatePermission()
-        self.delete_permission_task = DeletePermission()
+    def __init__(self,
+        verify_if_have_access_task: VerifyIfHaveAccess,
+        get_permissions_task: GetPermissions,
+        create_permission_task: CreatePermission,
+        delete_permission_task: DeletePermission
+    ) -> None:
+        self.verify_if_have_access_task = verify_if_have_access_task
+        self.get_permissions_task = get_permissions_task
+        self.create_permission_task = create_permission_task
+        self.delete_permission_task = delete_permission_task
     
     def register(self, app: WsgiApplication) -> None:
         try:

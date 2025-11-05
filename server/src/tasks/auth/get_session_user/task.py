@@ -4,9 +4,12 @@ from .models import Response
 
 class GetSessionUser:
     
-    def __init__(self) -> None:
-        self.session_manager = SessionManager()
-        self.log_system = LogSystem("auth/get_session_user")
+    def __init__(self,
+        session_manager: SessionManager,
+        log_system: LogSystem
+    ) -> None:
+        self.session_manager = session_manager
+        self.log_system = log_system
     
     def execute(self) -> Response:
         try:

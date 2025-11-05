@@ -7,11 +7,16 @@ from typing import cast
 
 class Login:
     
-    def __init__(self) -> None:
-        self.validate_login_task = ValidateLogin()
-        self.verify_if_user_is_in_session_task = VerifyIfUserIsInSession()
-        self.logout_task = Logout()
-        self.process_request_task = ProcessRequest()
+    def __init__(self,
+        validate_login_task: ValidateLogin,
+        verify_if_user_is_in_session_task: VerifyIfUserIsInSession,
+        logout_task: Logout,
+        process_request_task: ProcessRequest
+    ) -> None:
+        self.validate_login_task = validate_login_task
+        self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
+        self.logout_task = logout_task
+        self.process_request_task = process_request_task
     
     def register(self, app: WsgiApplication) -> None:
         try:

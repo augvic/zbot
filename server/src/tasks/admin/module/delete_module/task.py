@@ -6,11 +6,16 @@ from .models import Response
 
 class DeleteModule:
     
-    def __init__(self) -> None:
-        self.modules_client = ModulesClient("prd")
-        self.permisssions_client = PermissionsClient("prd")
-        self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin/modules/delete_module")
+    def __init__(self,
+        modules_client: ModulesClient,
+        permisssions_client: PermissionsClient,
+        session_manager: SessionManager,
+        log_system: LogSystem
+    ) -> None:
+        self.modules_client = modules_client
+        self.permisssions_client = permisssions_client
+        self.session_manager = session_manager
+        self.log_system = log_system
     
     def execute(self, module: str) -> Response:
         try:

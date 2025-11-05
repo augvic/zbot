@@ -5,10 +5,14 @@ from .models import Response
 
 class RenderTemplate:
     
-    def __init__(self) -> None:
-        self.template_renderer = TemplateManager()
-        self.log_system = LogSystem("application/render_template")
-        self.request_manager = RequestManager()
+    def __init__(self,
+        template_renderer: TemplateManager,
+        log_system: LogSystem,
+        request_manager: RequestManager
+    ) -> None:
+        self.template_renderer = template_renderer
+        self.log_system = log_system
+        self.request_manager = request_manager
     
     def execute(self, template: str) -> Response:
         try:

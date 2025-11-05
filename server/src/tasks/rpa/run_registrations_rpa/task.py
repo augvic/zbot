@@ -8,12 +8,19 @@ from .models import Response
 
 class RunRegistrationsRpa:
     
-    def __init__(self) -> None:
-        self.time_utility = TimeUtility()
-        self.log_system = LogSystem("rpa/registrations")
-        self.session_manager = SessionManager()
-        self.thread = ApplicationThread()
-        self.date_utility = DateUtility()
+    def __init__(self,
+        time_utility: TimeUtility,
+        log_system: LogSystem,
+        session_manager: SessionManager,
+        thread: ApplicationThread,
+        date_utility: DateUtility,
+
+    ) -> None:
+        self.time_utility = time_utility
+        self.log_system = log_system
+        self.session_manager = session_manager
+        self.thread = thread
+        self.date_utility = date_utility
         self.is_running = False
         self.stop = False
         self.memory: list[str] = []

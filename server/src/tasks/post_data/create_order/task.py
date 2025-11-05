@@ -6,10 +6,14 @@ from .models import *
 
 class CreateOrder:
     
-    def __init__(self) -> None:
-        self.order_creator = OrderCreator()
-        self.log_system = LogSystem("post_data/create_order")
-        self.session_manager = SessionManager()
+    def __init__(self,
+        order_creator: OrderCreator,
+        log_system: LogSystem,
+        session_manager: SessionManager
+    ) -> None:
+        self.order_creator = order_creator
+        self.log_system = log_system
+        self.session_manager = session_manager
     
     def execute(self, order_model: OrderModel) -> Response:
         try:

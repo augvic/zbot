@@ -3,8 +3,10 @@ from src.components.infra.wsgi_application import WsgiApplication
 
 class Main:
     
-    def __init__(self) -> None:
-        self.render_template_task = RenderTemplate()
+    def __init__(self,
+        render_template_task: RenderTemplate
+    ) -> None:
+        self.render_template_task = render_template_task
         
     def register(self, app: WsgiApplication) -> None:
         try:

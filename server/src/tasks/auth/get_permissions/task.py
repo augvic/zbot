@@ -6,11 +6,16 @@ from .models import Response
 
 class GetPermissions:
     
-    def __init__(self) -> None:
-        self.permissions_client = PermissionsClient("prd")
-        self.session_manager = SessionManager()
-        self.serializer = SqlaSerializer()
-        self.log_system = LogSystem("auth/get_permissions")
+    def __init__(self,
+        permissions_client: PermissionsClient,
+        session_manager: SessionManager,
+        serializer: SqlaSerializer,
+        log_system: LogSystem
+    ) -> None:
+        self.permissions_client = permissions_client
+        self.session_manager = session_manager
+        self.serializer = serializer
+        self.log_system = log_system
     
     def execute(self, user: str) -> Response:
         try:

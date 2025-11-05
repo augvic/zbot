@@ -6,11 +6,16 @@ from .models import Response
 
 class GetModulesList:
     
-    def __init__(self) -> None:
-        self.modules_client = ModulesClient("prd")
-        self.session_manager = SessionManager()
-        self.serializer = SqlaSerializer()
-        self.log_system = LogSystem("get_data/modules_list")
+    def __init__(self,
+        modules_client: ModulesClient,
+        session_manager: SessionManager,
+        serializer: SqlaSerializer,
+        log_system: LogSystem
+    ) -> None:
+        self.modules_client = modules_client
+        self.session_manager = session_manager
+        self.serializer = serializer
+        self.log_system = log_system
     
     def execute(self) -> Response:
         try:

@@ -4,9 +4,12 @@ from src.components.infra.wsgi_application import WsgiApplication
 
 class SessionModules:
     
-    def __init__(self) -> None:
-        self.verify_if_user_is_in_session_task = VerifyIfUserIsInSession()
-        self.get_session_modules_task = GetSessionModules()
+    def __init__(self,
+        verify_if_user_is_in_session_task: VerifyIfUserIsInSession,
+        get_session_modules_task: GetSessionModules
+    ) -> None:
+        self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
+        self.get_session_modules_task = get_session_modules_task
         
     def register(self, app: WsgiApplication) -> None:
         try:

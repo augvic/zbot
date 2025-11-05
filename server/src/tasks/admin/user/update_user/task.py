@@ -5,10 +5,14 @@ from .models import Response
 
 class UpdateUser:
     
-    def __init__(self) -> None:
-        self.users_client = UsersClient("prd")
-        self.session_manager = SessionManager()
-        self.log_system = LogSystem("admin/user/update_user")
+    def __init__(self,
+        users_client: UsersClient,
+        session_manager: SessionManager,
+        log_system: LogSystem
+    ) -> None:
+        self.users_client = users_client
+        self.session_manager = session_manager
+        self.log_system = log_system
     
     def execute(self,
         user: str,

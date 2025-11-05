@@ -7,12 +7,18 @@ from .models import Response
 
 class ValidateLogin:
     
-    def __init__(self) -> None:
-        self.users_client = UsersClient("prd")
-        self.permissions_client = PermissionsClient("prd")
-        self.modules_client = ModulesClient("prd")
-        self.session_manager = SessionManager()
-        self.log_system = LogSystem("auth/validate_login")
+    def __init__(self,
+        users_client: UsersClient,
+        permissions_client: PermissionsClient,
+        modules_client: ModulesClient,
+        session_manager: SessionManager,
+        log_system: LogSystem
+    ) -> None:
+        self.users_client = users_client
+        self.permissions_client = permissions_client
+        self.modules_client = modules_client
+        self.session_manager = session_manager
+        self.log_system = log_system
     
     def execute(self, user: str, password: str) -> Response:
         try:

@@ -8,10 +8,14 @@ from werkzeug.datastructures import FileStorage
 
 class Registrations:
     
-    def __init__(self) -> None:
-        self.verify_if_have_access_task = VerifyIfHaveAccess()
-        self.include_new_registration_task = IncludeNewRegistration()
-        self.process_request_task = ProcessRequest()
+    def __init__(self,
+        verify_if_have_access_task: VerifyIfHaveAccess,
+        include_new_registration_task: IncludeNewRegistration,
+        process_request_task: ProcessRequest,
+    ) -> None:
+        self.verify_if_have_access_task = verify_if_have_access_task
+        self.include_new_registration_task = include_new_registration_task
+        self.process_request_task = process_request_task
         
     def register(self, app: WsgiApplication) -> None:
         try:
