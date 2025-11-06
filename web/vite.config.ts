@@ -3,7 +3,7 @@ import path from "path";
 
 export default defineConfig({
     build: {
-        outDir: path.resolve(__dirname, ".dist", "storage"),
+        outDir: path.resolve(__dirname, ".package", "storage"),
         emptyOutDir: true,
         lib: {
             entry: path.resolve(__dirname, "src", "io", "pages", "zlogin.ts"),

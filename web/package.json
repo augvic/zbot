@@ -6,7 +6,7 @@
   "scripts": {
     "build": "vite build && npm run tailwindcss && npm run copy-storage && npm run transfer-to-server",
     "tailwindcss": "npx @tailwindcss/cli -i ./storage/css/input.css -o ./storage/css/output.css",
-    "copy-storage": "xcopy .\\storage .\\.dist\\storage /E /I /Y && copy .\\main.html .\\.dist\\main.html /Y",
+    "copy-storage": "xcopy .\\storage .\\.package\\storage /E /I /Y && copy .\\main.html .\\.package\\main.html /Y",
     "transfer-to-server": "xcopy .\\.dist ..\\server\\storage\\.web /E /Y /I"
   },
   "repository": {

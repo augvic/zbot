@@ -1,5 +1,5 @@
 import { io, Socket } from "socket.io-client";
-import { GetModuleFromRegistry } from "../../tasks/get_module_from_registry";
+import { GetModuleFromRegistryTask } from "../../tasks/get_module_from_registry";
 import { zLogin } from "./zlogin";
 
 export class zIndex {
@@ -12,8 +12,8 @@ export class zIndex {
     
     constructor() {
         this.createSelf();
-        this.createComponents();
         document.getElementById("application-content")!.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -262,7 +262,7 @@ class ModuleButton {
                 moduleContainer.classList.remove("opacity-fade-out");
                 moduleContainer.innerHTML = "";
                 socket.removeAllListeners();
-                const getModuleFromRegistryTask = new GetModuleFromRegistry();
+                const getModuleFromRegistryTask = new GetModuleFromRegistryTask();
                 const moduleClass = getModuleFromRegistryTask.execute(moduleName);
                 new moduleClass(moduleContainer, socket);
                 menu.classList.add("fade-out-left");

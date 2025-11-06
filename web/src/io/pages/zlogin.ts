@@ -1,16 +1,18 @@
 import { zIndex } from "./zindex";
 export { zIndex } from "./zindex";
+import { ThemeButton } from "../global/theme_button";
+import { Notification } from "../global/notification";
 
 export class zLogin {
     
     element!: HTMLElement
     loginContainer!: LoginContainer
     
-    constructor() {
+    constructor(makeRequestTask: MakeRequestTask) {
         this.createSelf();
-        this.createComponents();
-        this.startListeners();
         document.getElementById("application-content")!.appendChild(this.element);
+        this.createComponents(makeRequestTask);
+        this.startListeners();
     }
     
     private createSelf() {
@@ -19,8 +21,8 @@ export class zLogin {
         this.element.className = "w-full h-full flex justify-center items-center bg-gray-300 dark:bg-gray-900 transition-colors duration-300";
     }
     
-    private createComponents() {
-        this.loginContainer = new LoginContainer(this.element);
+    private createComponents(makeRequestTask: MakeRequestTask) {
+        this.loginContainer = new LoginContainer(this.element, makeRequestTask);
     }
     
     private startListeners() {
@@ -41,10 +43,10 @@ class LoginContainer {
     passwordInput!: LoginInput
     loginButton!: LoginButton
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -52,11 +54,11 @@ class LoginContainer {
         this.element.className = "h-[200px] w-[400px] flex flex-col items-center justify-center bg-white dark:bg-gray-700 rounded-md gap-2 opacity-fade-in transition-colors duration-300";
     }
     
-    private createComponents() {
+    private createComponents(makeRequestTask: MakeRequestTask) {
         this.title = new TitleContainer(this.element);
         this.userInput = new LoginInput(this.element, "user", "Matrícula", "text");
         this.passwordInput = new LoginInput(this.element, "password", "Senha", "password");
-        this.loginButton = new LoginButton(this.element);
+        this.loginButton = new LoginButton(this.element, makeRequestTask);
     }
     
 }
@@ -69,8 +71,8 @@ class TitleContainer {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -125,10 +127,10 @@ class LoginButton {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
-        this.startListeners();
         appendTo.appendChild(this.element);
+        this.startListeners(makeRequestTask);
     }
     
     private createSelf() {
@@ -137,139 +139,23 @@ class LoginButton {
         this.element.innerText = "Acessar";
     }
     
-    private startListeners() {
+    private startListeners(makeRequestTask: MakeRequestTask) {
         this.element.addEventListener("click", async () => {
             const user = (document.getElementById("user") as HTMLInputElement).value!;
             const password = (document.getElementById("password") as HTMLInputElement).value!;
-            const response = await fetch(`${window.location.origin}/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user, password })
-            });
-            const responseDict = await response.json()
-            if (!responseDict.success) {
-                new Notification(responseDict.message, "red");
+            const response = await makeRequestTask.execute("/login", "application/json", { user, password });
+            if (!response.success) {
+                new Notification(response.message, "red");
             } else {
                 const loginPage = document.getElementById("zLogin")!;
                 loginPage.classList.add("opacity-fade-out");
                 loginPage.addEventListener("animationend", () => {
                     loginPage.remove();
                     new zIndex();
-                    new Notification(responseDict.message, "green");
+                    new Notification(response.message, "green");
                 });
             }
         });
     }
     
-}
-
-class Notification {
-    
-    element!: HTMLElement
-    
-    constructor(message: string, color: string) {
-        this.createSelf(message, color);
-        this.pushUpExistingNotifications();
-        document.body.appendChild(this.element);
-        setTimeout(() => {
-            this.element.classList.remove("fade-in-right");
-            this.element.classList.add("fade-out-right");
-            this.element.addEventListener("animationend", () => {
-                this.element.remove()
-            }, { once: true });
-        }, 3000);
-    }
-    
-    private createSelf(message: string, color: string) {
-        this.element = document.createElement("div");
-        this.element.className = "notification fixed z-50 bottom-4 right-5 py-3 px-6 text-white rounded-md cursor-default fade-in-right transition-[bottom] duration-300 ease";
-        if (color == "green") {
-            this.element.classList.add("bg-green-400");
-        } else if (color == "orange") {
-            this.element.classList.add("bg-amber-400");
-        } else if (color == "red") {
-            this.element.classList.add("bg-red-400");
-        }
-        this.element.innerText = message;
-    }
-    
-    private pushUpExistingNotifications() {
-        const notifications = document.querySelectorAll<HTMLElement>(".notification");
-        notifications.forEach(notification => {
-            if (notification != this.element) {
-                const currentBottom = parseInt(
-                    getComputedStyle(notification).bottom.replace("px", "")
-                );
-                notification.style.bottom = (currentBottom + 60) + "px";
-            }
-        });
-    }
-    
-}
-
-class ThemeButton {
-    
-    element!: HTMLElement
-    icon!: Icon
-    
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
-        this.createComponents();
-        this.startListeners();
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf() {
-        this.element = document.createElement("button");
-        this.element.className = "cursor-pointer w-auto h-auto rounded-md transition-colors duration-300 hover:bg-gray-300 dark:hover:bg-gray-900 absolute ml-25 transition-colors duration-300";
-    }
-    
-    private createComponents() {
-        let iconSrc = "";
-        if (window.localStorage.getItem("theme") == "light") {
-            iconSrc = "/storage/images/moon.png";
-        } else {
-            iconSrc = "/storage/images/sun.png";
-        }
-        this.icon = new Icon(this.element, iconSrc);
-    }
-    
-    private startListeners() {
-        this.element.addEventListener("click", () => {
-            if (document.documentElement.classList.contains("light")) {
-                document.documentElement.classList.remove("light");
-                document.documentElement.classList.add("dark");
-                window.localStorage.setItem("theme", "dark");
-                this.icon.element.src = "/storage/images/sun.png";
-                this.icon.element.classList.remove("opacity-fade-in");
-                void this.icon.element.offsetWidth;
-                this.icon.element.classList.add("opacity-fade-in");
-            } else {
-                document.documentElement.classList.remove("dark");
-                document.documentElement.classList.add("light");
-                window.localStorage.setItem("theme", "light");
-                this.icon.element.src = "/storage/images/moon.png";
-                this.icon.element.classList.remove("opacity-fade-in");
-                void this.icon.element.offsetWidth;
-                this.icon.element.classList.add("opacity-fade-in");
-            }
-        });
-    }
-    
-}
-
-class Icon {
-    
-    element!: HTMLImageElement
-    
-    constructor(appendTo: HTMLElement, src: string) {
-        this.createSelf(src);
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf(src: string) {
-        this.element = document.createElement("img");
-        this.element.src = src;
-        this.element.className = "size-7 opacity-fade-in";
-    }
 }

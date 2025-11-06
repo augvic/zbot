@@ -1,16 +1,19 @@
-import { ModuleClassRegistry } from "../components/module_class_registry";
+import { ModuleRegistryComponent } from "../components/module_class_registry";
+import { zAdmin } from "../io/modules/zadmin";
+import { zRegRpa } from "../io/modules/zregrpa";
 
-export class GetModuleFromRegistry {
+export class GetModuleFromRegistryTask {
     
-    moduleClassRegistry!: ModuleClassRegistry
+    moduleClassRegistry!: ModuleRegistryComponent
     
-    private setup() {
-        this.moduleClassRegistry = new ModuleClassRegistry()
+    constructor(moduleRegistry: ModuleRegistryComponent) {
+        this.moduleClassRegistry = moduleRegistry;
     }
     
-    execute(moduleName: string): any {
-        this.setup();
-        return this.moduleClassRegistry.get_module_class(moduleName);
+    public execute(moduleName: string):
+    typeof zAdmin |
+    typeof zRegRpa {
+        return this.moduleClassRegistry.getModuleClass(moduleName);
     }
     
 }
