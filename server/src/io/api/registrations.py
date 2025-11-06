@@ -2,7 +2,7 @@ from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
 from src.tasks.post_data.include_new_registration.task import IncludeNewRegistration
 from src.tasks.post_data.include_new_registration.models import NewRegistration
 from src.tasks.application.process_request.task import ProcessRequest
-from src.components.infra.wsgi_application import WsgiApplication
+from src.tasks.application.route_registry import RouteRegistryTask
 from typing import cast
 from werkzeug.datastructures import FileStorage
 
@@ -12,14 +12,15 @@ class Registrations:
         verify_if_have_access_task: VerifyIfHaveAccess,
         include_new_registration_task: IncludeNewRegistration,
         process_request_task: ProcessRequest,
+        route_registry_task: RouteRegistryTask
     ) -> None:
         self.verify_if_have_access_task = verify_if_have_access_task
         self.include_new_registration_task = include_new_registration_task
         self.process_request_task = process_request_task
-        
-    def register(self, app: WsgiApplication) -> None:
+        self.route_registry_task = route_registry_task
+    
+    def init(self) -> None:
         try:
-            @app.route("/registrations", methods=["POST"])
             def include_registration() -> tuple[dict[str, bool | str], int]:
                 try:
                     response = self.verify_if_have_access_task.execute("zRegRpa")
@@ -68,5 +69,7 @@ class Registrations:
                         return {"success": True, "message": f"{response.message}"}, 400
                 except Exception as error:
                     return {"success": False, "message": f"{error}"}, 500
+            
+            self.route_registry_task.execute("/registrations", ["POST"], include_registration)
         except Exception as error:
             print(f"❌ Error in (Registratios) route: {error}.")

@@ -2,7 +2,7 @@ from src.tasks.auth.validate_login.task import ValidateLogin
 from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
 from src.tasks.auth.logout.task import Logout
 from src.tasks.application.process_request.task import ProcessRequest
-from src.components.infra.wsgi_application import WsgiApplication
+from src.tasks.application.route_registry import RouteRegistryTask
 from typing import cast
 
 class Login:
@@ -11,16 +11,17 @@ class Login:
         validate_login_task: ValidateLogin,
         verify_if_user_is_in_session_task: VerifyIfUserIsInSession,
         logout_task: Logout,
-        process_request_task: ProcessRequest
+        process_request_task: ProcessRequest,
+        route_registry_task: RouteRegistryTask
     ) -> None:
         self.validate_login_task = validate_login_task
         self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
         self.logout_task = logout_task
         self.process_request_task = process_request_task
+        self.route_registry_task = route_registry_task
     
-    def register(self, app: WsgiApplication) -> None:
+    def init(self) -> None:
         try:
-            @app.route("/login", methods=["POST"])
             def validate_login() -> tuple[dict[str, str | bool], int]:
                 try:
                     response = self.process_request_task.execute(
@@ -46,7 +47,6 @@ class Login:
                 except Exception as error:
                     return {"success": False, "message": f"{error}"}, 500
             
-            @app.route("/login", methods=["GET"])
             def verify_if_user_is_in_session() -> tuple[dict[str, str | bool], int]:
                 try:
                     response = self.verify_if_user_is_in_session_task.execute()
@@ -57,7 +57,6 @@ class Login:
                 except Exception as error:
                     return {"success": False, "message": f"{error}"}, 500
             
-            @app.route("/login", methods=["DELETE"])
             def logout() -> tuple[dict[str, str | bool], int]:
                 try:
                     response = self.logout_task.execute()
@@ -67,5 +66,9 @@ class Login:
                         return {"success": True, "message": response.message}, 401
                 except Exception as error:
                     return {"success": False, "message": f"{error}"}, 500
+            
+            self.route_registry_task.execute("/login", ["POST"], validate_login)
+            self.route_registry_task.execute("/login", ["GET"], verify_if_user_is_in_session)
+            self.route_registry_task.execute("/login", ["DELETE"], logout)
         except Exception as error:
             print(f"❌ Error in (Login) route: {error}.")

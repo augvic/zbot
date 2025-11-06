@@ -4,7 +4,7 @@ from src.tasks.admin.user.delete_user.task import DeleteUser
 from src.tasks.admin.user.update_user.task import UpdateUser
 from src.tasks.application.process_request.task import ProcessRequest
 from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
-from src.components.infra.wsgi_application import WsgiApplication
+from src.tasks.application.route_registry import RouteRegistryTask
 from typing import cast
 
 class Users:
@@ -15,7 +15,8 @@ class Users:
         create_user_task: CreateUser,
         delete_user_task: DeleteUser,
         update_user_task: UpdateUser,
-        process_request_task: ProcessRequest
+        process_request_task: ProcessRequest,
+        route_registry_task: RouteRegistryTask
     ) -> None:
         self.verify_if_have_access_task = verify_if_have_access_task
         self.get_users_task = get_users_task
@@ -23,10 +24,10 @@ class Users:
         self.delete_user_task = delete_user_task
         self.update_user_task = update_user_task
         self.process_request_task = process_request_task
+        self.route_registry_task = route_registry_task
     
-    def register(self, app: WsgiApplication) -> None:
+    def init(self) -> None:
         try:
-            @app.route("/users/<user>", methods=["GET"])
             def get_user(user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
                 try:
                     response =  self.verify_if_have_access_task.execute("zAdmin")
@@ -40,7 +41,6 @@ class Users:
                 except Exception as error:
                     return {"success": False, "message": f"{error}"}, 500
             
-            @app.route("/users", methods=["POST"])
             def create_user() -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
                 try:
                     response =  self.verify_if_have_access_task.execute("zAdmin")
@@ -73,7 +73,6 @@ class Users:
                 except Exception as error:
                     return {"success": False, "message": f"{error}"}, 500
             
-            @app.route("/users/<user>", methods=["DELETE"])
             def delete_user(user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
                 try:
                     response =  self.verify_if_have_access_task.execute("zAdmin")
@@ -87,8 +86,7 @@ class Users:
                 except Exception as error:
                     return {"success": False, "message": f"{error}"}, 500
             
-            @app.route("/users/<user>", methods=["PUT"])
-            def update_user(user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
+            def update_user() -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
                 try:
                     response =  self.verify_if_have_access_task.execute("zAdmin")
                     if not response.success:
@@ -119,5 +117,10 @@ class Users:
                         return {"success": False, "message": response.message}, 400
                 except Exception as error:
                     return {"success": False, "message": f"{error}"}, 500
+            
+            self.route_registry_task.execute("/users/<user>", ["GET"], get_user)
+            self.route_registry_task.execute("/users", ["POST"], create_user)
+            self.route_registry_task.execute("/users/<user>", ["DELETE"], delete_user)
+            self.route_registry_task.execute("/users/<user>", ["PUT"], update_user)
         except Exception as error:
             print(f"❌ Error in (Users) route: {error}.")

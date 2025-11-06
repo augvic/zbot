@@ -30,6 +30,7 @@ from src.tasks.get_data.get_modules_list.task import GetModulesList
 from src.tasks.post_data.create_order.task import CreateOrder
 from src.tasks.post_data.include_new_registration.task import IncludeNewRegistration
 from src.tasks.rpa.run_registrations_rpa.task import RunRegistrationsRpa
+from src.tasks.application.route_registry import RouteRegistryTask
 from src.components.adapter.dataclass_serializer import DataclassSerializer
 from src.components.adapter.sqla_serializer import SqlaSerializer
 from src.components.file_system.log_system import LogSystem
@@ -90,6 +91,7 @@ class CompositionRoot:
         self.get_permissions_log_system = LogSystem("auth/get_permissions")
         self.get_session_modules_log_system = LogSystem("auth/get_session_modules")
         self.get_session_user_log_system = LogSystem("auth/get_session_user")
+        self.route_registry_log_system = LogSystem("application/route_registry")
         self.logout_log_system = LogSystem("auth/logout")
         self.validate_login_log_system = LogSystem("auth/validate_login")
         self.verify_if_have_access_log_system = LogSystem("auth/verify_if_have_access")
@@ -257,7 +259,12 @@ class CompositionRoot:
             log_system=self.run_registrations_rpa_log_system,
             session_manager=self.session_manager,
             thread=self.application_thread,
-            date_utility=self.date_utility
+            date_utility=self.date_utility,
+            socketio=self.socketio
+        )
+        self.route_registry_task = RouteRegistryTask(
+            app_component=self.app,
+            log_system=self.route_registry_log_system
         )
     
     def _init_io(self) -> None:
@@ -265,49 +272,58 @@ class CompositionRoot:
             validate_login_task=self.validate_login_task,
             verify_if_user_is_in_session_task=self.verify_if_user_is_in_session_task,
             logout_task=self.logout_task,
-            process_request_task=self.process_request_task
-        ).register(self.app)
+            process_request_task=self.process_request_task,
+            route_registry_task=self.route_registry_task
+        ).init()
         Main(
-            render_template_task=self.render_template_task
-        ).register(self.app)
+            render_template_task=self.render_template_task,
+            route_registry_task=self.route_registry_task
+        ).init()
         ModulesList(
             verify_if_have_access_task=self.verify_if_have_access_task,
             get_modules_list_task=self.get_modules_list_task,
             create_module_task=self.create_module_task,
             delete_module_task=self.delete_module_task,
-            process_request_task=self.process_request_task
-        ).register(self.app)
+            process_request_task=self.process_request_task,
+            route_registry_task=self.route_registry_task
+        ).init()
         Permissions(
             verify_if_have_access_task=self.verify_if_have_access_task,
             get_permissions_task=self.get_permissions_task,
             create_permission_task=self.create_permission_task,
-            delete_permission_task=self.delete_permission_task
-        ).register(self.app)
+            delete_permission_task=self.delete_permission_task,
+            route_registry_task=self.route_registry_task
+        ).init()
         SessionModules(
             verify_if_user_is_in_session_task=self.verify_if_user_is_in_session_task,
-            get_session_modules_task=self.get_session_modules_task
-        ).register(self.app)
+            get_session_modules_task=self.get_session_modules_task,
+            route_registry_task=self.route_registry_task
+        ).init()
         Users(
             verify_if_have_access_task=self.verify_if_have_access_task,
             get_users_task=self.get_user_task,
             create_user_task=self.create_user_task,
             delete_user_task=self.delete_user_task,
             update_user_task=self.update_user_task,
-            process_request_task=self.process_request_task
-        ).register(self.app)
+            process_request_task=self.process_request_task,
+            route_registry_task=self.route_registry_task
+        ).init()
         SessionUser(
             verify_if_user_is_in_session_task=self.verify_if_user_is_in_session_task,
-            get_session_user_task=self.get_session_user_task
-        ).register(self.app)
+            get_session_user_task=self.get_session_user_task,
+            route_registry_task=self.route_registry_task
+        ).init()
         RegistrationsRpa(
             verify_if_have_acess_task=self.verify_if_have_access_task,
-            run_registrations_rpa_task=self.run_registrations_rpa_task
-        ).register(self.app, self.socketio)
+            run_registrations_rpa_task=self.run_registrations_rpa_task,
+            route_registry_task=self.route_registry_task
+        ).init()
         Registrations(
             verify_if_have_access_task=self.verify_if_have_access_task,
             include_new_registration_task=self.include_new_registration_task,
-            process_request_task=self.process_request_task
-        ).register(self.app)
+            process_request_task=self.process_request_task,
+            route_registry_task=self.route_registry_task
+        ).init()
     
     def run(self) -> None:
         self.socketio.run(self.app, host="127.0.0.1", debug=True)
