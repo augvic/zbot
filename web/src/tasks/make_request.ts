@@ -1,8 +1,8 @@
-class MakeRequestTask {
+class MakeRequest {
     
-    requestHandler!: RequestHandlerComponent
+    requestHandler!: RequestHandler
     
-    constructor(requestHandler: RequestHandlerComponent) {
+    constructor(requestHandler: RequestHandler) {
         this.requestHandler = requestHandler;
     }
     

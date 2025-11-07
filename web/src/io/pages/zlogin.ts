@@ -8,7 +8,7 @@ export class zLogin {
     element!: HTMLElement
     loginContainer!: LoginContainer
     
-    constructor(makeRequestTask: MakeRequestTask) {
+    constructor(makeRequestTask: MakeRequest) {
         this.createSelf();
         document.getElementById("application-content")!.appendChild(this.element);
         this.createComponents(makeRequestTask);
@@ -21,7 +21,7 @@ export class zLogin {
         this.element.className = "w-full h-full flex justify-center items-center bg-gray-300 dark:bg-gray-900 transition-colors duration-300";
     }
     
-    private createComponents(makeRequestTask: MakeRequestTask) {
+    private createComponents(makeRequestTask: MakeRequest) {
         this.loginContainer = new LoginContainer(this.element, makeRequestTask);
     }
     
@@ -43,7 +43,7 @@ class LoginContainer {
     passwordInput!: LoginInput
     loginButton!: LoginButton
     
-    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequest) {
         this.createSelf();
         appendTo.appendChild(this.element);
         this.createComponents(makeRequestTask);
@@ -54,7 +54,7 @@ class LoginContainer {
         this.element.className = "h-[200px] w-[400px] flex flex-col items-center justify-center bg-white dark:bg-gray-700 rounded-md gap-2 opacity-fade-in transition-colors duration-300";
     }
     
-    private createComponents(makeRequestTask: MakeRequestTask) {
+    private createComponents(makeRequestTask: MakeRequest) {
         this.title = new TitleContainer(this.element);
         this.userInput = new LoginInput(this.element, "user", "Matrícula", "text");
         this.passwordInput = new LoginInput(this.element, "password", "Senha", "password");
@@ -127,7 +127,7 @@ class LoginButton {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequest) {
         this.createSelf();
         appendTo.appendChild(this.element);
         this.startListeners(makeRequestTask);
@@ -139,7 +139,7 @@ class LoginButton {
         this.element.innerText = "Acessar";
     }
     
-    private startListeners(makeRequestTask: MakeRequestTask) {
+    private startListeners(makeRequestTask: MakeRequest) {
         this.element.addEventListener("click", async () => {
             const user = (document.getElementById("user") as HTMLInputElement).value!;
             const password = (document.getElementById("password") as HTMLInputElement).value!;

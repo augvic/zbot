@@ -1,12 +1,12 @@
-import { ModuleRegistryComponent } from "../components/module_class_registry";
+import { ModuleRegistry } from "../components/module_class_registry";
 import { zAdmin } from "../io/modules/zadmin";
 import { zRegRpa } from "../io/modules/zregrpa";
 
-export class GetModuleFromRegistryTask {
+export class GetModuleFromRegistry {
     
-    moduleClassRegistry!: ModuleRegistryComponent
+    moduleClassRegistry!: ModuleRegistry
     
-    constructor(moduleRegistry: ModuleRegistryComponent) {
+    constructor(moduleRegistry: ModuleRegistry) {
         this.moduleClassRegistry = moduleRegistry;
     }
     

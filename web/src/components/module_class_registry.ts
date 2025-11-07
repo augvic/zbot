@@ -1,7 +1,7 @@
 import { zAdmin } from "../io/modules/zadmin.js";
 import { zRegRpa } from "../io/modules/zregrpa.js";
 
-export class ModuleRegistryComponent {
+export class ModuleRegistry {
     
     public getModuleClass(moduleName: string):
     typeof zAdmin | 
