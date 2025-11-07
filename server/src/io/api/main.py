@@ -10,15 +10,9 @@ class Main:
         self.render_template_task = render_template_task
         self.route_registry_task = route_registry_task
         
-    def init(self) -> None:
+    def render_application(self) -> str | tuple[dict[str, bool | str], int]:
         try:
-            def render_application() -> str | tuple[dict[str, bool | str], int]:
-                try:
-                    response =  self.render_template_task.execute("main.html")
-                    return response.data
-                except Exception as error:
-                    return {"success": False, "message": f"{error}"}, 500
-            
-            self.route_registry_task.execute("/", ["GET"], render_application)
+            response =  self.render_template_task.execute("main.html")
+            return response.data
         except Exception as error:
-            print(f"❌ Error in (Main) route: {error}.")
+            return {"success": False, "message": f"{error}"}, 500   

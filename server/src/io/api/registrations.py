@@ -19,57 +19,51 @@ class Registrations:
         self.process_request_task = process_request_task
         self.route_registry_task = route_registry_task
     
-    def init(self) -> None:
+    def include_registration(self) -> tuple[dict[str, bool | str], int]:
         try:
-            def include_registration() -> tuple[dict[str, bool | str], int]:
-                try:
-                    response = self.verify_if_have_access_task.execute("zRegRpa")
-                    if not response.success:
-                        return {"success": False, "message": "Sem autorização."}, 401
-                    response = self.process_request_task.execute(
-                        content_type="multipart/form-data",
-                        expected_data=[
-                            "cnpj",
-                            "seller",
-                            "email",
-                            "cpf",
-                            "cpf_person",
-                            "tax_regime",
-                            "client_type",
-                        ],
-                        expected_files=[
-                            "article_association_doc",
-                        ],
-                        optional_data=[
-                            "suggested_limit",
-                        ],
-                        optional_files=[
-                            "bank_doc"
-                        ]
-                    )
-                    if not response.success:
-                        return {"success": False, "message": f"{response.message}"}, 400
-                    response = self.include_new_registration_task.execute(
-                        NewRegistration(
-                            cnpj=cast(str, response.data.get("cnpj")),
-                            seller=cast(str, response.data.get("seller")),
-                            email=cast(str, response.data.get("email")),
-                            cpf=cast(str, response.data.get("cpf")),
-                            cpf_person=cast(str, response.data.get("cpf_person")),
-                            tax_regime=cast(str, response.data.get("tax_regime")),
-                            article_association_doc=cast(FileStorage, response.files.get("article_association_doc")),
-                            bank_doc=response.files.get("bank_doc"),
-                            suggested_limit=response.data.get("suggested_limit"),
-                            client_type=cast(str, response.data.get("client_type"))
-                        )
-                    )
-                    if response.success:
-                        return {"success": True, "message": f"{response.message}"}, 200
-                    else:
-                        return {"success": True, "message": f"{response.message}"}, 400
-                except Exception as error:
-                    return {"success": False, "message": f"{error}"}, 500
-            
-            self.route_registry_task.execute("/registrations", ["POST"], include_registration)
+            response = self.verify_if_have_access_task.execute("zRegRpa")
+            if not response.success:
+                return {"success": False, "message": "Sem autorização."}, 401
+            response = self.process_request_task.execute(
+                content_type="multipart/form-data",
+                expected_data=[
+                    "cnpj",
+                    "seller",
+                    "email",
+                    "cpf",
+                    "cpf_person",
+                    "tax_regime",
+                    "client_type",
+                ],
+                expected_files=[
+                    "article_association_doc",
+                ],
+                optional_data=[
+                    "suggested_limit",
+                ],
+                optional_files=[
+                    "bank_doc"
+                ]
+            )
+            if not response.success:
+                return {"success": False, "message": f"{response.message}"}, 400
+            response = self.include_new_registration_task.execute(
+                NewRegistration(
+                    cnpj=cast(str, response.data.get("cnpj")),
+                    seller=cast(str, response.data.get("seller")),
+                    email=cast(str, response.data.get("email")),
+                    cpf=cast(str, response.data.get("cpf")),
+                    cpf_person=cast(str, response.data.get("cpf_person")),
+                    tax_regime=cast(str, response.data.get("tax_regime")),
+                    article_association_doc=cast(FileStorage, response.files.get("article_association_doc")),
+                    bank_doc=response.files.get("bank_doc"),
+                    suggested_limit=response.data.get("suggested_limit"),
+                    client_type=cast(str, response.data.get("client_type"))
+                )
+            )
+            if response.success:
+                return {"success": True, "message": f"{response.message}"}, 200
+            else:
+                return {"success": True, "message": f"{response.message}"}, 400
         except Exception as error:
-            print(f"❌ Error in (Registratios) route: {error}.")
+            return {"success": False, "message": f"{error}"}, 500

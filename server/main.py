@@ -268,38 +268,38 @@ class CompositionRoot:
         )
     
     def _init_io(self) -> None:
-        Login(
+        self.login_route = Login(
             validate_login_task=self.validate_login_task,
             verify_if_user_is_in_session_task=self.verify_if_user_is_in_session_task,
             logout_task=self.logout_task,
             process_request_task=self.process_request_task,
             route_registry_task=self.route_registry_task
-        ).init()
-        Main(
+        )
+        self.main_route = Main(
             render_template_task=self.render_template_task,
             route_registry_task=self.route_registry_task
-        ).init()
-        ModulesList(
+        )
+        self.modules_list_route = ModulesList(
             verify_if_have_access_task=self.verify_if_have_access_task,
             get_modules_list_task=self.get_modules_list_task,
             create_module_task=self.create_module_task,
             delete_module_task=self.delete_module_task,
             process_request_task=self.process_request_task,
             route_registry_task=self.route_registry_task
-        ).init()
-        Permissions(
+        )
+        self.permissions_route = Permissions(
             verify_if_have_access_task=self.verify_if_have_access_task,
             get_permissions_task=self.get_permissions_task,
             create_permission_task=self.create_permission_task,
             delete_permission_task=self.delete_permission_task,
             route_registry_task=self.route_registry_task
-        ).init()
-        SessionModules(
+        )
+        self.session_modules_route = SessionModules(
             verify_if_user_is_in_session_task=self.verify_if_user_is_in_session_task,
             get_session_modules_task=self.get_session_modules_task,
             route_registry_task=self.route_registry_task
-        ).init()
-        Users(
+        )
+        self.users_route = Users(
             verify_if_have_access_task=self.verify_if_have_access_task,
             get_users_task=self.get_user_task,
             create_user_task=self.create_user_task,
@@ -307,25 +307,45 @@ class CompositionRoot:
             update_user_task=self.update_user_task,
             process_request_task=self.process_request_task,
             route_registry_task=self.route_registry_task
-        ).init()
-        SessionUser(
+        )
+        self.session_user_route = SessionUser(
             verify_if_user_is_in_session_task=self.verify_if_user_is_in_session_task,
             get_session_user_task=self.get_session_user_task,
             route_registry_task=self.route_registry_task
-        ).init()
-        RegistrationsRpa(
+        )
+        self.registrations_rpa_route = RegistrationsRpa(
             verify_if_have_acess_task=self.verify_if_have_access_task,
             run_registrations_rpa_task=self.run_registrations_rpa_task,
             route_registry_task=self.route_registry_task
-        ).init()
-        Registrations(
+        )
+        self.registrations_route = Registrations(
             verify_if_have_access_task=self.verify_if_have_access_task,
             include_new_registration_task=self.include_new_registration_task,
             process_request_task=self.process_request_task,
             route_registry_task=self.route_registry_task
-        ).init()
+        )
     
     def run(self) -> None:
+        self.app.route("/login", methods=["POST"])(self.login_route.validate_login)
+        self.app.route("/login", methods=["GET"])(self.login_route.verify_if_user_is_in_session)
+        self.app.route("/login", methods=["DELETE"])(self.login_route.logout)
+        self.app.route("/", methods=["GET"])(self.main_route.render_application)
+        self.app.route("/modules-list", methods=["GET"])(self.modules_list_route.get_modules_list)
+        self.app.route("/modules-list", methods=["POST"])(self.modules_list_route.create_module)
+        self.app.route("/modules-list/<module>", methods=["DELETE"])(self.modules_list_route.delete_module)
+        self.app.route("/permissions/<user>", methods=["GET"])(self.permissions_route.get_user_permissions)
+        self.app.route("/permissions/<user>/<permission>", methods=["POST"])(self.permissions_route.create_user_permission)
+        self.app.route("/permissions/<user>/<permission>", methods=["DELETE"])(self.permissions_route.delete_user_permission)
+        self.app.route("/registrations-rpa", methods=["GET"])(self.registrations_rpa_route.refresh)
+        self.app.route("/registrations-rpa", methods=["POST"])(self.registrations_rpa_route.turn_on)
+        self.app.route("/registrations-rpa", methods=["DELETE"])(self.registrations_rpa_route.turn_off)
+        self.app.route("/registrations", methods=["POST"])(self.registrations_route.include_registration)
+        self.app.route("/session-modules", methods=["GET"])(self.session_modules_route.get_session_modules)
+        self.app.route("/session-user", methods=["GET"])(self.session_user_route.get_session_user)
+        self.app.route("/users/<user>", methods=["GET"])(self.users_route.get_user)
+        self.app.route("/users", methods=["POST"])(self.users_route.create_user)
+        self.app.route("/users/<user>", methods=["DELETE"])(self.users_route.delete_user)
+        self.app.route("/users/<user>", methods=["PUT"])(self.users_route.update_user)
         self.socketio.run(self.app, host="127.0.0.1", debug=True)
 
 CompositionRoot().run()

@@ -20,55 +20,47 @@ class Login:
         self.process_request_task = process_request_task
         self.route_registry_task = route_registry_task
     
-    def init(self) -> None:
+    def validate_login(self) -> tuple[dict[str, str | bool], int]:
         try:
-            def validate_login() -> tuple[dict[str, str | bool], int]:
-                try:
-                    response = self.process_request_task.execute(
-                        content_type="application/json",
-                        expected_data=[
-                            "user",
-                            "password"
-                        ],
-                        expected_files=[],
-                        optional_data=[],
-                        optional_files=[]
-                    )
-                    if not response.success:
-                        return {"success": False, "message": response.message}, 400
-                    response =  self.validate_login_task.execute(
-                        user=cast(str, response.data.get("user")),
-                        password=cast(str, response.data.get("password"))
-                    )
-                    if response.success:
-                        return {"success": True, "message": response.message}, 200
-                    else:
-                        return {"success": False, "message": response.message}, 400
-                except Exception as error:
-                    return {"success": False, "message": f"{error}"}, 500
-            
-            def verify_if_user_is_in_session() -> tuple[dict[str, str | bool], int]:
-                try:
-                    response = self.verify_if_user_is_in_session_task.execute()
-                    if response.success:
-                        return {"success": True, "message": response.message}, 200
-                    else:
-                        return {"success": False, "message": response.message}, 401
-                except Exception as error:
-                    return {"success": False, "message": f"{error}"}, 500
-            
-            def logout() -> tuple[dict[str, str | bool], int]:
-                try:
-                    response = self.logout_task.execute()
-                    if response.success:
-                        return {"success": True, "message": response.message}, 200
-                    else:
-                        return {"success": True, "message": response.message}, 401
-                except Exception as error:
-                    return {"success": False, "message": f"{error}"}, 500
-            
-            self.route_registry_task.execute("/login", ["POST"], validate_login)
-            self.route_registry_task.execute("/login", ["GET"], verify_if_user_is_in_session)
-            self.route_registry_task.execute("/login", ["DELETE"], logout)
+            response = self.process_request_task.execute(
+                content_type="application/json",
+                expected_data=[
+                    "user",
+                    "password"
+                ],
+                expected_files=[],
+                optional_data=[],
+                optional_files=[]
+            )
+            if not response.success:
+                return {"success": False, "message": response.message}, 400
+            response =  self.validate_login_task.execute(
+                user=cast(str, response.data.get("user")),
+                password=cast(str, response.data.get("password"))
+            )
+            if response.success:
+                return {"success": True, "message": response.message}, 200
+            else:
+                return {"success": False, "message": response.message}, 400
         except Exception as error:
-            print(f"❌ Error in (Login) route: {error}.")
+            return {"success": False, "message": f"{error}"}, 500
+    
+    def verify_if_user_is_in_session(self) -> tuple[dict[str, str | bool], int]:
+        try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if response.success:
+                return {"success": True, "message": response.message}, 200
+            else:
+                return {"success": False, "message": response.message}, 401
+        except Exception as error:
+            return {"success": False, "message": f"{error}"}, 500
+    
+    def logout(self) -> tuple[dict[str, str | bool], int]:
+        try:
+            response = self.logout_task.execute()
+            if response.success:
+                return {"success": True, "message": response.message}, 200
+            else:
+                return {"success": True, "message": response.message}, 401
+        except Exception as error:
+            return {"success": False, "message": f"{error}"}, 500

@@ -19,46 +19,38 @@ class Permissions:
         self.delete_permission_task = delete_permission_task
         self.route_registry_task = route_registry_task
     
-    def init(self) -> None:
+    def get_user_permissions(self, user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
-            def get_user_permissions(user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
-                try:
-                    response = self.verify_if_have_access_task.execute("zAdmin")
-                    if not response.success:
-                        return {"success": False, "message": response.message}, 401
-                    response = self.get_permissions_task.execute(user)
-                    return {"success": True, "message": response.message, "data": response.data}, 200
-                except Exception as error:
-                    return {"success": False, "message": f"{error}"}, 500
-            
-            def create_user_permission(user: str, permission: str) -> tuple[dict[str, str | bool], int]:
-                try:
-                    response = self.verify_if_have_access_task.execute("zAdmin")
-                    if not response.success:
-                        return {"success": False, "message": response.message}, 401
-                    response = self.create_permission_task.execute(user, permission)
-                    if response.success:
-                        return {"success": True, "message": response.message}, 200
-                    else:
-                        return {"success": False, "message": response.message}, 400
-                except Exception as error:
-                    return {"success": False, "message": f"{error}"}, 500
-            
-            def delete_user_permission(user: str, permission: str) -> tuple[dict[str, str | bool], int]:
-                try:
-                    response =  self.verify_if_have_access_task.execute("zAdmin")
-                    if not response.success:
-                        return {"success": False, "message": response.message}, 401
-                    response = self.delete_permission_task.execute(user, permission)
-                    if response.success:
-                        return {"success": True, "message": response.message}, 200
-                    else:
-                        return {"success": False, "message": response.message}, 400
-                except Exception as error:
-                    return {"success": False, "message": f"{error}"}, 500
-            
-            self.route_registry_task.execute("/permissions/<user>", ["GET"], get_user_permissions)
-            self.route_registry_task.execute("/permissions/<user>/<permission>", ["POST"], create_user_permission)
-            self.route_registry_task.execute("/permissions/<user>/<permission>", ["DELETE"], delete_user_permission)
+            response = self.verify_if_have_access_task.execute("zAdmin")
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
+            response = self.get_permissions_task.execute(user)
+            return {"success": True, "message": response.message, "data": response.data}, 200
         except Exception as error:
-            print(f"❌ Error in (Permissions) route: {error}.")
+            return {"success": False, "message": f"{error}"}, 500
+    
+    def create_user_permission(self, user: str, permission: str) -> tuple[dict[str, str | bool], int]:
+        try:
+            response = self.verify_if_have_access_task.execute("zAdmin")
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
+            response = self.create_permission_task.execute(user, permission)
+            if response.success:
+                return {"success": True, "message": response.message}, 200
+            else:
+                return {"success": False, "message": response.message}, 400
+        except Exception as error:
+            return {"success": False, "message": f"{error}"}, 500
+    
+    def delete_user_permission(self, user: str, permission: str) -> tuple[dict[str, str | bool], int]:
+        try:
+            response =  self.verify_if_have_access_task.execute("zAdmin")
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
+            response = self.delete_permission_task.execute(user, permission)
+            if response.success:
+                return {"success": True, "message": response.message}, 200
+            else:
+                return {"success": False, "message": response.message}, 400
+        except Exception as error:
+            return {"success": False, "message": f"{error}"}, 500

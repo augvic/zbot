@@ -26,101 +26,92 @@ class Users:
         self.process_request_task = process_request_task
         self.route_registry_task = route_registry_task
     
-    def init(self) -> None:
+    def get_user(self, user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
-            def get_user(user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
-                try:
-                    response =  self.verify_if_have_access_task.execute("zAdmin")
-                    if not response.success:
-                        return {"success": False, "message": "Sem autorização."}, 401
-                    response = self.get_users_task.execute(user)
-                    if response.success:
-                        return {"success": True, "message": response.message, "data": response.data}, 200
-                    else:
-                        return {"success": False, "message": response.message, "data": response.data}, 400
-                except Exception as error:
-                    return {"success": False, "message": f"{error}"}, 500
-            
-            def create_user() -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
-                try:
-                    response =  self.verify_if_have_access_task.execute("zAdmin")
-                    if not response.success:
-                        return {"success": False, "message": "Sem autorização."}, 401
-                    response = self.process_request_task.execute(
-                        content_type="application/json",
-                        expected_data=[
-                            "user",
-                            "name",
-                            "email",
-                            "password"
-                        ],
-                        expected_files=[],
-                        optional_data=[],
-                        optional_files=[]
-                    )
-                    if not response.success:
-                        return {"success": False, "message": response.message}, 400
-                    response = self.create_user_task.execute(
-                        user=cast(str, response.data.get("user")),
-                        name=cast(str, response.data.get("name")),
-                        email=cast(str, response.data.get("email")),
-                        password=cast(str, response.data.get("password")),
-                    )
-                    if response.success:
-                        return {"success": True, "message": response.message}, 200
-                    else:
-                        return {"success": False, "message": response.message}, 400
-                except Exception as error:
-                    return {"success": False, "message": f"{error}"}, 500
-            
-            def delete_user(user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
-                try:
-                    response =  self.verify_if_have_access_task.execute("zAdmin")
-                    if not response.success:
-                        return {"success": False, "message": "Sem autorização."}, 401
-                    response = self.delete_user_task.execute(user)
-                    if response.success:
-                        return {"success": True, "message": response.message}, 200
-                    else:
-                        return {"success": False, "message": response.message}, 400
-                except Exception as error:
-                    return {"success": False, "message": f"{error}"}, 500
-            
-            def update_user() -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
-                try:
-                    response =  self.verify_if_have_access_task.execute("zAdmin")
-                    if not response.success:
-                        return {"success": False, "message": "Sem autorização."}, 401
-                    response = self.process_request_task.execute(
-                        content_type="application/json",
-                        expected_data=[
-                            "user",
-                            "name",
-                            "email",
-                            "password"
-                        ],
-                        expected_files=[],
-                        optional_data=[],
-                        optional_files=[]
-                    )
-                    if not response.success:
-                        return {"success": False, "message": response.message}, 400
-                    response = self.update_user_task.execute(
-                        user=cast(str, response.data.get("user")),
-                        name=cast(str, response.data.get("name")),
-                        email=cast(str, response.data.get("email")),
-                        password=cast(str, response.data.get("password")),
-                    )
-                    if response.success:
-                        return {"success": True, "message": response.message}, 200
-                    else:
-                        return {"success": False, "message": response.message}, 400
-                except Exception as error:
-                    return {"success": False, "message": f"{error}"}, 500
-            
-            self.route_registry_task.execute("/users/<user>", ["GET"], get_user)
-            self.route_registry_task.execute("/users", ["POST"], create_user)
-            self.route_registry_task.execute("/users/<user>", ["DELETE"], delete_user)
-            self.route_registry_task.execute("/users/<user>", ["PUT"], update_user)
+            response =  self.verify_if_have_access_task.execute("zAdmin")
+            if not response.success:
+                return {"success": False, "message": "Sem autorização."}, 401
+            response = self.get_users_task.execute(user)
+            if response.success:
+                return {"success": True, "message": response.message, "data": response.data}, 200
+            else:
+                return {"success": False, "message": response.message, "data": response.data}, 400
         except Exception as error:
-            print(f"❌ Error in (Users) route: {error}.")
+            return {"success": False, "message": f"{error}"}, 500
+    
+    def create_user(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
+        try:
+            response =  self.verify_if_have_access_task.execute("zAdmin")
+            if not response.success:
+                return {"success": False, "message": "Sem autorização."}, 401
+            response = self.process_request_task.execute(
+                content_type="application/json",
+                expected_data=[
+                    "user",
+                    "name",
+                    "email",
+                    "password"
+                ],
+                expected_files=[],
+                optional_data=[],
+                optional_files=[]
+            )
+            if not response.success:
+                return {"success": False, "message": response.message}, 400
+            response = self.create_user_task.execute(
+                user=cast(str, response.data.get("user")),
+                name=cast(str, response.data.get("name")),
+                email=cast(str, response.data.get("email")),
+                password=cast(str, response.data.get("password")),
+            )
+            if response.success:
+                return {"success": True, "message": response.message}, 200
+            else:
+                return {"success": False, "message": response.message}, 400
+        except Exception as error:
+            return {"success": False, "message": f"{error}"}, 500
+    
+    def delete_user(self, user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
+        try:
+            response =  self.verify_if_have_access_task.execute("zAdmin")
+            if not response.success:
+                return {"success": False, "message": "Sem autorização."}, 401
+            response = self.delete_user_task.execute(user)
+            if response.success:
+                return {"success": True, "message": response.message}, 200
+            else:
+                return {"success": False, "message": response.message}, 400
+        except Exception as error:
+            return {"success": False, "message": f"{error}"}, 500
+    
+    def update_user(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
+        try:
+            response =  self.verify_if_have_access_task.execute("zAdmin")
+            if not response.success:
+                return {"success": False, "message": "Sem autorização."}, 401
+            response = self.process_request_task.execute(
+                content_type="application/json",
+                expected_data=[
+                    "user",
+                    "name",
+                    "email",
+                    "password"
+                ],
+                expected_files=[],
+                optional_data=[],
+                optional_files=[]
+            )
+            if not response.success:
+                return {"success": False, "message": response.message}, 400
+            response = self.update_user_task.execute(
+                user=cast(str, response.data.get("user")),
+                name=cast(str, response.data.get("name")),
+                email=cast(str, response.data.get("email")),
+                password=cast(str, response.data.get("password")),
+            )
+            if response.success:
+                return {"success": True, "message": response.message}, 200
+            else:
+                return {"success": False, "message": response.message}, 400
+        except Exception as error:
+            return {"success": False, "message": f"{error}"}, 500
