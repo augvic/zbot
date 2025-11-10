@@ -1,4 +1,4 @@
-class RequestHandler {
+export class RequestHandler {
     
     public async post<T>(endPoint: string, contentType: string, data: T): Promise<{ success: boolean, message: string, data: any }> {
         const response = await fetch(`${window.location.origin}${endPoint}`, {

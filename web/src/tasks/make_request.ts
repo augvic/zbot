@@ -1,4 +1,6 @@
-class MakeRequest {
+import { RequestHandler } from "../components/request_handler";
+
+export class MakeRequest {
     
     requestHandler!: RequestHandler
     

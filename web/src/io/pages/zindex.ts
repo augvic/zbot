@@ -1,5 +1,4 @@
 import { io, Socket } from "socket.io-client";
-import { GetModuleFromRegistryTask } from "../../tasks/get_module_from_registry";
 import { zLogin } from "./zlogin";
 
 export class zIndex {
