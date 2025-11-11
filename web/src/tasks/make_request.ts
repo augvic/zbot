@@ -1,15 +1,19 @@
-import { RequestHandler } from "../components/request_handler";
+import { RequestHandlerComponent } from "../components/request_handler";
 
-export class MakeRequest {
+export class MakeRequestTask {
     
-    requestHandler!: RequestHandler
+    requestHandler!: RequestHandlerComponent
     
-    constructor(requestHandler: RequestHandler) {
+    constructor(requestHandler: RequestHandlerComponent) {
         this.requestHandler = requestHandler;
     }
     
-    public async execute<T>(endPoint: string, contentType: string, data: T): Promise<{ success: boolean, message: string, data: any }> {
+    public async post<T>(endPoint: string, contentType: string, data: T): Promise<{ success: boolean, message: string, data: any }> {
         return await this.requestHandler.post(endPoint, contentType, data);
+    }
+    
+    public async get(endPoint: string): Promise<{ success: boolean, message: string, data: any }> {
+        return await this.requestHandler.get(endPoint);
     }
     
 }

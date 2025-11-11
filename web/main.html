@@ -14,26 +14,6 @@
         <div id="application-content" class="w-full h-full"></div>
     </body>
     
-    <script type="module">
-        import { zIndex, zLogin } from "/storage/bundle.js";
-        if (window.localStorage.getItem("theme") == null) {
-            window.localStorage.setItem("theme", "light");
-        }
-        if (window.localStorage.getItem("theme") == "light") {
-            document.documentElement.classList.remove("dark");
-            document.documentElement.classList.add("light");
-        } else {
-            document.documentElement.classList.remove("light");
-            document.documentElement.classList.add("dark");
-        }
-        const response = await fetch(`${window.location.origin}/login`);
-        const data = await response.json();
-        if (data.logged_in) {
-            document.getElementById("application-content").innerHTML = "";
-            new zIndex();
-        } else {
-            new zLogin();
-        }
-    </script>
+    <script type="module" src="/storage/bundle.js"></script>
     
 </html>

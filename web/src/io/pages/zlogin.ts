@@ -1,16 +1,15 @@
-import { zIndex } from "./zindex";
-export { zIndex } from "./zindex";
 import { ThemeButton } from "../global/theme_button";
 import { Notification } from "../global/notification";
+import { MakeRequestTask } from "../../tasks/make_request";
 
 export class zLogin {
     
     element!: HTMLElement
     loginContainer!: LoginContainer
     
-    constructor(makeRequestTask: MakeRequest) {
+    public init(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
-        document.getElementById("application-content")!.appendChild(this.element);
+        appendTo.appendChild(this.element);
         this.createComponents(makeRequestTask);
         this.startListeners();
     }
@@ -21,7 +20,7 @@ export class zLogin {
         this.element.className = "w-full h-full flex justify-center items-center bg-gray-300 dark:bg-gray-900 transition-colors duration-300";
     }
     
-    private createComponents(makeRequestTask: MakeRequest) {
+    private createComponents(makeRequestTask: MakeRequestTask) {
         this.loginContainer = new LoginContainer(this.element, makeRequestTask);
     }
     
@@ -43,7 +42,7 @@ class LoginContainer {
     passwordInput!: LoginInput
     loginButton!: LoginButton
     
-    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequest) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
         this.createComponents(makeRequestTask);
@@ -54,7 +53,7 @@ class LoginContainer {
         this.element.className = "h-[200px] w-[400px] flex flex-col items-center justify-center bg-white dark:bg-gray-700 rounded-md gap-2 opacity-fade-in transition-colors duration-300";
     }
     
-    private createComponents(makeRequestTask: MakeRequest) {
+    private createComponents(makeRequestTask: MakeRequestTask) {
         this.title = new TitleContainer(this.element);
         this.userInput = new LoginInput(this.element, "user", "Matrícula", "text");
         this.passwordInput = new LoginInput(this.element, "password", "Senha", "password");
@@ -82,7 +81,7 @@ class TitleContainer {
     
     private createComponents() {
         this.label = new LoginLabel(this.element);
-        this.themeButton = new ThemeButton(this.element)
+        this.themeButton = new ThemeButton(this.element, false)
     }
     
 }
@@ -127,7 +126,7 @@ class LoginButton {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequest) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
         this.startListeners(makeRequestTask);
@@ -139,11 +138,11 @@ class LoginButton {
         this.element.innerText = "Acessar";
     }
     
-    private startListeners(makeRequestTask: MakeRequest) {
+    private startListeners(makeRequestTask: MakeRequestTask) {
         this.element.addEventListener("click", async () => {
             const user = (document.getElementById("user") as HTMLInputElement).value!;
             const password = (document.getElementById("password") as HTMLInputElement).value!;
-            const response = await makeRequestTask.execute("/login", "application/json", { user, password });
+            const response = await makeRequestTask.post("/login", "application/json", { user, password });
             if (!response.success) {
                 new Notification(response.message, "red");
             } else {
@@ -151,7 +150,7 @@ class LoginButton {
                 loginPage.classList.add("opacity-fade-out");
                 loginPage.addEventListener("animationend", () => {
                     loginPage.remove();
-                    new zIndex();
+                    document.dispatchEvent(new Event("load:index"));
                     new Notification(response.message, "green");
                 });
             }

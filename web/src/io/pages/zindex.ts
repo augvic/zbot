@@ -1,5 +1,7 @@
-import { io, Socket } from "socket.io-client";
-import { zLogin } from "./zlogin";
+import { HoverSpan } from "../global/hover_span";
+import { Icon } from "../global/icon";
+import { ThemeButton } from "../global/theme_button";
+import { Notification } from "../global/notification";
 
 export class zIndex {
     
@@ -7,11 +9,10 @@ export class zIndex {
     menu!: Menu
     titleBar!: TitleBar
     module!: Module
-    websocket!: Socket
     
-    constructor() {
+    public init(appendTo: HTMLElement) {
         this.createSelf();
-        document.getElementById("application-content")!.appendChild(this.element);
+        appendTo.appendChild(this.element);
         this.createComponents();
     }
     
@@ -22,12 +23,9 @@ export class zIndex {
     }
     
     private createComponents() {
-        this.websocket = io(window.location.origin, {
-            withCredentials: true
-        });
         this.module = new Module(this.element);
-        this.menu = new Menu(this.element, this.websocket);
-        this.titleBar = new TitleBar(this.element, this.websocket);
+        this.menu = new Menu(this.element);
+        this.titleBar = new TitleBar(this.element);
     }
     
 }
@@ -40,9 +38,9 @@ class TitleBar {
     logoutButton!: LogoutButton
     themeButton!: ThemeButton
     
-    constructor(appendTo: HTMLElement, socket: Socket) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents(socket);
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
@@ -52,11 +50,11 @@ class TitleBar {
         this.element.className = "w-full bg-white dark:bg-gray-700 fixed z-50 h-[50px] flex items-center pl-3 transition-colors duration-300 gap-2";
     }
     
-    private createComponents(socket: Socket) {
+    private createComponents() {
         this.menuButton = new MenuButton(this.element);
         this.user = new UserName(this.element);
-        this.logoutButton = new LogoutButton(this.element, socket);
-        this.themeButton = new ThemeButton(this.element);
+        this.logoutButton = new LogoutButton(this.element);
+        this.themeButton = new ThemeButton(this.element, true);
     }
     
 }
@@ -86,10 +84,10 @@ class LogoutButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement, socket: Socket) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
         this.createComponents();
-        this.startListeners(socket);
+        this.startListeners();
         appendTo.appendChild(this.element);
     }
     
@@ -103,7 +101,7 @@ class LogoutButton {
         this.icon = new Icon(this.element, "logout-icon", "/storage/images/logout.png", "5");
     }
     
-    private startListeners(socket: Socket) {
+    private startListeners() {
         this.element.addEventListener("click", async () => {
             const response = await fetch(`${window.location.origin}/login`, {
                 method: "DELETE"
@@ -113,13 +111,12 @@ class LogoutButton {
                 new Notification("Erro ao deslogar.", "red");
                 return;
             }
-            socket.removeAllListeners();
             const page = document.getElementById("zIndex")!;
             page.classList.remove("opacity-fade-in");
             page.classList.add("opacity-fade-out");
             page.addEventListener("animationend", async () => {
                 page.remove();
-                new zLogin();
+                document.dispatchEvent(new Event("load:login"));
                 new Notification("Logout realizado.", "green");
             });
         });
@@ -175,36 +172,13 @@ class MenuButton {
     
 }
 
-class Icon {
-    
-    element!: HTMLImageElement
-    
-    constructor(appendTo: HTMLElement, id: string, src: string, size: string) {
-        this.createSelf(src, id, size);
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf(src: string, id: string, size: string) {
-        this.element = document.createElement("img");
-        this.element.src = src;
-        this.element.id = id;
-        this.element.className = "opacity-fade-in";
-        if (size == "7") {
-            this.element.classList.add("size-7");
-        } else {
-            this.element.classList.add("size-5");
-        }
-    }
-    
-}
-
 class Menu {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, socket: Socket) {
+    constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents(socket);
+        this.createComponents();
         appendTo.appendChild(this.element);
     }
     
@@ -217,14 +191,14 @@ class Menu {
         this.element.style.display = "none";
     }
     
-    private async createComponents(socket: Socket) {
+    private async createComponents() {
         const response = await fetch(`${window.location.origin}/session-modules`);
         const modulesAllowed = await response.json();
         if (modulesAllowed == null) {
             return
         }
-        modulesAllowed.forEach((module: { [key: string]: string; }) => {
-            new ModuleButton(this.element, module, socket);
+        modulesAllowed.forEach((module: {[key: string]: string}) => {
+            new ModuleButton(this.element, module);
         });   
     }
     
@@ -236,9 +210,9 @@ class ModuleButton {
     button!: HTMLElement
     hoverSpan!: HoverSpan
     
-    constructor(appendTo: HTMLElement, module: {[key: string]: string}, socket: Socket) {
+    constructor(appendTo: HTMLElement, module: {[key: string]: string}) {
         this.createSelf(module.module);
-        this.startListeners(module.module, module.description, socket);
+        this.startListeners(module.module, module.description);
         appendTo.appendChild(this.element);
     }
     
@@ -251,7 +225,7 @@ class ModuleButton {
         this.element.appendChild(this.button);
     }
     
-    private startListeners(moduleName:string, moduleDescription: string, socket: Socket) {
+    private startListeners(moduleName:string, moduleDescription: string) {
         this.button.addEventListener("click", () => {
             const moduleContainer = document.getElementById("module")!;
             const menu = document.getElementById("menu")!;
@@ -260,15 +234,12 @@ class ModuleButton {
             moduleContainer.addEventListener("animationend", async () => {
                 moduleContainer.classList.remove("opacity-fade-out");
                 moduleContainer.innerHTML = "";
-                socket.removeAllListeners();
-                const getModuleFromRegistryTask = new GetModuleFromRegistryTask();
-                const moduleClass = getModuleFromRegistryTask.execute(moduleName);
-                new moduleClass(moduleContainer, socket);
                 menu.classList.add("fade-out-left");
                 menu.addEventListener("animationend", () => {
                     menu.classList.remove("fade-out-left");
                     menu.style.display = "none";
                 }, { once: true });
+                document.dispatchEvent(new Event(`load:${moduleName}`));
             }, { once: true });
         });
         this.button.addEventListener("mouseenter", () => {
@@ -300,128 +271,6 @@ class Module {
         this.element.className = "w-full bg-gray-300 dark:bg-gray-900 transition-colors duration-300 justify-center items-center bottom-0 flex fixed cursor-default";
         this.element.style.height = "calc(100vh - 50px)";
         this.element.innerHTML = "<p class='text-black dark:text-white transition-colors duration-300'>✨ Selecione um módulo para começar.</p>"
-    }
-    
-}
-
-class HoverSpan {
-    
-    element!: HTMLElement
-    
-    constructor(appendTo: HTMLElement, text: string) {
-        this.createSelf(text);
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf(text: string) {
-        this.element = document.createElement("span");
-        this.element.className = "text-nowrap opacity-fade-in z-50 bg-blue-900 text-white py-1 px-4 rounded-lg absolute left-80 w-auto h-auto cursor-default";
-        this.element.style.fontSize = "small";
-        this.element.innerText = text;
-    }
-    
-}
-
-class ThemeButton {
-    
-    element!: HTMLElement
-    icon!: Icon
-    
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
-        this.createComponents();
-        this.startListeners();
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf() {
-        this.element = document.createElement("button");
-        this.element.className = "cursor-pointer w-auto h-auto rounded-md transition-colors duration-300 hover:bg-gray-300 dark:hover:bg-gray-900 absolute right-3";
-    }
-    
-    private createComponents() {
-        let iconSrc = "";
-        if (window.localStorage.getItem("theme") == "light") {
-            iconSrc = "/storage/images/moon.png";
-        } else {
-            iconSrc = "/storage/images/sun.png";
-        }
-        this.icon = new Icon(this.element, "theme-button", iconSrc, "7");
-    }
-    
-    private startListeners() {
-        this.element.addEventListener("click", () => {
-            const menuIcon = document.getElementById("menu-icon")! as HTMLImageElement;
-            if (document.documentElement.classList.contains("light")) {
-                document.documentElement.classList.remove("light");
-                document.documentElement.classList.add("dark");
-                window.localStorage.setItem("theme", "dark");
-                this.icon.element.src = "/storage/images/sun.png";
-                this.icon.element.classList.remove("opacity-fade-in");
-                void this.icon.element.offsetWidth;
-                this.icon.element.classList.add("opacity-fade-in");
-                menuIcon.src = "/storage/images/menu_dark.png";
-                menuIcon.classList.remove("opacity-fade-in");
-                void menuIcon.offsetWidth;
-                menuIcon.classList.add("opacity-fade-in");
-            } else {
-                document.documentElement.classList.remove("dark");
-                document.documentElement.classList.add("light");
-                window.localStorage.setItem("theme", "light");
-                this.icon.element.src = "/storage/images/moon.png";
-                this.icon.element.classList.remove("opacity-fade-in");
-                void this.icon.element.offsetWidth;
-                this.icon.element.classList.add("opacity-fade-in");
-                menuIcon.src = "/storage/images/menu_light.png";
-                menuIcon.classList.remove("opacity-fade-in");
-                void menuIcon.offsetWidth;
-                menuIcon.classList.add("opacity-fade-in");
-            }
-        });
-    }
-    
-}
-
-class Notification {
-    
-    element!: HTMLElement
-    
-    constructor(message: string, color: string) {
-        this.createSelf(message, color);
-        this.pushUpExistingNotifications();
-        document.body.appendChild(this.element);
-        setTimeout(() => {
-            this.element.classList.remove("fade-in-right");
-            this.element.classList.add("fade-out-right");
-            this.element.addEventListener("animationend", () => {
-                this.element.remove()
-            }, { once: true });
-        }, 3000);
-    }
-    
-    private createSelf(message: string, color: string) {
-        this.element = document.createElement("div");
-        this.element.className = "notification fixed z-50 bottom-4 right-5 py-3 px-6 text-white rounded-md cursor-default fade-in-right transition-[bottom] duration-300 ease";
-        if (color == "green") {
-            this.element.classList.add("bg-green-400");
-        } else if (color == "orange") {
-            this.element.classList.add("bg-amber-400");
-        } else if (color == "red") {
-            this.element.classList.add("bg-red-400");
-        }
-        this.element.innerText = message;
-    }
-    
-    private pushUpExistingNotifications() {
-        const notifications = document.querySelectorAll<HTMLElement>(".notification");
-        notifications.forEach(notification => {
-            if (notification != this.element) {
-                const currentBottom = parseInt(
-                    getComputedStyle(notification).bottom.replace("px", "")
-                );
-                notification.style.bottom = (currentBottom + 60) + "px";
-            }
-        });
     }
     
 }

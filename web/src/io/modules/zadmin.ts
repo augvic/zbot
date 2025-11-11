@@ -1,12 +1,15 @@
+import { Notification } from "../global/notification";
+import { Icon } from "../global/icon";
+
 export class zAdmin {
     
     element!: HTMLElement
     usersContainer!: Container
     
-    constructor(moduleContainer: HTMLElement) {
+    public init(appendTo: HTMLElement) {
         this.createSelf();
+        appendTo.appendChild(this.element);
         this.createComponents();
-        moduleContainer.appendChild(this.element);
     }
     
     private createSelf() {
@@ -29,8 +32,8 @@ class Container {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -53,8 +56,8 @@ class UsersSection {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -80,8 +83,8 @@ class UsersSectionTopBar {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -123,9 +126,9 @@ class SearchUserButton {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
+        appendTo.appendChild(this.element);
         this.createComponents();
         this.startListeners();
-        appendTo.appendChild(this.element);
     }
     
     private createSelf() {
@@ -134,7 +137,7 @@ class SearchUserButton {
     }
     
     private createComponents() {
-        this.icon = new Icon("/storage/images/magnifying_glass.png", this.element);
+        this.icon = new Icon(this.element, "", "/storage/images/magnifying_glass.png", "7");
     }
     
     private startListeners() {
@@ -175,9 +178,9 @@ class AddUserButton {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
+        appendTo.appendChild(this.element);
         this.createComponents();
         this.startListeners();
-        appendTo.appendChild(this.element);
     }
     
     private createSelf() {
@@ -186,7 +189,7 @@ class AddUserButton {
     }
     
     private createComponents() {
-        this.icon = new Icon("/storage/images/plus.png", this.element);
+        this.icon = new Icon(this.element, "", "/storage/images/plus.png", "7");
     }
     
     private startListeners() {
@@ -205,8 +208,8 @@ class GoToModulesSection {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.startListeners();
         appendTo.appendChild(this.element);
+        this.startListeners();
     }
     
     private createSelf() {
@@ -239,8 +242,8 @@ class UsersTableContainer {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -262,8 +265,8 @@ class UsersTable {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -284,8 +287,8 @@ class UsersTableHead {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -326,8 +329,8 @@ class UsersTableBody {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -358,8 +361,8 @@ class UsersTableBodyRow {
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf(user.user);
-        this.createComponents(user);
         appendTo.appendChild(this.element);
+        this.createComponents(user);
     }
     
     private createSelf(user: string) {
@@ -404,8 +407,8 @@ class UsersTableBodyRowButtonsCell {
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
-        this.createComponents(user);
         appendTo.appendChild(this.element);
+        this.createComponents(user);
     }
     
     private createSelf() {
@@ -427,9 +430,9 @@ class UsersTableEditButton {
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
         this.createSelf();
+        appendTo.appendChild(this.element);
         this.createComponents();
         this.startListeners(user);
-        appendTo.appendChild(this.element);
     }
     
     private createSelf() {
@@ -437,7 +440,8 @@ class UsersTableEditButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-blue-700 rounded-md hover:bg-blue-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new Icon("/storage/images/edit.png", this.element);
+        this.icon = new Icon(this.element, "", "/storage/images/edit.png", "7");
+        
     }
     
     private startListeners(user: {[key: string]: string}) {
@@ -455,9 +459,9 @@ class UsersTableDeleteButton {
     
     constructor(appendTo: HTMLElement, user: string) {
         this.createSelf();
+        appendTo.appendChild(this.element);
         this.createComponents();
         this.startListeners(user);
-        appendTo.appendChild(this.element);
     }
     
     private createSelf() {
@@ -465,7 +469,7 @@ class UsersTableDeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new Icon("/storage/images/delete.png", this.element);
+        this.icon = new Icon(this.element, "", "/storage/images/delete.png", "7");
     }
     
     private startListeners(user: string) {
@@ -489,67 +493,6 @@ class UsersTableDeleteButton {
     
 }
 
-class Icon {
-    
-    element!: HTMLImageElement
-    
-    constructor(src: string, appendTo: HTMLElement) {
-        this.createSelf(src);
-        appendTo.appendChild(this.element);
-    }
-    
-    private createSelf(src: string) {
-        this.element = document.createElement("img");
-        this.element.src = src;
-        this.element.className = "size-5 opacity-fade-in";
-    }
-    
-}
-
-class Notification {
-    
-    element!: HTMLElement
-    
-    constructor(message: string, color: string) {
-        this.createSelf(message, color);
-        this.pushUpExistingNotifications();
-        document.body.appendChild(this.element);
-        setTimeout(() => {
-            this.element.classList.remove("fade-in-right");
-            this.element.classList.add("fade-out-right");
-            this.element.addEventListener("animationend", () => {
-                this.element.remove()
-            }, { once: true });
-        }, 3000);
-    }
-    
-    private createSelf(message: string, color: string) {
-        this.element = document.createElement("div");
-        this.element.className = "notification fixed z-50 bottom-4 right-5 py-3 px-6 text-white rounded-md cursor-default fade-in-right transition-[bottom] duration-300 ease";
-        if (color == "green") {
-            this.element.classList.add("bg-green-400");
-        } else if (color == "orange") {
-            this.element.classList.add("bg-amber-400");
-        } else if (color == "red") {
-            this.element.classList.add("bg-red-400");
-        }
-        this.element.innerText = message;
-    }
-    
-    private pushUpExistingNotifications() {
-        const notifications = document.querySelectorAll<HTMLElement>(".notification");
-        notifications.forEach(notification => {
-            if (notification != this.element) {
-                const currentBottom = parseInt(
-                    getComputedStyle(notification).bottom.replace("px", "")
-                );
-                notification.style.bottom = (currentBottom + 60) + "px";
-            }
-        });
-    }
-    
-}
-
 class UserModal {
     
     element!: HTMLElement
@@ -557,10 +500,8 @@ class UserModal {
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
+        appendTo.appendChild(this.element);
         this.createComponents(user, editModal);
-        setTimeout(() => {
-            appendTo.appendChild(this.element);
-        }, 200);
     }
     
     private createSelf() {
@@ -583,8 +524,8 @@ class UserModalContainer {
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
+        this.createComponents(user, editModal);
     }
     
     private createSelf() {
@@ -612,8 +553,8 @@ class UserModalElements {
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
+        this.createComponents(user, editModal);
     }
     
     private createSelf() {
@@ -638,8 +579,8 @@ class UserModalInputsContainer {
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
+        this.createComponents(user, editModal);
     }
     
     private createSelf() {
@@ -677,8 +618,8 @@ class UserModalTableContainer {
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
+        this.createComponents(user, editModal);
     }
     
     private createSelf() {
@@ -701,8 +642,8 @@ class UserModalModulesListContainer {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -723,8 +664,8 @@ class UserModalModulesList {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -770,9 +711,9 @@ class UserModalAddModuleButton {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
+        appendTo.appendChild(this.element);
         this.createComponents();
         this.startListeners();
-        appendTo.appendChild(this.element);
     }
     
     private createSelf() {
@@ -781,7 +722,7 @@ class UserModalAddModuleButton {
     }
     
     private createComponents() {
-        this.icon = new Icon("/storage/images/plus.png", this.element);
+        this.icon = new Icon(this.element, "", "/storage/images/plus.png", "7");
     }
     
     private startListeners() {
@@ -818,8 +759,8 @@ class UserModalCloseButtonContainer {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -839,8 +780,8 @@ class UserModalCloseButton {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.startListeners();
         appendTo.appendChild(this.element);
+        this.startListeners();
     }
     
     private createSelf() {
@@ -892,8 +833,8 @@ class UserModalCreateButton {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.startListeners();
         appendTo.appendChild(this.element);
+        this.startListeners();
     }
     
     private createSelf() {
@@ -953,8 +894,8 @@ class UserModalSaveButton {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.startListeners();
         appendTo.appendChild(this.element);
+        this.startListeners();
     }
     
     private createSelf() {
@@ -1033,8 +974,8 @@ class PermissionsTableContainer {
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
+        this.createComponents(user, editModal);
     }
     
     private createSelf() {
@@ -1056,8 +997,8 @@ class PermissionsTable {
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
+        this.createComponents(user, editModal);
     }
     
     private createSelf() {
@@ -1078,8 +1019,8 @@ class PermissionsTableHead {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -1116,8 +1057,8 @@ class PermissionsTableBody {
     
     constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
         this.createSelf();
-        this.createComponents(user, editModal);
         appendTo.appendChild(this.element);
+        this.createComponents(user, editModal);
     }
     
     private createSelf() {
@@ -1150,8 +1091,8 @@ class PermissionsTableBodyRow {
     
     constructor(appendTo: HTMLElement, permission: {[key: string]: string}) {
         this.createSelf(permission);
-        this.createComponents(permission);
         appendTo.appendChild(this.element);
+        this.createComponents(permission);
     }
     
     private createSelf(permission: {[key: string]: string}) {
@@ -1191,8 +1132,8 @@ class PermissionsTableBodyRowButtonsCell {
     
     constructor(appendTo: HTMLElement, permission: {[key: string]: string}) {
         this.createSelf();
-        this.createComponents(permission);
         appendTo.appendChild(this.element);
+        this.createComponents(permission);
     }
     
     private createSelf() {
@@ -1213,9 +1154,9 @@ class PermissionsTableDeleteButton {
     
     constructor(appendTo: HTMLElement, permission: {[key: string]: string}) {
         this.createSelf();
+        appendTo.appendChild(this.element);
         this.createComponents();
         this.startListeners(permission);
-        appendTo.appendChild(this.element);
     }
     
     private createSelf() {
@@ -1223,7 +1164,7 @@ class PermissionsTableDeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new Icon("/storage/images/delete.png", this.element);
+        this.icon = new Icon(this.element, "", "/storage/images/delete.png", "7");
     }
     
     private startListeners(permission: {[key: string]: string}) {
@@ -1251,8 +1192,8 @@ class ModulesSection {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -1278,8 +1219,8 @@ class ModulesSectionTopBar {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -1321,9 +1262,9 @@ class SearchModuleButton {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
+        appendTo.appendChild(this.element);
         this.createComponents();
         this.startListeners();
-        appendTo.appendChild(this.element);
     }
     
     private createSelf() {
@@ -1332,7 +1273,7 @@ class SearchModuleButton {
     }
     
     private createComponents() {
-        this.icon = new Icon("/storage/images/magnifying_glass.png", this.element);
+        this.icon = new Icon(this.element, "", "/storage/images/magnifying_glass.png", "7");
     }
     
     private startListeners() {
@@ -1373,9 +1314,9 @@ class AddModuleButton {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
+        appendTo.appendChild(this.element);
         this.createComponents();
         this.startListeners();
-        appendTo.appendChild(this.element);
     }
     
     private createSelf() {
@@ -1384,7 +1325,7 @@ class AddModuleButton {
     }
     
     private createComponents() {
-        this.icon = new Icon("/storage/images/plus.png", this.element);
+        this.icon = new Icon(this.element, "", "/storage/images/plus.png", "7");
     }
     
     private startListeners() {
@@ -1403,8 +1344,8 @@ class GoToUsersSection {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.startListeners();
         appendTo.appendChild(this.element);
+        this.startListeners();
     }
     
     private createSelf() {
@@ -1437,8 +1378,8 @@ class ModulesTableContainer {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -1460,8 +1401,8 @@ class ModulesTable {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -1482,8 +1423,8 @@ class ModulesTableHead {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -1539,8 +1480,8 @@ class ModulesTableBody {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -1571,8 +1512,8 @@ class ModulesTableBodyRow {
     
     constructor(appendTo: HTMLElement, module: {[key: string]: string}) {
         this.createSelf(module);
-        this.createComponents(module);
         appendTo.appendChild(this.element);
+        this.createComponents(module);
     }
     
     private createSelf(module: {[key: string]: string}) {
@@ -1613,8 +1554,8 @@ class ModulesTableBodyRowButtonsCell {
     
     constructor(appendTo: HTMLElement, module: {[key: string]: string}) {
         this.createSelf();
-        this.createComponents(module);
         appendTo.appendChild(this.element);
+        this.createComponents(module);
     }
     
     private createSelf() {
@@ -1635,9 +1576,9 @@ class ModulesTableDeleteButton {
     
     constructor(appendTo: HTMLElement, module: string) {
         this.createSelf();
+        appendTo.appendChild(this.element);
         this.createComponents();
         this.startListeners(module);
-        appendTo.appendChild(this.element);
     }
     
     private createSelf() {
@@ -1645,7 +1586,7 @@ class ModulesTableDeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new Icon("/storage/images/delete.png", this.element);
+        this.icon = new Icon(this.element, "", "/storage/images/delete.png", "7");
     }
     
     private startListeners(module: string) {
@@ -1676,10 +1617,8 @@ class ModulesModal {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
+        appendTo.appendChild(this.element);
         this.createComponents();
-        setTimeout(() => {
-            appendTo.appendChild(this.element);
-        }, 200);
     }
     
     private createSelf() {
@@ -1702,8 +1641,8 @@ class ModulesModalContainer {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -1726,8 +1665,8 @@ class ModulesModalElements {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -1749,8 +1688,8 @@ class ModulesModalInputsContainer {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -1772,8 +1711,8 @@ class ModulesModalCloseButtonContainer {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.createComponents();
         appendTo.appendChild(this.element);
+        this.createComponents();
     }
     
     private createSelf() {
@@ -1793,8 +1732,8 @@ class ModulesModalCloseButton {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.startListeners();
         appendTo.appendChild(this.element);
+        this.startListeners();
     }
     
     private createSelf() {
@@ -1841,8 +1780,8 @@ class ModulesModalCreateButton {
     
     constructor(appendTo: HTMLElement) {
         this.createSelf();
-        this.startListeners();
         appendTo.appendChild(this.element);
+        this.startListeners();
     }
     
     private createSelf() {

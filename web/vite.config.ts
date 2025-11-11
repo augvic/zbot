@@ -6,7 +6,7 @@ export default defineConfig({
         outDir: path.resolve(__dirname, ".package", "storage"),
         emptyOutDir: true,
         lib: {
-            entry: path.resolve(__dirname, "src", "io", "pages", "zlogin.ts"),
+            entry: path.resolve(__dirname, "main.ts"),
             name: "zbot",
             fileName: () => "bundle.js",
             formats: ["es"]
