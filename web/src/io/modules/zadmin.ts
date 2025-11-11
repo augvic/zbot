@@ -1,15 +1,16 @@
 import { Notification } from "../global/notification";
 import { Icon } from "../global/icon";
+import { MakeRequestTask } from "../../tasks/make_request";
 
 export class zAdmin {
     
     element!: HTMLElement
     usersContainer!: Container
     
-    public init(appendTo: HTMLElement) {
+    public init(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -18,8 +19,8 @@ export class zAdmin {
         this.element.className = "w-full h-full opacity-fade-in bg-gray-300 dark:bg-gray-900 transition-colors duration-300 flex items-center justify-center";
     }
     
-    private createComponents() {
-        this.usersContainer = new Container(this.element);
+    private createComponents(makeRequestTask: MakeRequestTask) {
+        this.usersContainer = new Container(this.element, makeRequestTask);
     }
     
 }
@@ -30,10 +31,10 @@ class Container {
     usersSection!: UsersSection
     modulesSection!: ModulesSection
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -42,8 +43,8 @@ class Container {
         this.element.className = "w-[95%] h-[95%] flex bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg";
     }
     
-    private createComponents() {
-        this.usersSection = new UsersSection(this.element);
+    private createComponents(makeRequestTask: MakeRequestTask) {
+        this.usersSection = new UsersSection(this.element, makeRequestTask);
     }
     
 }
@@ -54,10 +55,10 @@ class UsersSection {
     titleBar!: UsersSectionTopBar
     tableContainer!: UsersTableContainer
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -66,9 +67,9 @@ class UsersSection {
         this.element.className = "w-full h-full flex flex-col p-5 gap-3 opacity-fade-in";
     }
     
-    private createComponents() {
-        this.titleBar = new UsersSectionTopBar(this.element);
-        this.tableContainer = new UsersTableContainer(this.element);
+    private createComponents(makeRequestTask: MakeRequestTask) {
+        this.titleBar = new UsersSectionTopBar(this.element, makeRequestTask);
+        this.tableContainer = new UsersTableContainer(this.element, makeRequestTask);
     }
     
 }
@@ -81,10 +82,10 @@ class UsersSectionTopBar {
     addUserButton!: AddUserButton
     goToModulesSection!: GoToModulesSection
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -92,11 +93,11 @@ class UsersSectionTopBar {
         this.element.className = "w-full h-auto flex items-center gap-2";
     }
     
-    private createComponents() {
+    private createComponents(makeRequestTask: MakeRequestTask) {
         this.searchInput = new SearchUserInput(this.element);
         this.searchButton = new SearchUserButton(this.element);
-        this.addUserButton = new AddUserButton(this.element);
-        this.goToModulesSection = new GoToModulesSection(this.element);
+        this.addUserButton = new AddUserButton(this.element, makeRequestTask);
+        this.goToModulesSection = new GoToModulesSection(this.element, makeRequestTask);
     }
     
 }
@@ -137,7 +138,7 @@ class SearchUserButton {
     }
     
     private createComponents() {
-        this.icon = new Icon(this.element, "", "/storage/images/magnifying_glass.png", "7");
+        this.icon = new Icon(this.element, "", "/storage/images/magnifying_glass.png", "5");
     }
     
     private startListeners() {
@@ -176,11 +177,11 @@ class AddUserButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
         this.createComponents();
-        this.startListeners();
+        this.startListeners(makeRequestTask);
     }
     
     private createSelf() {
@@ -189,12 +190,12 @@ class AddUserButton {
     }
     
     private createComponents() {
-        this.icon = new Icon(this.element, "", "/storage/images/plus.png", "7");
+        this.icon = new Icon(this.element, "", "/storage/images/plus.png", "5");
     }
     
-    private startListeners() {
+    private startListeners(makeRequestTask: MakeRequestTask) {
         this.element.addEventListener("click", () => {
-            new UserModal(document.getElementById("zAdmin")!, {}, false);
+            new UserModal(document.getElementById("zAdmin")!, {}, false, makeRequestTask);
         });
     }
     
@@ -206,10 +207,10 @@ class GoToModulesSection {
     button!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.startListeners();
+        this.startListeners(makeRequestTask);
     }
     
     private createSelf() {
@@ -221,14 +222,14 @@ class GoToModulesSection {
         this.element.appendChild(this.button);
     }
     
-    private startListeners() {
+    private startListeners(makeRequestTask: MakeRequestTask) {
         this.button.addEventListener("click", () => {
             const sectionsContainer = document.getElementById("sections-container")!;
             const usersSection = document.getElementById("users-section")!;
             usersSection.classList.add("opacity-fade-out");
             usersSection.addEventListener("animationend", () => {
                 usersSection.remove();
-                new ModulesSection(sectionsContainer);
+                new ModulesSection(sectionsContainer, makeRequestTask);
             }, { once: true });
         });
     }
@@ -240,10 +241,10 @@ class UsersTableContainer {
     element!: HTMLElement
     table!: UsersTable
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -251,8 +252,8 @@ class UsersTableContainer {
         this.element.className = "w-auto h-auto flex-1 overflow-y-auto custom-scroll";
     }
     
-    private createComponents() {
-        this.table = new UsersTable(this.element);   
+    private createComponents(makeRequestTask: MakeRequestTask) {
+        this.table = new UsersTable(this.element, makeRequestTask);   
     }
     
 }
@@ -263,10 +264,10 @@ class UsersTable {
     tableHead!: UsersTableHead
     tableBody!: UsersTableBody
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -274,9 +275,9 @@ class UsersTable {
         this.element.className = "h-auto w-full flex flex-col whitespace-nowrap cursor-default border-collapse text-center text-black dark:text-white transition-colors duration-300";
     }
     
-    private createComponents() {
+    private createComponents(makeRequestTask: MakeRequestTask) {
         this.tableHead = new UsersTableHead(this.element);
-        this.tableBody = new UsersTableBody(this.element);
+        this.tableBody = new UsersTableBody(this.element, makeRequestTask);
     }
     
 }
@@ -327,10 +328,10 @@ class UsersTableBody {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -339,15 +340,14 @@ class UsersTableBody {
         this.element.className = "w-auto h-auto flex flex-col";
     }
     
-    private async createComponents() {
-        const response = await fetch(`${window.location.origin}/users/all`);
-        const data: {[key: string]: boolean | [{}] | string} = await response.json();
-        if (!data.success) {
-            new Notification(data.message as string, "red");
+    private async createComponents(makeRequestTask: MakeRequestTask) {
+        const response = await makeRequestTask.get("/users/all");
+        if (!response.success) {
+            new Notification(response.message, "red");
         }
-        const users = data.users as [{}]
+        const users = response.data as [{}]
         users.forEach((user: {}) => {
-            let row = new UsersTableBodyRow(this.element, user);
+            let row = new UsersTableBodyRow(this.element, user, makeRequestTask);
             row.element.offsetHeight;
             row.element.style.height = "46px";
         });
@@ -359,10 +359,10 @@ class UsersTableBodyRow {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, makeRequestTask: MakeRequestTask) {
         this.createSelf(user.user);
         appendTo.appendChild(this.element);
-        this.createComponents(user);
+        this.createComponents(user, makeRequestTask);
     }
     
     private createSelf(user: string) {
@@ -371,12 +371,12 @@ class UsersTableBodyRow {
         this.element.className = "w-full h-[0px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 table-row-transitions user-row";
     }
     
-    private createComponents(user: {[key: string]: string}) {
+    private createComponents(user: {[key: string]: string}, makeRequestTask: MakeRequestTask) {
         new UsersTableBodyRowCell(this.element, user.user, user.user, "user");
         new UsersTableBodyRowCell(this.element, user.name, user.user, "name");
         new UsersTableBodyRowCell(this.element, user.email, user.user, "email");
         new UsersTableBodyRowCell(this.element, user.password, user.user, "password");
-        new UsersTableBodyRowButtonsCell(this.element, user);
+        new UsersTableBodyRowButtonsCell(this.element, user, makeRequestTask);
     }
     
 }
@@ -405,10 +405,10 @@ class UsersTableBodyRowButtonsCell {
     editButton!: UsersTableEditButton
     deleteButton!: UsersTableDeleteButton
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents(user);
+        this.createComponents(user, makeRequestTask);
     }
     
     private createSelf() {
@@ -416,9 +416,9 @@ class UsersTableBodyRowButtonsCell {
         this.element.className = "p-2 h-auto w-[20%] flex gap-x-2 items-center justify-center";
     }
     
-    private createComponents(user: {[key: string]: string}) {
-        this.editButton = new UsersTableEditButton(this.element, user);
-        this.deleteButton = new UsersTableDeleteButton(this.element, user.user);
+    private createComponents(user: {[key: string]: string}, makeRequestTask: MakeRequestTask) {
+        this.editButton = new UsersTableEditButton(this.element, user, makeRequestTask);
+        this.deleteButton = new UsersTableDeleteButton(this.element, user.user, makeRequestTask);
     }
     
 }
@@ -428,11 +428,11 @@ class UsersTableEditButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
         this.createComponents();
-        this.startListeners(user);
+        this.startListeners(user, makeRequestTask);
     }
     
     private createSelf() {
@@ -440,13 +440,13 @@ class UsersTableEditButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-blue-700 rounded-md hover:bg-blue-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new Icon(this.element, "", "/storage/images/edit.png", "7");
+        this.icon = new Icon(this.element, "", "/storage/images/edit.png", "5");
         
     }
     
-    private startListeners(user: {[key: string]: string}) {
+    private startListeners(user: {[key: string]: string}, makeRequestTask: MakeRequestTask) {
         this.element.addEventListener("click", () => {
-            new UserModal(document.getElementById("zAdmin")!, user, true);
+            new UserModal(document.getElementById("zAdmin")!, user, true, makeRequestTask);
         });
     }
     
@@ -457,11 +457,11 @@ class UsersTableDeleteButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement, user: string) {
+    constructor(appendTo: HTMLElement, user: string, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
         this.createComponents();
-        this.startListeners(user);
+        this.startListeners(user, makeRequestTask);
     }
     
     private createSelf() {
@@ -469,19 +469,16 @@ class UsersTableDeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new Icon(this.element, "", "/storage/images/delete.png", "7");
+        this.icon = new Icon(this.element, "", "/storage/images/delete.png", "5");
     }
     
-    private startListeners(user: string) {
+    private startListeners(user: string, makeRequestTask: MakeRequestTask) {
         this.element.addEventListener("click", async () => {
-            const response = await fetch(`${window.location.origin}/users/${user}`, {
-                method: "DELETE",
-            });
-            const data = await response.json();
-            if (!data.success) {
-                new Notification(data.message, "red");
+            const response = await makeRequestTask.delete(`/users/${user}`);
+            if (!response.success) {
+                new Notification(response.message, "red");
             } else {
-                new Notification(data.message, "green");
+                new Notification(response.message, "green");
                 const userRow = document.getElementById(`${user}-row`)!;
                 userRow.style.height = "0px";
                 setTimeout(() => {
@@ -498,10 +495,10 @@ class UserModal {
     element!: HTMLElement
     modal!: UserModalContainer
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents(user, editModal);
+        this.createComponents(user, editModal, makeRequestTask);
     }
     
     private createSelf() {
@@ -509,8 +506,8 @@ class UserModal {
         this.element.id = "user-modal";
         this.element.className = "w-full h-full fixed flex items-center justify-center z-50 bg-black/80 opacity-fade-in";
     }
-    private createComponents(user: {[key: string]: string}, editModal: boolean) {
-        this.modal = new UserModalContainer(this.element, user, editModal);
+    private createComponents(user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
+        this.modal = new UserModalContainer(this.element, user, editModal, makeRequestTask);
     }
     
 }
@@ -522,10 +519,10 @@ class UserModalContainer {
     elementsContainer!: UserModalElements
     button!: UserModalSaveButton | UserModalCreateButton
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents(user, editModal);
+        this.createComponents(user, editModal, makeRequestTask);
     }
     
     private createSelf() {
@@ -533,13 +530,13 @@ class UserModalContainer {
         this.element.className = "w-auto h-auto flex flex-col items-center p-3 bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg gap-y-2";
     }
     
-    private createComponents(user: {[key: string]: string}, editModal: boolean) {
+    private createComponents(user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
         this.closeButtonContainer = new UserModalCloseButtonContainer(this.element);
-        this.elementsContainer = new UserModalElements(this.element, user, editModal);
+        this.elementsContainer = new UserModalElements(this.element, user, editModal, makeRequestTask);
         if (editModal) {
-            this.button = new UserModalSaveButton(this.element);
+            this.button = new UserModalSaveButton(this.element, makeRequestTask);
         } else {
-            this.button = new UserModalCreateButton(this.element);
+            this.button = new UserModalCreateButton(this.element, makeRequestTask);
         }
     }
     
@@ -551,10 +548,10 @@ class UserModalElements {
     inputsContainer!: UserModalInputsContainer
     tableContainer!: UserModalTableContainer
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents(user, editModal);
+        this.createComponents(user, editModal, makeRequestTask);
     }
     
     private createSelf() {
@@ -562,9 +559,9 @@ class UserModalElements {
         this.element.className = "w-full h-auto flex flex-1 gap-x-2";
     }
     
-    private createComponents(user: {[key: string]: string}, editModal: boolean) {
-        this.inputsContainer = new UserModalInputsContainer(this.element, user, editModal);
-        this.tableContainer = new UserModalTableContainer(this.element, user, editModal);
+    private createComponents(user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
+        this.inputsContainer = new UserModalInputsContainer(this.element, user, editModal, makeRequestTask);
+        this.tableContainer = new UserModalTableContainer(this.element, user, editModal, makeRequestTask);
     }
     
 }
@@ -577,10 +574,10 @@ class UserModalInputsContainer {
     emailInput!: UserModalInput
     passwordInput!: UserModalInput
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents(user, editModal);
+        this.createComponents(user, editModal, makeRequestTask);
     }
     
     private createSelf() {
@@ -588,14 +585,13 @@ class UserModalInputsContainer {
         this.element.className = "w-auto h-auto flex flex-col p-3 items-center justify-center gap-y-2 border border-gray-300 dark:border-gray-900 transition-colors duration-300 rounded-lg";
     }
     
-    private async createComponents(user: {[key: string]: string}, editModal: boolean) {
+    private async createComponents(user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
         if (editModal) {
-            const response = await fetch(`${window.location.origin}/users/${user.user}`);
-            const data = await response.json();
-            if (!data.success) {
-                new Notification(data.message, "red");
+            const response = await makeRequestTask.get(`/users/${user.user}`)
+            if (!response.success) {
+                new Notification(response.message, "red");
             }
-            const userDataUpdated = data.users;
+            const userDataUpdated = response.data[0];
             this.userInput = new UserModalInput(this.element, "text", "Usuário", "user-modal-user", userDataUpdated.user, editModal);
             this.nameInput = new UserModalInput(this.element, "text", "Nome", "user-modal-name", userDataUpdated.name, editModal);
             this.emailInput = new UserModalInput(this.element, "text", "E-mail", "user-modal-email", userDataUpdated.email, editModal);
@@ -616,10 +612,10 @@ class UserModalTableContainer {
     permissionsTableContainer!: PermissionsTableContainer
     selectContainer!: UserModalModulesListContainer
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents(user, editModal);
+        this.createComponents(user, editModal, makeRequestTask);
     }
     
     private createSelf() {
@@ -627,9 +623,9 @@ class UserModalTableContainer {
         this.element.className = "w-[300px] h-[300px] flex flex-col p-3 gap-y-2 items-center justify-center border border-gray-300 dark:border-gray-900 transition-colors duration-300 rounded-lg";
     }
     
-    private createComponents(user: {[key: string]: string}, editModal: boolean) {
-        this.selectContainer = new UserModalModulesListContainer(this.element);
-        this.permissionsTableContainer = new PermissionsTableContainer(this.element, user, editModal);
+    private createComponents(user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
+        this.selectContainer = new UserModalModulesListContainer(this.element, makeRequestTask);
+        this.permissionsTableContainer = new PermissionsTableContainer(this.element, user, editModal, makeRequestTask);
     }
     
 }
@@ -640,10 +636,10 @@ class UserModalModulesListContainer {
     select!: UserModalModulesList
     button!: UserModalAddModuleButton
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -651,8 +647,8 @@ class UserModalModulesListContainer {
         this.element.className = "w-auto h-auto flex gap-x-2";
     }
     
-    private createComponents() {
-        this.select = new UserModalModulesList(this.element);
+    private createComponents(makeRequestTask: MakeRequestTask) {
+        this.select = new UserModalModulesList(this.element, makeRequestTask);
         this.button = new UserModalAddModuleButton(this.element);
     }
     
@@ -662,10 +658,10 @@ class UserModalModulesList {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -674,13 +670,12 @@ class UserModalModulesList {
         this.element.className = "h-auto w-auto bg-white border border-gray-300 rounded-md p-1";
     }
     
-    private async createComponents() {
-        const response = await fetch(`${window.location.origin}/modules-list`);
-        const data: {[key: string]: string | boolean | [{}]} = await response.json();
-        if (!data.success) {
-            new Notification(data.message as string, "red");
+    private async createComponents(makeRequestTask: MakeRequestTask) {
+        const response = await makeRequestTask.get("/modules-list")
+        if (!response.success) {
+            new Notification(response.message, "red");
         }
-        const modules = data.modules as [{[key: string]: string}]
+        const modules = response.data as [{[key: string]: string}]
         modules.forEach(module => {
             new Option(this.element, module.module)
         });
@@ -722,7 +717,7 @@ class UserModalAddModuleButton {
     }
     
     private createComponents() {
-        this.icon = new Icon(this.element, "", "/storage/images/plus.png", "7");
+        this.icon = new Icon(this.element, "", "/storage/images/plus.png", "5");
     }
     
     private startListeners() {
@@ -831,10 +826,10 @@ class UserModalCreateButton {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.startListeners();
+        this.startListeners(makeRequestTask);
     }
     
     private createSelf() {
@@ -843,35 +838,27 @@ class UserModalCreateButton {
         this.element.innerText = "Criar";
     }
     
-    private startListeners() {
+    private startListeners(makeRequestTask: MakeRequestTask) {
         this.element.addEventListener("click", async () => {
             const tableBody = document.getElementById("users-table-body")!;
             const user = (document.getElementById("user-modal-user") as HTMLInputElement).value!;
             const name = (document.getElementById("user-modal-name") as HTMLInputElement).value!;
             const email = (document.getElementById("user-modal-email") as HTMLInputElement).value!;
             const password = (document.getElementById("user-modal-password") as HTMLInputElement).value!;
-            const response = await fetch(`${window.location.origin}/users`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user, name, email, password })
-            });
-            const data = await response.json();
-            if (!data.success) {
-                new Notification(data.message, "red");
+            const response = await makeRequestTask.post("/users", "application/json", { user, name, email, password });
+            if (!response.success) {
+                new Notification(response.message, "red");
                 return;
             } else {
-                new Notification(data.message, "green");
+                new Notification(response.message, "green");
             }
             const permissionsToCreate = document.querySelectorAll<HTMLElement>(".permission-to-create");
             permissionsToCreate.forEach(async permission => {
-                const response = await fetch(`${window.location.origin}/permissions/${user}/${permission.innerText}`, {
-                    method: "POST"
-                });
-                const data = await response.json();
-                if (!data.success) {
-                    new Notification(data.message, "red");
+                const response = await makeRequestTask.post(`/permissions/${user}/${permission.innerText}`, "", "");
+                if (!response.success) {
+                    new Notification(response.message, "red");
                 } else {
-                    new Notification(data.message, "green");
+                    new Notification(response.message, "green");
                 }
             });
             const modal = document.getElementById("user-modal")!;
@@ -879,7 +866,7 @@ class UserModalCreateButton {
             modal.classList.add("opacity-fade-out");
             modal.addEventListener("animationend", () => {
                 modal.remove();
-                let row = new UsersTableBodyRow(tableBody, { user: user, name: name, email: email, password: password });
+                let row = new UsersTableBodyRow(tableBody, { user: user, name: name, email: email, password: password }, makeRequestTask);
                 row.element.offsetHeight;
                 row.element.style.height = "46px";
             }, { once: true });
@@ -892,10 +879,10 @@ class UserModalSaveButton {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.startListeners();
+        this.startListeners(makeRequestTask);
     }
     
     private createSelf() {
@@ -904,46 +891,35 @@ class UserModalSaveButton {
         this.element.innerText = "Salvar";
     }
     
-    private startListeners() {
+    private startListeners(makeRequestTask: MakeRequestTask) {
         this.element.addEventListener("click", async () => {
             const user = (document.getElementById("user-modal-user") as HTMLInputElement).value!;
             const name = (document.getElementById("user-modal-name") as HTMLInputElement).value!;
             const email = (document.getElementById("user-modal-email") as HTMLInputElement).value!;
             const password = (document.getElementById("user-modal-password") as HTMLInputElement).value!;
-            const response = await fetch(`${window.location.origin}/users/${user}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user, name, email, password })
-            });
-            const data = await response.json();
-            if (!data.success) {
-                new Notification(data.message, "red");
+            const response = await makeRequestTask.put(`/users/${user}`, "application/json", { user, name, email, password });
+            if (!response.success) {
+                new Notification(response.message, "red");
                 return;
             } else {
-                new Notification(data.message, "green");
+                new Notification(response.message, "green");
             }
             const permissionsToDelete = document.querySelectorAll<HTMLElement>(".permission-to-delete");
             permissionsToDelete.forEach(async permission => {
-                const response = await fetch(`${window.location.origin}/permissions/${user}/${permission.innerText}`, {
-                    method: "DELETE"
-                });
-                const data = await response.json();
-                if (!data.success) {
-                    new Notification(data.message, "red");
+                const response = await makeRequestTask.delete(`/permissions/${user}/${permission.innerText}`)
+                if (!response.success) {
+                    new Notification(response.message, "red");
                 } else {
-                    new Notification(data.message, "green");
+                    new Notification(response.message, "green");
                 }
             });
             const permissionsToCreate = document.querySelectorAll<HTMLElement>(".permission-to-create");
             permissionsToCreate.forEach(async permission => {
-                const response = await fetch(`${window.location.origin}/permissions/${user}/${permission.innerText}`, {
-                    method: "POST"
-                });
-                const data = await response.json();
-                if (!data.success) {
-                    new Notification(data.message, "red");
+                const response = await makeRequestTask.post(`/permissions/${user}/${permission.innerText}`, "", "")
+                if (!response.success) {
+                    new Notification(response.message, "red");
                 } else {
-                    new Notification(data.message, "green");
+                    new Notification(response.message, "green");
                 }
             });
             const modal = document.getElementById("user-modal")!;
@@ -972,10 +948,10 @@ class PermissionsTableContainer {
     element!: HTMLElement
     modulesTable!: PermissionsTable
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents(user, editModal);
+        this.createComponents(user, editModal, makeRequestTask);
     }
     
     private createSelf() {
@@ -983,8 +959,8 @@ class PermissionsTableContainer {
         this.element.className = "w-full h-full flex-1 overflow-y-auto custom-scroll";
     }
     
-    private createComponents(user: {[key: string]: string}, editModal: boolean) {
-        this.modulesTable = new PermissionsTable(this.element, user, editModal);   
+    private createComponents(user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
+        this.modulesTable = new PermissionsTable(this.element, user, editModal, makeRequestTask);   
     }
     
 }
@@ -995,10 +971,10 @@ class PermissionsTable {
     tableHead!: PermissionsTableHead
     tableBody!: PermissionsTableBody
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents(user, editModal);
+        this.createComponents(user, editModal, makeRequestTask);
     }
     
     private createSelf() {
@@ -1006,9 +982,9 @@ class PermissionsTable {
         this.element.className = "h-auto w-full flex flex-col whitespace-nowrap cursor-default border-collapse text-center text-black dark:text-white transition-colors duration-300";
     }
     
-    private createComponents(user: {[key: string]: string}, editModal: boolean) {
+    private createComponents(user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
         this.tableHead = new PermissionsTableHead(this.element);
-        this.tableBody = new PermissionsTableBody(this.element, user, editModal);
+        this.tableBody = new PermissionsTableBody(this.element, user, editModal, makeRequestTask);
     }
     
 }
@@ -1055,10 +1031,10 @@ class PermissionsTableBody {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean) {
+    constructor(appendTo: HTMLElement, user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents(user, editModal);
+        this.createComponents(user, editModal, makeRequestTask);
     }
     
     private createSelf() {
@@ -1067,14 +1043,13 @@ class PermissionsTableBody {
         this.element.className = "w-auto h-auto flex flex-col";
     }
     
-    private async createComponents(user: {[key: string]: string}, editModal: boolean) {
+    private async createComponents(user: {[key: string]: string}, editModal: boolean, makeRequestTask: MakeRequestTask) {
         if (editModal) {
-            const response = await fetch(`${window.location.origin}/permissions/${user.user}`);
-            const data: {[key: string]: boolean | string | [string]} = await response.json();
-            if (!data.success) {
-                new Notification(data.message as string, "red");
+            const response = await makeRequestTask.get(`/permissions/${user.user}`)
+            if (!response.success) {
+                new Notification(response.message as string, "red");
             }
-            const permissions = data.permissions as [{}]
+            const permissions = response.data as [{}]
             permissions.forEach((permission) => {
                 let row = new PermissionsTableBodyRow(this.element, permission);
                 row.element.offsetHeight;
@@ -1164,7 +1139,7 @@ class PermissionsTableDeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new Icon(this.element, "", "/storage/images/delete.png", "7");
+        this.icon = new Icon(this.element, "", "/storage/images/delete.png", "5");
     }
     
     private startListeners(permission: {[key: string]: string}) {
@@ -1190,10 +1165,10 @@ class ModulesSection {
     titleBar!: ModulesSectionTopBar
     tableContainer!: ModulesTableContainer
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -1202,9 +1177,9 @@ class ModulesSection {
         this.element.className = "w-full h-full flex flex-col p-5 gap-3 opacity-fade-in";
     }
     
-    private createComponents() {
-        this.titleBar = new ModulesSectionTopBar(this.element);
-        this.tableContainer = new ModulesTableContainer(this.element);
+    private createComponents(makeRequestTask: MakeRequestTask) {
+        this.titleBar = new ModulesSectionTopBar(this.element, makeRequestTask);
+        this.tableContainer = new ModulesTableContainer(this.element, makeRequestTask);
     }
     
 }
@@ -1217,10 +1192,10 @@ class ModulesSectionTopBar {
     AddModuleButton!: AddModuleButton
     GoToUsersSection!: GoToUsersSection
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -1228,11 +1203,11 @@ class ModulesSectionTopBar {
         this.element.className = "w-full h-auto flex items-center gap-2";
     }
     
-    private createComponents() {
+    private createComponents(makeRequestTask: MakeRequestTask) {
         this.searchInput = new SearchModuleInput(this.element);
         this.searchButton = new SearchModuleButton(this.element);
-        this.AddModuleButton = new AddModuleButton(this.element);
-        this.GoToUsersSection = new GoToUsersSection(this.element);
+        this.AddModuleButton = new AddModuleButton(this.element, makeRequestTask);
+        this.GoToUsersSection = new GoToUsersSection(this.element, makeRequestTask);
     }
     
 }
@@ -1273,7 +1248,7 @@ class SearchModuleButton {
     }
     
     private createComponents() {
-        this.icon = new Icon(this.element, "", "/storage/images/magnifying_glass.png", "7");
+        this.icon = new Icon(this.element, "", "/storage/images/magnifying_glass.png", "5");
     }
     
     private startListeners() {
@@ -1312,11 +1287,11 @@ class AddModuleButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
         this.createComponents();
-        this.startListeners();
+        this.startListeners(makeRequestTask);
     }
     
     private createSelf() {
@@ -1325,12 +1300,12 @@ class AddModuleButton {
     }
     
     private createComponents() {
-        this.icon = new Icon(this.element, "", "/storage/images/plus.png", "7");
+        this.icon = new Icon(this.element, "", "/storage/images/plus.png", "5");
     }
     
-    private startListeners() {
+    private startListeners(makeRequestTask: MakeRequestTask) {
         this.element.addEventListener("click", () => {
-            new ModulesModal(document.getElementById("zAdmin")!);
+            new ModulesModal(document.getElementById("zAdmin")!, makeRequestTask);
         });
     }
     
@@ -1342,10 +1317,10 @@ class GoToUsersSection {
     button!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.startListeners();
+        this.startListeners(makeRequestTask);
     }
     
     private createSelf() {
@@ -1357,14 +1332,14 @@ class GoToUsersSection {
         this.element.appendChild(this.button);
     }
     
-    private startListeners() {
+    private startListeners(makeRequestTask: MakeRequestTask) {
         this.button.addEventListener("click", () => {
             const sectionsContainer = document.getElementById("sections-container")!;
             const modulesSection = document.getElementById("modules-section")!;
             modulesSection.classList.add("opacity-fade-out");
             modulesSection.addEventListener("animationend", () => {
                 modulesSection.remove();
-                new UsersSection(sectionsContainer);
+                new UsersSection(sectionsContainer, makeRequestTask);
             }, { once: true });
         });
     }
@@ -1376,10 +1351,10 @@ class ModulesTableContainer {
     element!: HTMLElement
     table!: ModulesTable
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -1387,8 +1362,8 @@ class ModulesTableContainer {
         this.element.className = "w-auto h-auto flex-1 overflow-y-auto custom-scroll";
     }
     
-    private createComponents() {
-        this.table = new ModulesTable(this.element);   
+    private createComponents(makeRequestTask: MakeRequestTask) {
+        this.table = new ModulesTable(this.element, makeRequestTask);   
     }
     
 }
@@ -1399,10 +1374,10 @@ class ModulesTable {
     tableHead!: ModulesTableHead
     tableBody!: ModulesTableBody
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -1410,9 +1385,9 @@ class ModulesTable {
         this.element.className = "h-auto w-full flex flex-col whitespace-nowrap cursor-default border-collapse text-center text-black dark:text-white transition-colors duration-300";
     }
     
-    private createComponents() {
+    private createComponents(makeRequestTask: MakeRequestTask) {
         this.tableHead = new ModulesTableHead(this.element);
-        this.tableBody = new ModulesTableBody(this.element);
+        this.tableBody = new ModulesTableBody(this.element, makeRequestTask);
     }
     
 }
@@ -1478,10 +1453,10 @@ class ModulesTableBody {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -1490,15 +1465,14 @@ class ModulesTableBody {
         this.element.className = "w-auto h-auto flex flex-col";
     }
     
-    private async createComponents() {
-        const response = await fetch(`${window.location.origin}/modules-list`);
-        const data: {[key: string]: boolean | [{}] | string} = await response.json();
-        if (!data.success) {
-            new Notification(data.message as string, "red");
+    private async createComponents(makeRequestTask: MakeRequestTask) {
+        const response = await makeRequestTask.get("/modules-list");
+        if (!response.success) {
+            new Notification(response.message as string, "red");
         }
-        const modules = data.modules as [{}]
+        const modules = response.data as [{}]
         modules.forEach((module) => {
-            let row = new ModulesTableBodyRow(this.element, module);
+            let row = new ModulesTableBodyRow(this.element, module, makeRequestTask);
             row.element.offsetHeight;
             row.element.style.height = "46px";
         });
@@ -1510,10 +1484,10 @@ class ModulesTableBodyRow {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement, module: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, module: {[key: string]: string}, makeRequestTask: MakeRequestTask) {
         this.createSelf(module);
         appendTo.appendChild(this.element);
-        this.createComponents(module);
+        this.createComponents(module, makeRequestTask);
     }
     
     private createSelf(module: {[key: string]: string}) {
@@ -1522,10 +1496,10 @@ class ModulesTableBodyRow {
         this.element.className = "w-full h-[0px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 table-row-transitions user-row";
     }
     
-    private createComponents(module: {[key: string]: string}) {
+    private createComponents(module: {[key: string]: string}, makeRequestTask: MakeRequestTask) {
         new ModulesTableBodyRowCell(this.element, module.module);
         new ModulesTableBodyRowCell(this.element, module.description);
-        new ModulesTableBodyRowButtonsCell(this.element, module);
+        new ModulesTableBodyRowButtonsCell(this.element, module, makeRequestTask);
     }
     
 }
@@ -1552,10 +1526,10 @@ class ModulesTableBodyRowButtonsCell {
     element!: HTMLElement
     deleteButton!: ModulesTableDeleteButton
     
-    constructor(appendTo: HTMLElement, module: {[key: string]: string}) {
+    constructor(appendTo: HTMLElement, module: {[key: string]: string}, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents(module);
+        this.createComponents(module, makeRequestTask);
     }
     
     private createSelf() {
@@ -1563,8 +1537,8 @@ class ModulesTableBodyRowButtonsCell {
         this.element.className = "p-2 h-auto w-[20%] flex gap-x-2 items-center justify-center";
     }
     
-    private createComponents(module: {[key: string]: string}) {
-        this.deleteButton = new ModulesTableDeleteButton(this.element, module.module);
+    private createComponents(module: {[key: string]: string}, makeRequestTask: MakeRequestTask) {
+        this.deleteButton = new ModulesTableDeleteButton(this.element, module.module, makeRequestTask);
     }
     
 }
@@ -1574,11 +1548,11 @@ class ModulesTableDeleteButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement, module: string) {
+    constructor(appendTo: HTMLElement, module: string, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
         this.createComponents();
-        this.startListeners(module);
+        this.startListeners(module, makeRequestTask);
     }
     
     private createSelf() {
@@ -1586,19 +1560,16 @@ class ModulesTableDeleteButton {
         this.element.className = "p-1 h-auto w-auto h-auto bg-red-700 rounded-md hover:bg-red-900 transition-colors duration-300 cursor-pointer";
     }
     private createComponents() {
-        this.icon = new Icon(this.element, "", "/storage/images/delete.png", "7");
+        this.icon = new Icon(this.element, "", "/storage/images/delete.png", "5");
     }
     
-    private startListeners(module: string) {
+    private startListeners(module: string, makeRequestTask: MakeRequestTask) {
         this.element.addEventListener("click", async () => {
-            const response = await fetch(`${window.location.origin}/modules-list/${module}`, {
-                method: "DELETE",
-            });
-            const data = await response.json();
-            if (!data.success) {
-                new Notification(data.message, "red");
+            const response = await makeRequestTask.delete(`/modules-list/${module}`);
+            if (!response.success) {
+                new Notification(response.message, "red");
             } else {
-                new Notification(data.message, "green");
+                new Notification(response.message, "green");
                 const userRow = document.getElementById(`${module}-row`)!;
                 userRow.style.height = "0px";
                 setTimeout(() => {
@@ -1615,10 +1586,10 @@ class ModulesModal {
     element!: HTMLElement
     modal!: ModulesModalContainer
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -1626,8 +1597,8 @@ class ModulesModal {
         this.element.id = "modules-modal";
         this.element.className = "w-full h-full fixed flex items-center justify-center z-50 bg-black/80 opacity-fade-in";
     }
-    private createComponents() {
-        this.modal = new ModulesModalContainer(this.element);
+    private createComponents(makeRequestTask: MakeRequestTask) {
+        this.modal = new ModulesModalContainer(this.element, makeRequestTask);
     }
     
 }
@@ -1639,10 +1610,10 @@ class ModulesModalContainer {
     elementsContainer!: ModulesModalElements
     button!: ModulesModalCreateButton
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -1650,10 +1621,10 @@ class ModulesModalContainer {
         this.element.className = "w-auto h-auto flex flex-col items-center p-3 bg-white dark:bg-gray-700 transition-colors duration-300 rounded-lg gap-y-2";
     }
     
-    private createComponents() {
+    private createComponents(makeRequestTask: MakeRequestTask) {
         this.closeButtonContainer = new ModulesModalCloseButtonContainer(this.element);
         this.elementsContainer = new ModulesModalElements(this.element);
-        this.button = new ModulesModalCreateButton(this.element);
+        this.button = new ModulesModalCreateButton(this.element, makeRequestTask);
     }
     
 }
@@ -1778,10 +1749,10 @@ class ModulesModalCreateButton {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.startListeners();
+        this.startListeners(makeRequestTask);
     }
     
     private createSelf() {
@@ -1790,29 +1761,24 @@ class ModulesModalCreateButton {
         this.element.innerText = "Adicionar";
     }
     
-    private startListeners() {
+    private startListeners(makeRequestTask: MakeRequestTask) {
         this.element.addEventListener("click", async () => {
             const tableBody = document.getElementById("modules-table-body")!;
             const module = (document.getElementById("modules-modal-module") as HTMLInputElement).value!;
             const description = (document.getElementById("modules-modal-description") as HTMLInputElement).value!;
-            const response = await fetch(`${window.location.origin}/modules-list`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ module, description })
-            });
-            const data = await response.json();
-            if (!data.success) {
-                new Notification(data.message, "red");
+            const response = await makeRequestTask.post("/modules-list", "application/json", { module, description });
+            if (!response.success) {
+                new Notification(response.message, "red");
                 return;
             } else {
-                new Notification(data.message, "green");
+                new Notification(response.message, "green");
             }
             const modal = document.getElementById("modules-modal")!;
             modal.classList.remove("opacity-fade-in");
             modal.classList.add("opacity-fade-out");
             modal.addEventListener("animationend", () => {
                 modal.remove();
-                let row = new ModulesTableBodyRow(tableBody, { module: module, description: description });
+                let row = new ModulesTableBodyRow(tableBody, { module: module, description: description }, makeRequestTask);
                 row.element.offsetHeight;
                 row.element.style.height = "46px";
             }, { once: true });

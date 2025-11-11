@@ -10,6 +10,7 @@ import { WebSocketComponent } from "./src/components/web_socket";
 class CompositionRoot {
     
     app!: HTMLElement
+    module!: HTMLElement
     zIndex!: zIndex
     zLogin!: zLogin
     zRegRpa!: zRegRpa
@@ -43,18 +44,19 @@ class CompositionRoot {
         this.zRegRpa = new zRegRpa();
         document.addEventListener("load:index", () => {
             this.webSocketComponent.init();
-            this.zIndex.init(this.app);
+            this.zIndex.init(this.app, this.makeRequestTask);
+            this.module = document.getElementById("module")!;
         });
         document.addEventListener("load:login", () => {
             this.zLogin.init(this.app, this.makeRequestTask);
         });
         document.addEventListener("load:zAdmin", () => {
             this.webSocketComponent.webSocket.removeAllListeners();
-            this.zAdmin.init(this.app);
+            this.zAdmin.init(this.module, this.makeRequestTask);
         });
         document.addEventListener("load:zRegRpa", () => {
             this.webSocketComponent.webSocket.removeAllListeners();
-            this.zRegRpa.init(this.app);
+            this.zRegRpa.init(this.module);
             this.webSocketComponent.webSocket.on("regrpa_terminal", (response: {[key: string]: string}) => {
                 const terminal = this.zRegRpa.container.terminalSection.terminal.element;
                 const distanceFromBottom = terminal.scrollHeight - (terminal.scrollTop + terminal.clientHeight);
@@ -117,9 +119,9 @@ class CompositionRoot {
         const response = await this.makeRequestTask.get("/login");
         if (response.success) {
             this.app.innerHTML = "";
-            this.zIndex.init(this.app)
+            document.dispatchEvent(new Event("load:index"));
         } else {
-            this.zLogin.init(this.app, this.makeRequestTask);
+            document.dispatchEvent(new Event("load:login"));
         }
     }
     

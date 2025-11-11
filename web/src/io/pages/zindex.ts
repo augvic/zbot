@@ -2,6 +2,7 @@ import { HoverSpan } from "../global/hover_span";
 import { Icon } from "../global/icon";
 import { ThemeButton } from "../global/theme_button";
 import { Notification } from "../global/notification";
+import { MakeRequestTask } from "../../tasks/make_request";
 
 export class zIndex {
     
@@ -10,10 +11,10 @@ export class zIndex {
     titleBar!: TitleBar
     module!: Module
     
-    public init(appendTo: HTMLElement) {
+    public init(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         appendTo.appendChild(this.element);
-        this.createComponents();
+        this.createComponents(makeRequestTask);
     }
     
     private createSelf() {
@@ -22,10 +23,10 @@ export class zIndex {
         this.element.className = "h-full w-full overflow-hidden flex flex-col bg-gray-300 dark:bg-gray-900 transition-colors duration-300 opacity-fade-in";
     }
     
-    private createComponents() {
+    private createComponents(makeRequestTask: MakeRequestTask) {
         this.module = new Module(this.element);
-        this.menu = new Menu(this.element);
-        this.titleBar = new TitleBar(this.element);
+        this.menu = new Menu(this.element, makeRequestTask);
+        this.titleBar = new TitleBar(this.element, makeRequestTask);
     }
     
 }
@@ -38,9 +39,9 @@ class TitleBar {
     logoutButton!: LogoutButton
     themeButton!: ThemeButton
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
-        this.createComponents();
+        this.createComponents(makeRequestTask);
         appendTo.appendChild(this.element);
     }
     
@@ -50,10 +51,10 @@ class TitleBar {
         this.element.className = "w-full bg-white dark:bg-gray-700 fixed z-50 h-[50px] flex items-center pl-3 transition-colors duration-300 gap-2";
     }
     
-    private createComponents() {
+    private createComponents(makeRequestTask: MakeRequestTask) {
         this.menuButton = new MenuButton(this.element);
-        this.user = new UserName(this.element);
-        this.logoutButton = new LogoutButton(this.element);
+        this.user = new UserName(this.element, makeRequestTask);
+        this.logoutButton = new LogoutButton(this.element, makeRequestTask);
         this.themeButton = new ThemeButton(this.element, true);
     }
     
@@ -63,18 +64,21 @@ class UserName {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
-        this.createSelf();
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
+        this.createSelf(makeRequestTask);
         appendTo.appendChild(this.element);
     }
     
-    private async createSelf() {
+    private async createSelf(makeRequestTask: MakeRequestTask) {
         this.element = document.createElement("p");
         this.element.id = "user";
         this.element.className = "text-black dark:text-white transition-colors duration-300 cursor-default";
-        const response = await fetch(`${window.location.origin}/session-user`);
-        const user = await response.json();
-        this.element.innerText = `Usuário: ${user}`;
+        const response = await makeRequestTask.get("/session-user");
+        if (response.success) {
+            this.element.innerText = `Usuário: ${response.data}`;
+        } else {
+            new Notification(response.message, "red");
+        }
     }
     
 }
@@ -84,10 +88,10 @@ class LogoutButton {
     element!: HTMLElement
     icon!: Icon
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
         this.createComponents();
-        this.startListeners();
+        this.startListeners(makeRequestTask);
         appendTo.appendChild(this.element);
     }
     
@@ -101,15 +105,14 @@ class LogoutButton {
         this.icon = new Icon(this.element, "logout-icon", "/storage/images/logout.png", "5");
     }
     
-    private startListeners() {
+    private startListeners(makeRequestTask: MakeRequestTask) {
         this.element.addEventListener("click", async () => {
-            const response = await fetch(`${window.location.origin}/login`, {
-                method: "DELETE"
-            });
-            const data = await response.json();
-            if (!data.success) {
-                new Notification("Erro ao deslogar.", "red");
+            const response = await makeRequestTask.delete("/login");
+            if (!response.success) {
+                new Notification(response.message, "red");
                 return;
+            } else {
+                new Notification(response.message, "green");
             }
             const page = document.getElementById("zIndex")!;
             page.classList.remove("opacity-fade-in");
@@ -117,7 +120,6 @@ class LogoutButton {
             page.addEventListener("animationend", async () => {
                 page.remove();
                 document.dispatchEvent(new Event("load:login"));
-                new Notification("Logout realizado.", "green");
             });
         });
     }
@@ -176,9 +178,9 @@ class Menu {
     
     element!: HTMLElement
     
-    constructor(appendTo: HTMLElement) {
+    constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
-        this.createComponents();
+        this.createComponents(makeRequestTask);
         appendTo.appendChild(this.element);
     }
     
@@ -191,13 +193,16 @@ class Menu {
         this.element.style.display = "none";
     }
     
-    private async createComponents() {
-        const response = await fetch(`${window.location.origin}/session-modules`);
-        const modulesAllowed = await response.json();
-        if (modulesAllowed == null) {
+    private async createComponents(makeRequestTask: MakeRequestTask) {
+        const response = await makeRequestTask.get("/session-modules");
+        if (!response.success) {
+            new Notification(response.message, "red");
+            return;
+        }
+        if (response.data == null) {
             return
         }
-        modulesAllowed.forEach((module: {[key: string]: string}) => {
+        response.data.forEach((module: {[key: string]: string}) => {
             new ModuleButton(this.element, module);
         });   
     }
