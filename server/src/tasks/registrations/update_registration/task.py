@@ -137,7 +137,7 @@ class UpdateRegistration:
                 and registration_exists.seller == seller \
                 and registration_exists.cpf == cpf \
                 and registration_exists.cpf_person == cpf_person:
-                    self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ⚠️ Nenhum dado do cadastro modificado.")
+                    self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ⚠️ Nenhum dado do cadastro ({cnpj}) modificado.")
                     return Response(success=True, message="⚠️ Nenhum dado do cadastro modificado.")
             self.registrations_client.update(
                 cnpj=cnpj,
@@ -165,7 +165,7 @@ class UpdateRegistration:
                 cpf=cpf,
                 cpf_person=cpf_person
             )
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Cadastro atualizado.")
+            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Cadastro ({cnpj}) atualizado.")
             return Response(success=True, message="✅ Cadastro atualizado.")
         except Exception as error:
             self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")

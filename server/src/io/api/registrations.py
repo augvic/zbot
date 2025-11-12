@@ -158,7 +158,7 @@ class Registrations:
                 email=cast(str, response.data.get("email")),
                 tax_regime=cast(str, response.data.get("tax_regime")),
                 comission_receipt=cast(str, response.data.get("comission_receipt")),
-                status=cast(str, response.data.get("state")),
+                status=cast(str, response.data.get("status")),
                 client_type=cast(str, response.data.get("client_type")),
                 suggested_limit=cast(str, response.data.get("suggested_limit")),
                 seller=cast(str, response.data.get("seller")),

@@ -171,7 +171,7 @@ class RegistrationsClient:
                 if status:
                     to_update.status = status
                 if client_type:
-                    to_update.opening = client_type
+                    to_update.client_type = client_type
                 if suggested_limit:
                     to_update.suggested_limit = suggested_limit
                 if seller:
