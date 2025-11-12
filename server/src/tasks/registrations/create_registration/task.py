@@ -9,7 +9,7 @@ from src.components.file_system.registrations_docs_handler import RegistrationsD
 from src.components.infra.session_manager import SessionManager
 from .models import Response, NewRegistration
 
-class IncludeNewRegistration:
+class CreateRegistration:
     
     def __init__(self,
         federal_revenue_api: PositivoFederalRevenueApi,
@@ -38,7 +38,10 @@ class IncludeNewRegistration:
             registration_exists = self.registrations_client.read(new_registration.cnpj)
             if registration_exists:
                 self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Tentativa de inclusão de cadastro já existente: {new_registration.cnpj}.")
-                return Response(success=False, message="❌ Tentativa de inclusão de cadastro já existente: {new_registration.cnpj}.")    
+                return Response(success=False, message="❌ Tentativa de inclusão de cadastro já existente: {new_registration.cnpj}.")
+            if not new_registration.cnpj:
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o CNPJ.")
+                return Response(success=False, message="❌ Preencha o CNPJ.")
             self.registrations_client.create(
                 cnpj=new_registration.cnpj,
                 opening=federal_revenue_data.opening,
@@ -59,12 +62,12 @@ class IncludeNewRegistration:
                 tax_regime=new_registration.tax_regime,
                 comission_receipt=federal_revenue_data.comission_receipt,
                 status="Cadastrar",
-                registration_date_hour=None,
-                charge_date_hour=None,
+                registration_date_hour="-",
+                charge_date_hour="-",
                 federal_revenue_consult_date=self.date_utility.get_today_str(),
-                doc_resent=None,
+                doc_resent="-",
                 client_type=new_registration.client_type,
-                suggested_limit=new_registration.suggested_limit,
+                suggested_limit=new_registration.suggested_limit if new_registration.suggested_limit else "-",
                 seller=new_registration.seller,
                 cpf=new_registration.cpf,
                 cpf_person=new_registration.cpf_person

@@ -47,13 +47,10 @@ class RunRegistrationsRpa:
             if self.is_running == True:
                 return Response(success=False, message="❌ RPA já está em processamento.")
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Solicitação de inicio do RPA.")
-            self.socketio.emit("regrpa_status", {"status": "Iniciando..."})
-            self.thread.start(target=self.loop, args=(self.socketio,))
-            self.socketio.emit("regrpa_notification", {"success": True, "message": "✅ RPA iniciado."})
-            self.socketio.emit("regrpa_status", {"status": "Em processamento..."})
-            self.is_running = True
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ RPA iniciado.")
-            return Response(success=True, message="✅ RPA iniciado.")
+            self.user = self.session_manager.get_from_session("user")
+            self.thread.init(target=self.loop)
+            self.thread.start()
+            return Response(success=True, message="✅ Solicitação de inicio do RPA bem sucedida.")
         except Exception as error:
             self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro ao iniciar RPA: {error}.")
             raise Exception("❌ Erro interno ao iniciar RPA. Contate o administrador.")
@@ -62,22 +59,27 @@ class RunRegistrationsRpa:
         try:
             if self.is_running == False:
                 return Response(success=False, message="❌ RPA já está desligado.")
-            self.socketio.emit("regrpa_status", {"status": "Desligando..."})
+            self.socketio.emit("regrpa_status", {"message": "Desligando..."})
             self.stop = True
-            return Response(success=True, message="✅ RPA desligado.")
+            return Response(success=True, message="✅ Solicitação de encerramento do RPA bem sucedida.")
         except Exception as error:
             self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro desligar RPA: {error}.")
             raise Exception("❌ Erro interno ao desligar RPA. Contate o administrador.")
     
     def loop(self) -> None:
         try:
+            self.socketio.emit("regrpa_notification", {"success": True, "message": "✅ RPA iniciado."})
+            self.socketio.emit("regrpa_status", {"message": "Em processamento..."})
+            self.is_running = True
+            self.log_system.write_text(f"👤 Por usuário ({self.user}): ✅ RPA iniciado.")
+            self.user = ""
             while True:
                 if self.day != self.date_utility.get_today_datetime():
                     self.memory.clear()
                     self.day = self.date_utility.get_today_datetime()
                 if self.stop == True:
                     self.socketio.emit("regrpa_notification", {"success": True, "message": "✅ RPA desligado."})
-                    self.socketio.emit("regrpa_status", {"status": "Desligado."})
+                    self.socketio.emit("regrpa_status", {"message": "Desligado."})
                     self.stop = False
                     self.is_running = False
                     break
@@ -85,7 +87,7 @@ class RunRegistrationsRpa:
                 self.time_utility.sleep(2)
         except Exception as error:
             self.log_system.write_error(f"❌ Erro durante execução do RPA: {error}.")
-            self.socketio.emit("regrpa_status", {"status": "Desligado."})
+            self.socketio.emit("regrpa_status", {"message": "Desligado."})
             self.socketio.emit("regrpa_notification", {"success": False, "message": "❌ Erro durante execução do RPA."})
             self.stop = False
             self.is_running = False

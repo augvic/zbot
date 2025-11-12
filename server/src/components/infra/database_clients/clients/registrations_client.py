@@ -124,10 +124,6 @@ class RegistrationsClient:
         tax_regime: str,
         comission_receipt: str,
         status: str,
-        registration_date_hour: str,
-        charge_date_hour: str,
-        federal_revenue_consult_date: str,
-        doc_resent: str,
         client_type: str,
         suggested_limit: str,
         seller: str,
@@ -174,14 +170,6 @@ class RegistrationsClient:
                     to_update.comission_receipt = comission_receipt
                 if status:
                     to_update.status = status
-                if registration_date_hour:
-                    to_update.registration_date_hour = registration_date_hour
-                if charge_date_hour:
-                    to_update.charge_date_hour = charge_date_hour
-                if federal_revenue_consult_date:
-                    to_update.federal_revenue_consult_date = federal_revenue_consult_date
-                if doc_resent:
-                    to_update.doc_resent = doc_resent
                 if client_type:
                     to_update.opening = client_type
                 if suggested_limit:

@@ -27,10 +27,12 @@ from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSes
 from src.tasks.get_data.get_federal_revenue_data.task import GetFederalRevenueData
 from src.tasks.get_data.get_financial_data.task import GetFinancialData
 from src.tasks.get_data.get_modules_list.task import GetModulesList
-from src.tasks.post_data.create_order.task import CreateOrder
-from src.tasks.post_data.include_new_registration.task import IncludeNewRegistration
+from src.tasks.orders.create_order.task import CreateOrder
+from src.tasks.registrations.create_registration.task import CreateRegistration
+from src.tasks.registrations.delete_registration.task import DeleteRegistration
+from src.tasks.registrations.update_registration.task import UpdateRegistration
+from src.tasks.registrations.get_registration.task import GetRegistration
 from src.tasks.rpa.run_registrations_rpa.task import RunRegistrationsRpa
-from src.tasks.application.route_registry import RouteRegistryTask
 from src.components.adapter.dataclass_serializer import DataclassSerializer
 from src.components.adapter.sqla_serializer import SqlaSerializer
 from src.components.file_system.log_system import LogSystem
@@ -99,8 +101,11 @@ class CompositionRoot:
         self.get_federal_revenue_data_log_system = LogSystem("get_data/federal_revenue_data")
         self.get_financial_data_log_system = LogSystem("get_data/financial_data")
         self.get_modules_list_log_system = LogSystem("get_data/modules_list")
-        self.create_order_log_system = LogSystem("post_data/create_order")
-        self.include_new_registration_log_system = LogSystem("post_data/include_new_registration")
+        self.create_order_log_system = LogSystem("orders/create_order")
+        self.create_registration_log_system = LogSystem("registrations/create_registration")
+        self.update_registration_log_system = LogSystem("registrations/update_registration")
+        self.delete_registration_log_system = LogSystem("registrations/delete_registration")
+        self.get_registration_log_system = LogSystem("registrations/get_registration")
         self.run_registrations_rpa_log_system = LogSystem("rpa/registrations")
         self.registrations_doc_handler = RegistrationsDocsHandler()
         self.application_thread = ApplicationThread()
@@ -243,17 +248,6 @@ class CompositionRoot:
             log_system=self.create_order_log_system,
             session_manager=self.session_manager
         )
-        self.include_new_registration_task = IncludeNewRegistration(
-            federal_revenue_api=self.federal_revenue_api,
-            registrations_client=self.registrations_client,
-            state_registrations_client=self.state_registrations_client,
-            suframa_registrations_client=self.suframa_registrations_client,
-            nceas_client=self.nceas_client,
-            log_system=self.include_new_registration_log_system,
-            date_utility=self.date_utility,
-            docs_handler=self.registrations_doc_handler,
-            session_manager=self.session_manager
-        )
         self.run_registrations_rpa_task = RunRegistrationsRpa(
             time_utility=self.time_utility,
             log_system=self.run_registrations_rpa_log_system,
@@ -262,9 +256,32 @@ class CompositionRoot:
             date_utility=self.date_utility,
             socketio=self.socketio
         )
-        self.route_registry_task = RouteRegistryTask(
-            app_component=self.app,
-            log_system=self.route_registry_log_system
+        self.create_registration_task = CreateRegistration(
+            federal_revenue_api=self.federal_revenue_api,
+            registrations_client=self.registrations_client,
+            state_registrations_client=self.state_registrations_client,
+            suframa_registrations_client=self.suframa_registrations_client,
+            nceas_client=self.nceas_client,
+            log_system=self.create_registration_log_system,
+            date_utility=self.date_utility,
+            docs_handler=self.registrations_doc_handler,
+            session_manager=self.session_manager
+        )
+        self.update_registration_task = UpdateRegistration(
+            registrations_client=self.registrations_client,
+            session_manager=self.session_manager,
+            log_system=self.update_registration_log_system
+        )
+        self.delete_registration_task = DeleteRegistration(
+            registrations_client=self.registrations_client,
+            session_manager=self.session_manager,
+            log_system=self.delete_registration_log_system
+        )
+        self.get_registration_task = GetRegistration(
+            registrations_client=self.registrations_client,
+            session_manager=self.session_manager,
+            serializer=self.sqla_serializer,
+            log_system=self.get_registration_log_system
         )
     
     def _init_io(self) -> None:
@@ -272,32 +289,27 @@ class CompositionRoot:
             validate_login_task=self.validate_login_task,
             verify_if_user_is_in_session_task=self.verify_if_user_is_in_session_task,
             logout_task=self.logout_task,
-            process_request_task=self.process_request_task,
-            route_registry_task=self.route_registry_task
+            process_request_task=self.process_request_task
         )
         self.main_route = Main(
-            render_template_task=self.render_template_task,
-            route_registry_task=self.route_registry_task
+            render_template_task=self.render_template_task
         )
         self.modules_list_route = ModulesList(
             verify_if_have_access_task=self.verify_if_have_access_task,
             get_modules_list_task=self.get_modules_list_task,
             create_module_task=self.create_module_task,
             delete_module_task=self.delete_module_task,
-            process_request_task=self.process_request_task,
-            route_registry_task=self.route_registry_task
+            process_request_task=self.process_request_task
         )
         self.permissions_route = Permissions(
             verify_if_have_access_task=self.verify_if_have_access_task,
             get_permissions_task=self.get_permissions_task,
             create_permission_task=self.create_permission_task,
-            delete_permission_task=self.delete_permission_task,
-            route_registry_task=self.route_registry_task
+            delete_permission_task=self.delete_permission_task
         )
         self.session_modules_route = SessionModules(
             verify_if_user_is_in_session_task=self.verify_if_user_is_in_session_task,
-            get_session_modules_task=self.get_session_modules_task,
-            route_registry_task=self.route_registry_task
+            get_session_modules_task=self.get_session_modules_task
         )
         self.users_route = Users(
             verify_if_have_access_task=self.verify_if_have_access_task,
@@ -305,24 +317,23 @@ class CompositionRoot:
             create_user_task=self.create_user_task,
             delete_user_task=self.delete_user_task,
             update_user_task=self.update_user_task,
-            process_request_task=self.process_request_task,
-            route_registry_task=self.route_registry_task
+            process_request_task=self.process_request_task
         )
         self.session_user_route = SessionUser(
             verify_if_user_is_in_session_task=self.verify_if_user_is_in_session_task,
-            get_session_user_task=self.get_session_user_task,
-            route_registry_task=self.route_registry_task
+            get_session_user_task=self.get_session_user_task
         )
         self.registrations_rpa_route = RegistrationsRpa(
             verify_if_have_acess_task=self.verify_if_have_access_task,
-            run_registrations_rpa_task=self.run_registrations_rpa_task,
-            route_registry_task=self.route_registry_task
+            run_registrations_rpa_task=self.run_registrations_rpa_task
         )
         self.registrations_route = Registrations(
             verify_if_have_access_task=self.verify_if_have_access_task,
-            include_new_registration_task=self.include_new_registration_task,
-            process_request_task=self.process_request_task,
-            route_registry_task=self.route_registry_task
+            create_registration_task=self.create_registration_task,
+            update_registration_task=self.update_registration_task,
+            get_registration_task=self.get_registration_task,
+            delete_registration_task=self.delete_registration_task,
+            process_request_task=self.process_request_task
         )
     
     def run(self) -> None:
@@ -340,12 +351,15 @@ class CompositionRoot:
         self.app.route("/registrations-rpa", methods=["POST"])(self.registrations_rpa_route.turn_on)
         self.app.route("/registrations-rpa", methods=["DELETE"])(self.registrations_rpa_route.turn_off)
         self.app.route("/registrations", methods=["POST"])(self.registrations_route.include_registration)
+        self.app.route("/registrations/<cnpj>", methods=["GET"])(self.registrations_route.get_registration)
+        self.app.route("/registrations/<cnpj>", methods=["DELETE"])(self.registrations_route.delete_registration)
+        self.app.route("/registrations", methods=["PUT"])(self.registrations_route.update_registration)
         self.app.route("/session-modules", methods=["GET"])(self.session_modules_route.get_session_modules)
         self.app.route("/session-user", methods=["GET"])(self.session_user_route.get_session_user)
         self.app.route("/users/<user>", methods=["GET"])(self.users_route.get_user)
         self.app.route("/users", methods=["POST"])(self.users_route.create_user)
         self.app.route("/users/<user>", methods=["DELETE"])(self.users_route.delete_user)
-        self.app.route("/users/<user>", methods=["PUT"])(self.users_route.update_user)
+        self.app.route("/users", methods=["PUT"])(self.users_route.update_user)
         self.socketio.run(self.app, host="127.0.0.1", debug=True)
 
 CompositionRoot().run()

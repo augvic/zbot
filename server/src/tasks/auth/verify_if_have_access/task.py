@@ -15,7 +15,7 @@ class VerifyIfHaveAccess:
         try:
             if not self.session_manager.is_user_in_session() or not self.session_manager.have_user_module_access(module):
                 self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Não tem acesso ao módulo: ({module}).")
-                return Response(success=False, message="❌ Não tem acesso.")
+                return Response(success=False, message="❌ Sem autorização.")
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Tem acesso ao módulo: ({module}).")
             return Response(success=True, message="✅ Tem acesso.")
         except Exception as error:

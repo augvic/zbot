@@ -1,8 +1,10 @@
 from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
-from src.tasks.post_data.include_new_registration.task import IncludeNewRegistration
-from src.tasks.post_data.include_new_registration.models import NewRegistration
+from src.tasks.registrations.create_registration.task import CreateRegistration
+from src.tasks.registrations.create_registration.models import NewRegistration
+from src.tasks.registrations.delete_registration.task import DeleteRegistration
+from src.tasks.registrations.get_registration.task import GetRegistration
+from src.tasks.registrations.update_registration.task import UpdateRegistration
 from src.tasks.application.process_request.task import ProcessRequest
-from src.tasks.application.route_registry import RouteRegistryTask
 from typing import cast
 from werkzeug.datastructures import FileStorage
 
@@ -10,20 +12,24 @@ class Registrations:
     
     def __init__(self,
         verify_if_have_access_task: VerifyIfHaveAccess,
-        include_new_registration_task: IncludeNewRegistration,
-        process_request_task: ProcessRequest,
-        route_registry_task: RouteRegistryTask
+        create_registration_task: CreateRegistration,
+        delete_registration_task: DeleteRegistration,
+        get_registration_task: GetRegistration,
+        update_registration_task: UpdateRegistration,
+        process_request_task: ProcessRequest
     ) -> None:
         self.verify_if_have_access_task = verify_if_have_access_task
-        self.include_new_registration_task = include_new_registration_task
+        self.create_registration_task = create_registration_task
         self.process_request_task = process_request_task
-        self.route_registry_task = route_registry_task
+        self.update_registration_task = update_registration_task
+        self.get_registration_task = get_registration_task
+        self.delete_registration_task = delete_registration_task
     
     def include_registration(self) -> tuple[dict[str, bool | str], int]:
         try:
             response = self.verify_if_have_access_task.execute("zRegRpa")
             if not response.success:
-                return {"success": False, "message": "Sem autorização."}, 401
+                return {"success": False, "message": response.message}, 401
             response = self.process_request_task.execute(
                 content_type="multipart/form-data",
                 expected_data=[
@@ -47,7 +53,7 @@ class Registrations:
             )
             if not response.success:
                 return {"success": False, "message": f"{response.message}"}, 400
-            response = self.include_new_registration_task.execute(
+            response = self.create_registration_task.execute(
                 NewRegistration(
                     cnpj=cast(str, response.data.get("cnpj")),
                     seller=cast(str, response.data.get("seller")),
@@ -65,5 +71,103 @@ class Registrations:
                 return {"success": True, "message": f"{response.message}"}, 200
             else:
                 return {"success": True, "message": f"{response.message}"}, 400
+        except Exception as error:
+            return {"success": False, "message": f"{error}"}, 500
+    
+    def get_registration(self, cnpj: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
+        try:
+            response =  self.verify_if_have_access_task.execute("zRegRpa")
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
+            response = self.get_registration_task.execute(cnpj)
+            if response.success:
+                return {"success": True, "message": response.message, "data": response.data}, 200
+            else:
+                return {"success": False, "message": response.message, "data": response.data}, 400
+        except Exception as error:
+            return {"success": False, "message": f"{error}"}, 500
+    
+    def delete_registration(self, cnpj: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
+        try:
+            response =  self.verify_if_have_access_task.execute("zRegRpa")
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
+            response = self.delete_registration_task.execute(cnpj)
+            if response.success:
+                return {"success": True, "message": response.message}, 200
+            else:
+                return {"success": False, "message": response.message}, 400
+        except Exception as error:
+            return {"success": False, "message": f"{error}"}, 500
+    
+    def update_registration(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
+        try:
+            response =  self.verify_if_have_access_task.execute("zRegRpa")
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
+            response = self.process_request_task.execute(
+                content_type="application/json",
+                expected_data=[
+                    "cnpj",
+                    "opening",
+                    "company_name",
+                    "trade_name",
+                    "legal_nature",
+                    "legal_nature_id",
+                    "registration_status",
+                    "street",
+                    "number",
+                    "complement",
+                    "neighborhood",
+                    "pac",
+                    "city",
+                    "state",
+                    "fone",
+                    "email",
+                    "tax_regime",
+                    "comission_receipt",
+                    "status",
+                    "client_type",
+                    "suggested_limit",
+                    "seller",
+                    "cpf",
+                    "cpf_person"
+                ],
+                expected_files=[],
+                optional_data=[],
+                optional_files=[]
+            )
+            if not response.success:
+                return {"success": False, "message": response.message}, 400
+            response = self.update_registration_task.execute(
+                cnpj=cast(str, response.data.get("cnpj")),
+                opening=cast(str, response.data.get("opening")),
+                company_name=cast(str, response.data.get("company_name")),
+                trade_name=cast(str, response.data.get("trade_name")),
+                legal_nature=cast(str, response.data.get("legal_nature")),
+                legal_nature_id=cast(str, response.data.get("legal_nature_id")),
+                registration_status=cast(str, response.data.get("registration_status")),
+                street=cast(str, response.data.get("street")),
+                number=cast(str, response.data.get("number")),
+                complement=cast(str, response.data.get("complement")),
+                neighborhood=cast(str, response.data.get("neighborhood")),
+                pac=cast(str, response.data.get("pac")),
+                city=cast(str, response.data.get("city")),
+                state=cast(str, response.data.get("state")),
+                fone=cast(str, response.data.get("fone")),
+                email=cast(str, response.data.get("email")),
+                tax_regime=cast(str, response.data.get("tax_regime")),
+                comission_receipt=cast(str, response.data.get("comission_receipt")),
+                status=cast(str, response.data.get("state")),
+                client_type=cast(str, response.data.get("client_type")),
+                suggested_limit=cast(str, response.data.get("suggested_limit")),
+                seller=cast(str, response.data.get("seller")),
+                cpf=cast(str, response.data.get("cpf")),
+                cpf_person=cast(str, response.data.get("cpf_person"))
+            )
+            if response.success:
+                return {"success": True, "message": response.message}, 200
+            else:
+                return {"success": False, "message": response.message}, 400
         except Exception as error:
             return {"success": False, "message": f"{error}"}, 500

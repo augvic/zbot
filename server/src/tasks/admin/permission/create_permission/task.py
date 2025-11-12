@@ -23,6 +23,9 @@ class CreatePermission:
             if not user_exists:
                 self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar permissão: ❌ Usuário não existe.")
                 return Response(success=False, message="❌ Usuário não existe.")
+            if not permission:
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar permissão: ❌ Necessário enviar permissão.")
+                return Response(success=False, message="❌ Necessário enviar permissão.")
             self.permissions_client.create(user, permission)
             self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao criar permissão: ✅ Permissão ({permission}) adicionada.")
             return Response(success=True, message=f"✅ Permissão ({permission}) adicionada.")

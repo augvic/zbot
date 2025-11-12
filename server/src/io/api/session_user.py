@@ -1,18 +1,15 @@
 from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
 from src.tasks.auth.get_session_user.task import GetSessionUser
-from src.tasks.application.route_registry import RouteRegistryTask
 from typing import Any
 
 class SessionUser:
     
     def __init__(self,
         verify_if_user_is_in_session_task: VerifyIfUserIsInSession,
-        get_session_user_task: GetSessionUser,
-        route_registry_task: RouteRegistryTask
+        get_session_user_task: GetSessionUser
     ) -> None:
         self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
         self.get_session_user_task = get_session_user_task
-        self.route_registry_task = route_registry_task
     
     def get_session_user(self) -> tuple[dict[str, str | bool | Any], int]:
         try:

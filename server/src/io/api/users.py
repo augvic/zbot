@@ -4,7 +4,6 @@ from src.tasks.admin.user.delete_user.task import DeleteUser
 from src.tasks.admin.user.update_user.task import UpdateUser
 from src.tasks.application.process_request.task import ProcessRequest
 from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
-from src.tasks.application.route_registry import RouteRegistryTask
 from typing import cast
 
 class Users:
@@ -15,8 +14,7 @@ class Users:
         create_user_task: CreateUser,
         delete_user_task: DeleteUser,
         update_user_task: UpdateUser,
-        process_request_task: ProcessRequest,
-        route_registry_task: RouteRegistryTask
+        process_request_task: ProcessRequest
     ) -> None:
         self.verify_if_have_access_task = verify_if_have_access_task
         self.get_users_task = get_users_task
@@ -24,13 +22,12 @@ class Users:
         self.delete_user_task = delete_user_task
         self.update_user_task = update_user_task
         self.process_request_task = process_request_task
-        self.route_registry_task = route_registry_task
     
     def get_user(self, user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
             response =  self.verify_if_have_access_task.execute("zAdmin")
             if not response.success:
-                return {"success": False, "message": "Sem autorização."}, 401
+                return {"success": False, "message": response.message}, 401
             response = self.get_users_task.execute(user)
             if response.success:
                 return {"success": True, "message": response.message, "data": response.data}, 200
@@ -43,7 +40,7 @@ class Users:
         try:
             response =  self.verify_if_have_access_task.execute("zAdmin")
             if not response.success:
-                return {"success": False, "message": "Sem autorização."}, 401
+                return {"success": False, "message": response.message}, 401
             response = self.process_request_task.execute(
                 content_type="application/json",
                 expected_data=[
@@ -75,7 +72,7 @@ class Users:
         try:
             response =  self.verify_if_have_access_task.execute("zAdmin")
             if not response.success:
-                return {"success": False, "message": "Sem autorização."}, 401
+                return {"success": False, "message": response.message}, 401
             response = self.delete_user_task.execute(user)
             if response.success:
                 return {"success": True, "message": response.message}, 200
@@ -88,7 +85,7 @@ class Users:
         try:
             response =  self.verify_if_have_access_task.execute("zAdmin")
             if not response.success:
-                return {"success": False, "message": "Sem autorização."}, 401
+                return {"success": False, "message": response.message}, 401
             response = self.process_request_task.execute(
                 content_type="application/json",
                 expected_data=[

@@ -3,7 +3,6 @@ from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
 from src.tasks.admin.module.create_module.task import CreateModule
 from src.tasks.admin.module.delete_module.task import DeleteModule
 from src.tasks.application.process_request.task import ProcessRequest
-from src.tasks.application.route_registry import RouteRegistryTask
 from typing import cast
 
 class ModulesList:
@@ -13,15 +12,13 @@ class ModulesList:
         get_modules_list_task: GetModulesList,
         create_module_task: CreateModule,
         delete_module_task: DeleteModule,
-        process_request_task: ProcessRequest,
-        route_registry_task: RouteRegistryTask
+        process_request_task: ProcessRequest
     ) -> None:
         self.verify_if_have_access_task = verify_if_have_access_task
         self.get_modules_list_task = get_modules_list_task
         self.create_module_task = create_module_task
         self.delete_module_task = delete_module_task
         self.process_request_task = process_request_task
-        self.route_registry_task = route_registry_task
     
     def get_modules_list(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:

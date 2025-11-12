@@ -2,7 +2,6 @@ from src.tasks.auth.get_permissions.task import GetPermissions
 from src.tasks.admin.permission.create_permission.task import CreatePermission
 from src.tasks.admin.permission.delete_permission.task import DeletePermission
 from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
-from src.tasks.application.route_registry import RouteRegistryTask
 
 class Permissions:
     
@@ -10,14 +9,12 @@ class Permissions:
         verify_if_have_access_task: VerifyIfHaveAccess,
         get_permissions_task: GetPermissions,
         create_permission_task: CreatePermission,
-        delete_permission_task: DeletePermission,
-        route_registry_task: RouteRegistryTask
+        delete_permission_task: DeletePermission
     ) -> None:
         self.verify_if_have_access_task = verify_if_have_access_task
         self.get_permissions_task = get_permissions_task
         self.create_permission_task = create_permission_task
         self.delete_permission_task = delete_permission_task
-        self.route_registry_task = route_registry_task
     
     def get_user_permissions(self, user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
