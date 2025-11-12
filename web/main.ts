@@ -56,7 +56,7 @@ class CompositionRoot {
         });
         document.addEventListener("load:zRegRpa", () => {
             this.webSocketComponent.webSocket.removeAllListeners();
-            this.zRegRpa.init(this.module);
+            this.zRegRpa.init(this.module, this.makeRequestTask);
             this.webSocketComponent.webSocket.on("regrpa_terminal", (response: {[key: string]: string}) => {
                 const terminal = this.zRegRpa.container.terminalSection.terminal.element;
                 const distanceFromBottom = terminal.scrollHeight - (terminal.scrollTop + terminal.clientHeight);
@@ -64,8 +64,9 @@ class CompositionRoot {
                 text.className = "cursor-default text-white transition-opacity duration-300";
                 text.style.opacity = "0";
                 text.innerText = response.message;
+                terminal.appendChild(text);
                 text.style.opacity = "1";
-                if (distanceFromBottom <= 20) {
+                if (distanceFromBottom <= 50) {
                     terminal.scrollTop = terminal.scrollHeight;
                 }
             });
@@ -82,10 +83,10 @@ class CompositionRoot {
                 const turnOnButton = this.zRegRpa.container.terminalSection.topBar.turnOnButton.element;
                 status.style.opacity = "0";
                 setTimeout(() => {
-                    status.innerText = `Status: ${response.status}`;
+                    status.innerText = `Status: ${response.message}`;
                     status.style.opacity = "1";   
                 }, 300);
-                if (response.status == "Em processamento.") {
+                if (response.message == "Em processamento...") {
                     turnOffButton.disabled = false;
                     turnOffButton.style.backgroundColor = "oklch(50.5% 0.213 27.518)";
                     turnOffButton.style.cursor = "pointer";
@@ -93,7 +94,7 @@ class CompositionRoot {
                     turnOnButton.style.backgroundColor = "#919191";
                     turnOnButton.style.cursor = "not-allowed";
                 }
-                if (response.status == "Desligado.") {
+                if (response.message == "Desligado.") {
                     turnOnButton.disabled = false;
                     turnOnButton.style.backgroundColor = "oklch(52.7% 0.154 150.069)";
                     turnOnButton.style.cursor = "pointer";

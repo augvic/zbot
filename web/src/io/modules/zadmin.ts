@@ -897,7 +897,7 @@ class UserModalSaveButton {
             const name = (document.getElementById("user-modal-name") as HTMLInputElement).value!;
             const email = (document.getElementById("user-modal-email") as HTMLInputElement).value!;
             const password = (document.getElementById("user-modal-password") as HTMLInputElement).value!;
-            const response = await makeRequestTask.put(`/users/${user}`, "application/json", { user, name, email, password });
+            const response = await makeRequestTask.put(`/users`, "application/json", { user, name, email, password });
             if (!response.success) {
                 new Notification(response.message, "red");
                 return;
