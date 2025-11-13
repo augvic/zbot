@@ -801,19 +801,27 @@ class UserModalCloseButton {
 class UserModalInput {
     
     element!: HTMLInputElement
+    container!: HTMLDivElement
+    label!: HTMLLabelElement
     
     constructor(appendTo: HTMLElement, type: string, placeholder: string, id: string, value: string, editModal: boolean) {
         this.createSelf(placeholder, id, type, value, editModal);
-        appendTo.appendChild(this.element);
+        appendTo.appendChild(this.container);
     }
     
     private createSelf(placeholder: string, id: string, type: string, value: string, editModal: boolean) {
+        this.container = document.createElement("div");
+        this.container.className = "flex flex-col gap-y-2";
+        this.label = document.createElement("label");
+        this.label.className = "text-black dark:text-white transition-colors duration-300";
+        this.label.innerText = `${placeholder}:`
         this.element = document.createElement("input");
         this.element.id = id;
         this.element.type = type;
         this.element.className = "w-[300px] h-[30px] p-2 bg-white border border-gray-300 outline-none rounded-md";
-        this.element.placeholder = placeholder;
         this.element.value = value;
+        this.container.appendChild(this.label);
+        this.container.appendChild(this.element)
         if (id == "user-modal-user" && editModal == true) {
             this.element.readOnly = true;
             this.element.className = "w-[300px] h-[30px] p-2 border outline-none rounded-md cursor-default bg-gray-300 text-black border-gray-300 dark:bg-gray-900 dark:text-white dark:border-gray-900 transition-colors duration-300";
