@@ -34,14 +34,32 @@ class CreateRegistration:
     
     def execute(self, new_registration: NewRegistration) -> Response:
         try:
-            federal_revenue_data = self.federal_revenue_api.get_data(new_registration.cnpj)
             registration_exists = self.registrations_client.read(new_registration.cnpj)
             if registration_exists:
                 self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Tentativa de inclusão de cadastro já existente: {new_registration.cnpj}.")
-                return Response(success=False, message="❌ Tentativa de inclusão de cadastro já existente: {new_registration.cnpj}.")
+                return Response(success=False, message="❌ Tentativa de inclusão de cadastro já existente ({new_registration.cnpj}).")
             if not new_registration.cnpj:
                 self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o CNPJ.")
                 return Response(success=False, message="❌ Preencha o CNPJ.")
+            if not new_registration.seller:
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o vendedor.")
+                return Response(success=False, message="❌ Preencha o vendedor.")
+            if not new_registration.email:
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o e-mail.")
+                return Response(success=False, message="❌ Preencha o e-mail.")
+            if not new_registration.cpf or not new_registration.cpf_person:
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o representante legal e seu CPF.")
+                return Response(success=False, message="❌ Preencha o o representante legal e seu CPF.")
+            if not new_registration.tax_regime:
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o regime tributário.")
+                return Response(success=False, message="❌ Preencha o regime tributário.")
+            if not new_registration.client_type:
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o tipo do cliente.")
+                return Response(success=False, message="❌ Preencha o tipo do cliente.")
+            if not new_registration.article_association_doc:
+                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Envie o contrato social.")
+                return Response(success=False, message="❌ Envie o contrato social.")
+            federal_revenue_data = self.federal_revenue_api.get_data(new_registration.cnpj)
             self.registrations_client.create(
                 cnpj=new_registration.cnpj,
                 opening=federal_revenue_data.opening,
