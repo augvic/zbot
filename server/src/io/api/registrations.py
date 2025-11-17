@@ -70,7 +70,7 @@ class Registrations:
             if response.success:
                 return {"success": True, "message": f"{response.message}"}, 200
             else:
-                return {"success": True, "message": f"{response.message}"}, 400
+                return {"success": False, "message": f"{response.message}"}, 400
         except Exception as error:
             return {"success": False, "message": f"{error}"}, 500
     
