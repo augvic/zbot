@@ -4,6 +4,7 @@ from src.tasks.registrations.create_registration.models import NewRegistration
 from src.tasks.registrations.delete_registration.task import DeleteRegistration
 from src.tasks.registrations.get_registration.task import GetRegistration
 from src.tasks.registrations.update_registration.task import UpdateRegistration
+from src.tasks.registrations.update_registration.models import RegistrationData
 from src.tasks.application.process_request.task import ProcessRequest
 from typing import cast
 from werkzeug.datastructures import FileStorage
@@ -140,30 +141,32 @@ class Registrations:
             if not response.success:
                 return {"success": False, "message": response.message}, 400
             response = self.update_registration_task.execute(
-                cnpj=cast(str, response.data.get("cnpj")),
-                opening=cast(str, response.data.get("opening")),
-                company_name=cast(str, response.data.get("company_name")),
-                trade_name=cast(str, response.data.get("trade_name")),
-                legal_nature=cast(str, response.data.get("legal_nature")),
-                legal_nature_id=cast(str, response.data.get("legal_nature_id")),
-                registration_status=cast(str, response.data.get("registration_status")),
-                street=cast(str, response.data.get("street")),
-                number=cast(str, response.data.get("number")),
-                complement=cast(str, response.data.get("complement")),
-                neighborhood=cast(str, response.data.get("neighborhood")),
-                pac=cast(str, response.data.get("pac")),
-                city=cast(str, response.data.get("city")),
-                state=cast(str, response.data.get("state")),
-                fone=cast(str, response.data.get("fone")),
-                email=cast(str, response.data.get("email")),
-                tax_regime=cast(str, response.data.get("tax_regime")),
-                comission_receipt=cast(str, response.data.get("comission_receipt")),
-                status=cast(str, response.data.get("status")),
-                client_type=cast(str, response.data.get("client_type")),
-                suggested_limit=cast(str, response.data.get("suggested_limit")),
-                seller=cast(str, response.data.get("seller")),
-                cpf=cast(str, response.data.get("cpf")),
-                cpf_person=cast(str, response.data.get("cpf_person"))
+                RegistrationData(
+                    cnpj=cast(str, response.data.get("cnpj")),
+                    opening=cast(str, response.data.get("opening")),
+                    company_name=cast(str, response.data.get("company_name")),
+                    trade_name=cast(str, response.data.get("trade_name")),
+                    legal_nature=cast(str, response.data.get("legal_nature")),
+                    legal_nature_id=cast(str, response.data.get("legal_nature_id")),
+                    registration_status=cast(str, response.data.get("registration_status")),
+                    street=cast(str, response.data.get("street")),
+                    number=cast(str, response.data.get("number")),
+                    complement=cast(str, response.data.get("complement")),
+                    neighborhood=cast(str, response.data.get("neighborhood")),
+                    pac=cast(str, response.data.get("pac")),
+                    city=cast(str, response.data.get("city")),
+                    state=cast(str, response.data.get("state")),
+                    fone=cast(str, response.data.get("fone")),
+                    email=cast(str, response.data.get("email")),
+                    tax_regime=cast(str, response.data.get("tax_regime")),
+                    comission_receipt=cast(str, response.data.get("comission_receipt")),
+                    status=cast(str, response.data.get("status")),
+                    client_type=cast(str, response.data.get("client_type")),
+                    suggested_limit=cast(float, response.data.get("suggested_limit")),
+                    seller=cast(str, response.data.get("seller")),
+                    cpf=cast(str, response.data.get("cpf")),
+                    cpf_person=cast(str, response.data.get("cpf_person"))
+                )
             )
             if response.success:
                 return {"success": True, "message": response.message}, 200

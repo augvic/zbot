@@ -150,9 +150,9 @@ class CreateRegistration:
                 registration_date_hour="-",
                 charge_date_hour="-",
                 federal_revenue_consult_date=self.date_utility.get_today_str(),
-                doc_resent="-",
+                doc_resent=False,
                 client_type=new_registration.client_type,
-                suggested_limit=new_registration.suggested_limit if new_registration.suggested_limit else "-",
+                suggested_limit=new_registration.suggested_limit if new_registration.suggested_limit else 0.0,
                 seller=new_registration.seller,
                 cpf=new_registration.cpf,
                 cpf_person=new_registration.cpf_person

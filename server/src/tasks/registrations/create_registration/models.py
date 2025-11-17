@@ -18,5 +18,5 @@ class NewRegistration:
     tax_regime: str
     article_association_doc: FileStorage
     client_type: str
-    suggested_limit: str | None
+    suggested_limit: float | None
     bank_doc: FileStorage | None

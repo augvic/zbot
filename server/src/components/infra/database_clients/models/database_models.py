@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, Float, Boolean
 from sqlalchemy.orm import mapped_column, DeclarativeBase
 
 class Base(DeclarativeBase):
@@ -54,9 +54,9 @@ class Registration(Base):
     registration_date_hour = mapped_column(String, nullable=True)
     charge_date_hour = mapped_column(String, nullable=True)
     federal_revenue_consult_date = mapped_column(String, nullable=True)
-    doc_resent = mapped_column(String, nullable=True)
+    doc_resent = mapped_column(Boolean, nullable=True)
     client_type = mapped_column(String, nullable=True)
-    suggested_limit = mapped_column(String, nullable=True)
+    suggested_limit = mapped_column(Float, nullable=True)
     seller = mapped_column(String, nullable=True)
     cpf = mapped_column(String, nullable=True)
     cpf_person = mapped_column(String, nullable=True)

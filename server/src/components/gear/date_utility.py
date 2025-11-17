@@ -13,3 +13,16 @@ class DateUtility:
             return datetime.now().date()
         except Exception as error:
             raise Exception(f"Error in (DateUtility) component in (get_today_datetime) method: {error}.")
+        
+    def convert_to_datetime(self, date: str) -> date:
+        try:
+            return datetime.strptime(date, "%d/%m/%Y")
+        except Exception as error:
+            raise Exception(f"Error in (DateUtility) component in (convert_to_datetime) method: {error}.")
+        
+    def is_date(self, date: str) -> bool:
+        try:
+            datetime.strptime(date, "%d/%m/%Y")
+            return True
+        except:
+            return False
