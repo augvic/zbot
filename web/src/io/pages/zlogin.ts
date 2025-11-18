@@ -2,26 +2,19 @@ import { ThemeButton } from "../global/theme_button";
 import { Notification } from "../global/notification";
 import { MakeRequestTask } from "../../tasks/make_request";
 
-export class zLogin {
+export class Page {
     
     element!: HTMLElement
-    loginContainer!: LoginContainer
+    loginContainer!: Container
     
-    public init(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
-        this.createSelf();
-        appendTo.appendChild(this.element);
-        this.createComponents(makeRequestTask);
-        this.startListeners();
-    }
-    
-    private createSelf() {
+    constructor() {
         this.element = document.createElement("div");
         this.element.id = "zLogin";
         this.element.className = "w-full h-full flex justify-center items-center bg-gray-300 dark:bg-gray-900 transition-colors duration-300";
     }
     
     private createComponents(makeRequestTask: MakeRequestTask) {
-        this.loginContainer = new LoginContainer(this.element, makeRequestTask);
+        this.loginContainer = new Container(this.element, makeRequestTask);
     }
     
     private startListeners() {
@@ -34,13 +27,13 @@ export class zLogin {
     
 }
 
-class LoginContainer {
+export class Container {
     
     element!: HTMLElement
-    title!: TitleContainer
-    userInput!: LoginInput
-    passwordInput!: LoginInput
-    loginButton!: LoginButton
+    title!: Title
+    userInput!: Input
+    passwordInput!: Input
+    loginButton!: Button
     
     constructor(appendTo: HTMLElement, makeRequestTask: MakeRequestTask) {
         this.createSelf();
@@ -54,18 +47,18 @@ class LoginContainer {
     }
     
     private createComponents(makeRequestTask: MakeRequestTask) {
-        this.title = new TitleContainer(this.element);
-        this.userInput = new LoginInput(this.element, "user", "Matrícula", "text");
-        this.passwordInput = new LoginInput(this.element, "password", "Senha", "password");
-        this.loginButton = new LoginButton(this.element, makeRequestTask);
+        this.title = new Title(this.element);
+        this.userInput = new Input(this.element, "user", "Matrícula", "text");
+        this.passwordInput = new Input(this.element, "password", "Senha", "password");
+        this.loginButton = new Button(this.element, makeRequestTask);
     }
     
 }
 
-class TitleContainer {
+export class Title {
     
     element!: HTMLElement
-    label!: LoginLabel
+    label!: Label
     themeButton!: ThemeButton
     
     constructor(appendTo: HTMLElement) {
@@ -80,13 +73,13 @@ class TitleContainer {
     }
     
     private createComponents() {
-        this.label = new LoginLabel(this.element);
+        this.label = new Label(this.element);
         this.themeButton = new ThemeButton(this.element, false)
     }
     
 }
 
-class LoginInput {
+export class Input {
     
     element!: HTMLInputElement
     
@@ -105,7 +98,7 @@ class LoginInput {
     
 }
 
-class LoginLabel {
+export class Label {
     
     element!: HTMLElement
     
@@ -122,7 +115,7 @@ class LoginLabel {
     
 }
 
-class LoginButton {
+export class Button {
     
     element!: HTMLElement
     
