@@ -47,7 +47,7 @@ export class Wrapper {
     
     constructor(orientation: string, width: string, height: string, items: string, justify: string) {
         this.element = document.createElement("div");
-        this.element.className = "flex gap-2 overflow-auto";
+        this.element.className = "flex gap-2 overflow-auto custom-scroll";
         this.element.style.width = width;
         this.element.style.height = height;
         this.element.style.justifyContent = justify;
@@ -241,6 +241,60 @@ export class HoverSpan {
         this.element.className = "text-nowrap z-50 bg-blue-900 text-white py-1 px-4 rounded-lg absolute left-80 w-auto h-auto cursor-default";
         this.element.style.fontSize = "small";
         this.element.innerText = text;
+    }
+    
+}
+
+export class Table {
+    
+    wrapper: HTMLDivElement
+    table: HTMLDivElement
+    cells: {[key: string]: HTMLDivElement[]}
+    
+    constructor(width: string, height: string, rows: [{}]) {
+        this.wrapper = document.createElement("div");
+        this.wrapper.className = "overflow-auto custom-scroll";
+        this.wrapper.style.width = width;
+        this.wrapper.style.height = height;
+        this.table = document.createElement("div");
+        this.table.className = "h-auto w-auto flex flex-col whitespace-nowrap cursor-default text-center text-black dark:text-white transition-colors duration-300";
+        let header = true;
+        this.cells = {};
+        rows.forEach(row => {
+            const tableRow = document.createElement("div");
+            if (header) {
+                tableRow.className = "font-bold h-[46px] w-auto flex bg-gray-300 dark:bg-gray-900 transition-colors duration-300 sticky top-0 rounded-tl-lg rounded-tr-lg";
+                header = false;
+            } else {
+                tableRow.className = "w-auto h-[46px] flex border-b-2 border-b-gray-300 dark:border-b-gray-900 table-row-transitions";
+            }
+            Object.entries(row).forEach(([key, value]) => {
+                if (!this.cells[key]) {
+                    this.cells[key] = [];
+                }
+                const cell = document.createElement("div");
+                cell.className = `p-2 h-auto w-auto flex items-center justify-center`; 
+                cell.innerText = value as string;
+                tableRow.appendChild(cell);
+                this.cells[key].push(cell);
+            });
+            this.table.appendChild(tableRow);
+        });
+        this.wrapper.appendChild(this.table);
+    }
+    
+    public adjustColumns() {
+        Object.entries(this.cells).forEach(([key, cells]) => {
+            let width = 0;
+            cells.forEach(cell => {
+                if (cell.offsetWidth > width) {
+                    width = cell.offsetWidth;
+                }
+            });
+            cells.forEach(cell => {
+                cell.style.width = width + "px";
+            });
+        });
     }
     
 }

@@ -11,7 +11,7 @@ export class Controller {
     constructor() {
         this.components = new Components();
         this.tasks = new Tasks(this.components);
-        this.io = new IO()
+        this.io = new IO(this.tasks)
         document.body.appendChild(this.io.global.app.element);
         this.events();
     }
@@ -166,7 +166,7 @@ export class Controller {
     }
     
     private zAdminEvents() {
-        document.addEventListener("load:zAdmin", () => {
+        document.addEventListener("load:zAdmin", async () => {
             this.io.zAdmin.moduleWrapper.element.classList.add("opacity-fade-in");
             setTimeout(() => {
                 this.io.zAdmin.moduleWrapper.element.classList.remove("opacity-fade-in");
@@ -185,6 +185,8 @@ export class Controller {
                 this.io.zAdmin.usersSection.element.appendChild(this.io.zAdmin.usersSectionTopBar.element);
                 this.io.zAdmin.usersSectionTopBar.element.appendChild(this.io.zAdmin.searchUserInput.element);
                 this.io.zAdmin.usersSectionTopBar.element.appendChild(this.io.zAdmin.searchUserButton.element);
+                this.io.zAdmin.usersSection.element.appendChild(this.io.zAdmin.usersSectionTable.wrapper);
+                this.io.zAdmin.usersSectionTable.adjustColumns();
             });
         });
     }

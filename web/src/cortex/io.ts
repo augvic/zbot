@@ -1,4 +1,5 @@
 import * as elements from "../io/elements";
+import { Tasks } from "./tasks";
 
 export class IO {
     
@@ -7,11 +8,11 @@ export class IO {
     zIndex: Zindex
     zAdmin: Zadmin
     
-    constructor() {
+    constructor(tasks: Tasks) {
         this.global = new Global();
         this.zLogin = new Zlogin();
         this.zIndex = new Zindex();
-        this.zAdmin = new Zadmin();
+        this.zAdmin = new Zadmin(tasks);
     }
     
     public createButton(text: string, bgColor: string, width: string, height: string) {
@@ -24,6 +25,10 @@ export class IO {
     
     public createHoverSpan(text: string) {
         return new elements.HoverSpan(text);
+    }
+    
+    public createTable(width: string, height: string, rows: [{}]) {
+        return new elements.Table(width, height, rows);
     }
     
 }
@@ -113,17 +118,26 @@ class Zadmin {
     searchUserInput: elements.Input
     searchUserButton: elements.IconButton
     selectUsersSectionButton: elements.Button
+    usersSectionTable!: elements.Table
     
-    constructor() {
+    constructor(tasks: Tasks) {
+        this.mountUserTableRows(tasks);    
         this.moduleWrapper = new elements.Wrapper("horizontal", "100%", "100%", "center", "center");
         this.optionsContainer = new elements.Container("vertical", "10%", "500px", "center", "center");
         this.optionsContainerWrapper = new elements.Wrapper("vertical", "100%", "100%", "center", "center");
         this.viewContainer = new elements.Container("vertical", "85%", "90%", "center", "center");
         this.usersSection = new elements.Wrapper("vertical", "100%", "100%", "", "");
-        this.usersSectionTopBar = new elements.Wrapper("horizontal", "100%", "", "center", "start");
+        this.usersSectionTopBar = new elements.Wrapper("horizontal", "100%", "5%", "center", "start");
         this.searchUserInput = new elements.Input("Pesquisar", "text", "300px", "30px");
         this.searchUserButton = new elements.IconButton("/storage/images/magnifying_glass.png", 5, "blue");
         this.selectUsersSectionButton = new elements.Button("Usuários", "orange", "100%", "");
+        
+    }
+    
+    private async mountUserTableRows(tasks: Tasks) {
+        const usersTableRows = ((await tasks.makeRequestTask.get("/users/all")).data as [{}]);
+        usersTableRows.unshift({ email: "E-mail", name: "Nome", password: "Senha", user: "Usuário" });
+        this.usersSectionTable = new elements.Table("100%", "95%", usersTableRows);
     }
     
 }
