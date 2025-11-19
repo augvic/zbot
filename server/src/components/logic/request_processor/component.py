@@ -5,6 +5,8 @@ class RequestProcessor:
     
     def process(self, content_type: str, expected_data: list[str], expected_files: list[str], optional_data: list[str], optional_files: list[str]) -> RequestProcessed:
         try:
+            data_dict = {}
+            files_dict = {}
             if request.content_type is None:
                 return RequestProcessed(success=False, message=f"Endpoint: '{request.endpoint}'. Enviar conteúdo da requisição como: {content_type}.", data={}, files={})
             if content_type not in request.content_type:

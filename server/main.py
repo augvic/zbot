@@ -1,3 +1,3 @@
-from src.cortex.composition import Composition
+from src.cortex.controller import Controller
 
-Composition().run()
+Controller().run_process()
