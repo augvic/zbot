@@ -49,6 +49,9 @@ export class Controller {
     private zLoginEvents() {
         document.addEventListener("load:zLogin", () => {
             this.io.zLogin.page.element.classList.add("opacity-fade-in");
+            setTimeout(() => {
+                this.io.zLogin.page.element.classList.remove("opacity-fade-in");
+            }, 300);
             this.io.global.app.element.appendChild(this.io.zLogin.page.element);
             this.io.zLogin.page.element.appendChild(this.io.zLogin.container.element);
             this.io.zLogin.container.element.appendChild(this.io.zLogin.bar.element);
@@ -57,9 +60,6 @@ export class Controller {
             this.io.zLogin.container.element.appendChild(this.io.zLogin.button.element);
             this.io.zLogin.bar.element.appendChild(this.io.zLogin.label.element);
             this.io.zLogin.bar.element.appendChild(this.io.global.themeButton.element);
-            setTimeout(() => {
-                this.io.zLogin.page.element.classList.remove("opacity-fade-in");
-            }, 300);
         });
         this.io.zLogin.button.element.addEventListener("click", async () => {
             const user = this.io.zLogin.userInput.element.value;                
@@ -87,23 +87,24 @@ export class Controller {
             const modules = ((await this.tasks.makeRequestTask.get("/session-modules")).data as [{[key: string]: string}]);
             const user = (await this.tasks.makeRequestTask.get("/session-user")).data;
             this.io.zIndex.page.element.classList.add("opacity-fade-in");
+            setTimeout(() => {
+                this.io.zIndex.page.element.classList.remove("opacity-fade-in");
+            }, 300);
             this.io.zIndex.userName.element.innerText = `Usuário: ${user}`;
             this.io.global.app.element.appendChild(this.io.zIndex.page.element);
             this.io.zIndex.page.element.appendChild(this.io.zIndex.titleBar.element);
             this.io.zIndex.page.element.appendChild(this.io.zIndex.module.element);
             this.io.zIndex.page.element.appendChild(this.io.zIndex.menu.element);
+            this.io.zIndex.menu.element.appendChild(this.io.zIndex.menuWrapper.element);
             this.io.zIndex.titleBar.element.appendChild(this.io.zIndex.menuButton.element);
             this.io.zIndex.titleBar.element.appendChild(this.io.zIndex.userName.element);
             this.io.zIndex.titleBar.element.appendChild(this.io.zIndex.logoutButton.element);
             this.io.zIndex.themeButtonContainer.element.appendChild(this.io.global.themeButton.element);
             this.io.zIndex.titleBar.element.appendChild(this.io.zIndex.themeButtonContainer.element);
-            setTimeout(() => {
-                this.io.zIndex.page.element.classList.remove("opacity-fade-in");
-            }, 300);
-            this.io.zIndex.menu.element.innerHTML = "";
+            this.io.zIndex.menuWrapper.element.innerHTML = "";
             modules.forEach(module => {
-                const button = this.io.createButton(module.module, "blue").element;
-                this.io.zIndex.menu.element.appendChild(button);
+                const button = this.io.createButton(module.module, "blue", "100%", "").element;
+                this.io.zIndex.menuWrapper.element.appendChild(button);
                 button.addEventListener("click", () => {
                     button.dispatchEvent(new Event("mouseleave"));
                     this.io.zIndex.module.element.classList.add("opacity-fade-out");
@@ -120,6 +121,8 @@ export class Controller {
                 });
                 button.addEventListener("mouseenter", () => {
                     let hoverSpan = this.io.createHoverSpan(module.description);
+                    hoverSpan.element.classList.add("opacity-fade-in");
+                    button.appendChild(hoverSpan.element);
                     button.addEventListener("mouseleave", () => {
                         hoverSpan.element.classList.remove("opacity-fade-in");
                         hoverSpan.element.classList.add("opacity-fade-out");
@@ -162,10 +165,35 @@ export class Controller {
         });
     }
     
+    private zAdminEvents() {
+        document.addEventListener("load:zAdmin", () => {
+            this.io.zAdmin.moduleWrapper.element.classList.add("opacity-fade-in");
+            setTimeout(() => {
+                this.io.zAdmin.moduleWrapper.element.classList.remove("opacity-fade-in");
+            }, 300);
+            this.io.zIndex.module.element.appendChild(this.io.zAdmin.moduleWrapper.element);
+            this.io.zAdmin.moduleWrapper.element.appendChild(this.io.zAdmin.optionsContainer.element);
+            this.io.zAdmin.moduleWrapper.element.appendChild(this.io.zAdmin.viewContainer.element);
+            this.io.zAdmin.optionsContainer.element.appendChild(this.io.zAdmin.optionsContainerWrapper.element);
+            this.io.zAdmin.optionsContainerWrapper.element.appendChild(this.io.zAdmin.selectUsersSectionButton.element);
+            this.io.zAdmin.selectUsersSectionButton.element.addEventListener("click", () => {
+                this.io.zAdmin.usersSection.element.classList.add("opacity-fade-in");
+                setTimeout(() => {
+                    this.io.zAdmin.usersSection.element.classList.remove("opacity-fade-in");
+                }, 300);
+                this.io.zAdmin.viewContainer.element.appendChild(this.io.zAdmin.usersSection.element);
+                this.io.zAdmin.usersSection.element.appendChild(this.io.zAdmin.usersSectionTopBar.element);
+                this.io.zAdmin.usersSectionTopBar.element.appendChild(this.io.zAdmin.searchUserInput.element);
+                this.io.zAdmin.usersSectionTopBar.element.appendChild(this.io.zAdmin.searchUserButton.element);
+            });
+        });
+    }
+    
     private events() {
         this.globalEvents();
         this.zLoginEvents();
         this.zIndexEvents();
+        this.zAdminEvents();
     }
     
     public async run_process() {

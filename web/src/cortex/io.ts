@@ -5,15 +5,17 @@ export class IO {
     global: Global
     zLogin: Zlogin
     zIndex: Zindex
+    zAdmin: Zadmin
     
     constructor() {
         this.global = new Global();
         this.zLogin = new Zlogin();
         this.zIndex = new Zindex();
+        this.zAdmin = new Zadmin();
     }
     
-    public createButton(text: string, bgColor: string) {
-        return new elements.Button(text, bgColor);
+    public createButton(text: string, bgColor: string, width: string, height: string) {
+        return new elements.Button(text, bgColor, width, height);
     }
     
     public createNotification(message: string, color: string) {
@@ -48,21 +50,21 @@ class Global {
 class Zlogin {
     
     page: elements.Page
-    container: elements.VerticalContainer
-    bar: elements.HorizontalContainerNoBg
+    container: elements.Container
+    bar: elements.Wrapper
     userInput: elements.Input
     passwordInput: elements.Input
     label: elements.Label
     button: elements.Button
     
     constructor() {
-        this.page = new elements.Page();
-        this.container = new elements.VerticalContainer("400px", "200px", "center", "center");
-        this.bar = new elements.HorizontalContainerNoBg("", "", "center", "center");
+        this.page = new elements.Page("vertical");
+        this.container = new elements.Container("vertical", "400px", "200px", "center", "center");
+        this.bar = new elements.Wrapper("horizontal", "", "", "center", "center");
         this.userInput = new elements.Input("Usuário", "text", "70%", "30px");
         this.passwordInput = new elements.Input("Senha", "password", "70%", "30px");
-        this.label = new elements.LabelBold("Login");
-        this.button = new elements.Button("Acessar", "blue");
+        this.label = new elements.Label("Login", true, "lg");
+        this.button = new elements.Button("Acessar", "blue", "40%", "");
     }
     
 }
@@ -70,13 +72,14 @@ class Zlogin {
 class Zindex {
     
     page: elements.Page
-    titleBar: elements.HorizontalContainer
+    titleBar: elements.Container
     menuButton: elements.IconButton
     userName: elements.Label
     logoutButton: elements.IconButton
-    menu: elements.LeftMenu
-    module: elements.VerticalContainerNoBg
-    themeButtonContainer: elements.HorizontalContainerNoBg
+    menu: elements.BlurContainer
+    menuWrapper: elements.Wrapper
+    module: elements.Wrapper
+    themeButtonContainer: elements.Wrapper
     
     constructor() {
         let menuButtonIcon = "";
@@ -86,14 +89,41 @@ class Zindex {
         } else {
             menuButtonIcon = "/storage/images/menu_dark.png";
         }
-        this.page = new elements.Page();
-        this.titleBar = new elements.HorizontalContainer("100%", "50px", "center", "");
-        this.themeButtonContainer = new elements.HorizontalContainerNoBg("100%", "100%", "center", "end");
+        this.page = new elements.Page("vertical");
+        this.titleBar = new elements.Container("horizontal", "100%", "60px", "center", "");
+        this.themeButtonContainer = new elements.Wrapper("horizontal", "100%", "100%", "center", "end");
         this.menuButton = new elements.IconButton(menuButtonIcon, 5, "");
-        this.userName = new elements.Label("");
+        this.userName = new elements.Label("", false, "md");
         this.logoutButton = new elements.IconButton("/storage/images/logout.png", 5, "red");
-        this.menu = new elements.LeftMenu();
-        this.module = new elements.VerticalContainerNoBg("100%", "calc(100vh - 50px", "center", "center");
+        this.menu = new elements.BlurContainer("vertical", "300px", "calc(100vh - 60px)", "bottom", "left");
+        this.menuWrapper = new elements.Wrapper("vertical", "100%", "100%", "", "")
+        this.module = new elements.Wrapper("vertical", "100%", "calc(100vh - 60px)", "center", "center");
+    }
+    
+}
+
+class Zadmin {
+    
+    moduleWrapper: elements.Wrapper
+    optionsContainer: elements.Container
+    optionsContainerWrapper: elements.Wrapper
+    viewContainer: elements.Container
+    usersSection: elements.Wrapper
+    usersSectionTopBar: elements.Wrapper
+    searchUserInput: elements.Input
+    searchUserButton: elements.IconButton
+    selectUsersSectionButton: elements.Button
+    
+    constructor() {
+        this.moduleWrapper = new elements.Wrapper("horizontal", "100%", "100%", "center", "center");
+        this.optionsContainer = new elements.Container("vertical", "10%", "500px", "center", "center");
+        this.optionsContainerWrapper = new elements.Wrapper("vertical", "100%", "100%", "center", "center");
+        this.viewContainer = new elements.Container("vertical", "85%", "90%", "center", "center");
+        this.usersSection = new elements.Wrapper("vertical", "100%", "100%", "", "");
+        this.usersSectionTopBar = new elements.Wrapper("horizontal", "100%", "", "center", "start");
+        this.searchUserInput = new elements.Input("Pesquisar", "text", "300px", "30px");
+        this.searchUserButton = new elements.IconButton("/storage/images/magnifying_glass.png", 5, "blue");
+        this.selectUsersSectionButton = new elements.Button("Usuários", "orange", "100%", "");
     }
     
 }

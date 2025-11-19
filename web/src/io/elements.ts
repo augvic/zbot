@@ -13,69 +13,48 @@ export class Page {
     
     element: HTMLDivElement
     
-    constructor() {
+    constructor(orientation: string) {
         this.element = document.createElement("div");
-        this.element.className = "w-full h-full flex flex-col justify-center overflow-hidden items-center bg-gray-300 dark:bg-gray-900 transition-colors duration-300";
+        this.element.className = "w-full h-full flex justify-center overflow-hidden items-center bg-gray-300 dark:bg-gray-900 transition-colors duration-300";
+        if (orientation == "vertical") {
+            this.element.classList.add("flex-col");
+        }
     }
     
 }
 
-export class VerticalContainer {
+export class Container {
     
     element: HTMLDivElement
     
-    constructor(width: string, height: string, items: string, justify: string) {
+    constructor(orientation: string, width: string, height: string, items: string, justify: string) {
         this.element = document.createElement("div");
-        this.element.className = "flex flex-col bg-white dark:bg-gray-700 rounded-md gap-y-2 p-3 transition-colors duration-300";
+        this.element.className = "flex bg-white dark:bg-gray-700 rounded-md gap-2 p-3 transition-colors duration-300";
         this.element.style.width = width;
         this.element.style.height = height;
         this.element.style.justifyContent = justify;
         this.element.style.alignItems = items;
+        if (orientation == "vertical") {
+            this.element.classList.add("flex-col");
+        }
     }
     
 }
 
-export class HorizontalContainer {
+export class Wrapper {
     
     element: HTMLDivElement
     
-    constructor(width: string, height: string, items: string, justify: string) {
+    constructor(orientation: string, width: string, height: string, items: string, justify: string) {
         this.element = document.createElement("div");
-        this.element.className = "flex bg-white dark:bg-gray-700 rounded-md gap-x-2 p-3 transition-colors duration-300";
+        this.element.className = "flex gap-2 overflow-auto";
         this.element.style.width = width;
         this.element.style.height = height;
         this.element.style.justifyContent = justify;
         this.element.style.alignItems = items;
-    }
-    
-}
-
-export class HorizontalContainerNoBg {
-    
-    element: HTMLDivElement
-    
-    constructor(width: string, height: string, items: string, justify: string) {
-        this.element = document.createElement("div");
-        this.element.className = "flex gap-x-2 items-center";
-        this.element.style.width = width;
-        this.element.style.height = height;
-        this.element.style.justifyContent = justify;
-        this.element.style.alignItems = items;
-    }
-    
-}
-
-export class VerticalContainerNoBg {
-    
-    element: HTMLDivElement
-    
-    constructor(width: string, height: string, items: string, justify: string) {
-        this.element = document.createElement("div");
-        this.element.className = "flex flex-col gap-y-2 items-center";
-        this.element.style.width = width;
-        this.element.style.height = height;
-        this.element.style.justifyContent = justify;
-        this.element.style.alignItems = items;
+        if (orientation == "vertical") {
+            this.element.classList.add("flex-col");
+        }
     }
     
 }
@@ -95,26 +74,26 @@ export class Input {
     
 }
 
-export class LabelBold {
-    
-    element: HTMLLabelElement
-    
-    constructor(text: string) {
-        this.element = document.createElement("label");
-        this.element.className = "text-black dark:text-white font-bold text-2xl cursor-default transition-colors duration-300 whitespace-nowrap";
-        this.element.innerText = text;
-    }
-    
-}
-
 export class Label {
     
     element: HTMLLabelElement
     
-    constructor(text: string) {
+    constructor(text: string, bold: boolean, size: string) {
         this.element = document.createElement("label");
         this.element.className = "text-black dark:text-white cursor-default transition-colors duration-300 whitespace-nowrap";
         this.element.innerText = text;
+        if (bold) {
+            this.element.classList.add("font-bold");
+        }
+        if (size == "sm") {
+            this.element.classList.add("text-sm");
+        }
+        if (size == "md") {
+            this.element.classList.add("text-md");
+        }
+        if (size == "lg") {
+            this.element.classList.add("text-2xl");
+        }
     }
     
 }
@@ -123,10 +102,12 @@ export class Button {
     
     element: HTMLButtonElement
     
-    constructor(text: string, bgColor: string) {
+    constructor(text: string, bgColor: string, width: string, height: string) {
         this.element = document.createElement("button");
         this.element.className = "rounded-md text-white cursor-pointer transition-colors duration-300 p-2";
         this.element.innerText = text;
+        this.element.style.width = width;
+        this.element.style.height = height;
         if (bgColor == "blue") {
             this.element.classList.add("bg-blue-700");
             this.element.classList.add("hover:bg-blue-900");
@@ -219,16 +200,34 @@ export class Notification {
     
 }
 
-export class LeftMenu {
+export class BlurContainer {
     
     element!: HTMLElement
     
-    constructor() {
+    constructor(orientation: string, width: string, height: string, fixedTopBottom: string, fixedLeftRight: string) {
         this.element = document.createElement("div");
-        this.element.className = "w-[300px] flex-col fixed bg-white/30 dark:bg-gray-700/30 z-40 p-3 gap-y-3 bottom-0 left-0 rounded-br-lg rounded-tr-lg";
-        this.element.style.height = "calc(100vh - 50px)";
+        this.element.className = "w-[300px] flex fixed bg-white/30 dark:bg-gray-700/30 z-40 p-3 gap-2";
+        this.element.style.height = height;
+        this.element.style.width = width;
         this.element.style.backdropFilter = "blur(6px)";
         this.element.style.display = "none";
+        if (orientation == "vertical") {
+            this.element.classList.add("flex-col");
+        }
+        if (fixedTopBottom == "bottom") {
+            this.element.classList.add("bottom-0");
+        } else {
+            this.element.classList.add("top-0");
+        }
+        if (fixedLeftRight == "left") {
+            this.element.classList.add("left-0");
+            this.element.classList.add("rounded-br-lg");
+            this.element.classList.add("rounded-tr-lg");
+        } else {
+            this.element.classList.add("right-0")
+            this.element.classList.add("rounded-bl-lg");
+            this.element.classList.add("rounded-tl-lg");
+        }
     }
     
 }
