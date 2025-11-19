@@ -16,100 +16,107 @@ export class Controller {
         this.events();
     }
     
-    private async login() {
-        const user = this.io.zLogin.userInput.element.value;                
-        const password = this.io.zLogin.passwordInput.element.value;
-        const response = await this.tasks.makeRequestTask.post("/login", "application/json", { user, password });
-        if (!response.success) {
-            this.io.createNotification(response.message, "red");
-        } else {
-            this.io.zLogin.page.element.classList.add("opacity-fade-out");
-            setTimeout(() => {
-                this.io.zLogin.page.element.remove();
-                document.dispatchEvent(new Event("load:zIndex"));
-                this.io.createNotification(response.message, "green");                
-            }, 500);
-        }
+    private globalEvents() {
+        this.io.global.themeButton.element.addEventListener("click", () => {
+            if (document.documentElement.classList.contains("light")) {
+                document.documentElement.classList.remove("light");
+                document.documentElement.classList.add("dark");
+                window.localStorage.setItem("theme", "dark");
+                this.io.global.themeButton.icon.src = "/storage/images/sun.png";
+                this.io.global.themeButton.icon.classList.remove("opacity-fade-in");
+                void this.io.global.themeButton.icon.offsetWidth;
+                this.io.global.themeButton.icon.classList.add("opacity-fade-in");
+                this.io.zIndex.menuButton.icon.src = "/storage/images/menu_dark.png";
+                this.io.zIndex.menuButton.icon.classList.remove("opacity-fade-in");
+                void this.io.zIndex.menuButton.icon.offsetWidth;
+                this.io.zIndex.menuButton.icon.classList.add("opacity-fade-in");
+            } else {
+                document.documentElement.classList.remove("dark");
+                document.documentElement.classList.add("light");
+                window.localStorage.setItem("theme", "light");
+                this.io.global.themeButton.icon.src = "/storage/images/moon.png";
+                this.io.global.themeButton.icon.classList.remove("opacity-fade-in");
+                void this.io.global.themeButton.icon.offsetWidth;
+                this.io.global.themeButton.icon.classList.add("opacity-fade-in");
+                this.io.zIndex.menuButton.icon.src = "/storage/images/menu_light.png";
+                this.io.zIndex.menuButton.icon.classList.remove("opacity-fade-in");
+                void this.io.zIndex.menuButton.icon.offsetWidth;
+                this.io.zIndex.menuButton.icon.classList.add("opacity-fade-in");
+            }
+        });
     }
     
-    private async logout() {
-        const response = await this.tasks.makeRequestTask.delete("/login");
-        if (!response.success) {
-            this.io.createNotification(response.message, "red");
-            return;
-        } else {
-            this.io.createNotification(response.message, "green");
-        }
-        this.io.zIndex.page.element.classList.remove("opacity-fade-in");
-        this.io.zIndex.page.element.classList.add("opacity-fade-out");
-        setTimeout(() => {
-            this.io.zIndex.page.element.remove();
-            document.dispatchEvent(new Event("load:zLogin"));
-        }, 500);
-    }
-    
-    private changeTheme() {
-        if (document.documentElement.classList.contains("light")) {
-            document.documentElement.classList.remove("light");
-            document.documentElement.classList.add("dark");
-            window.localStorage.setItem("theme", "dark");
-            this.io.global.themeButton.icon.src = "/storage/images/sun.png";
-            this.io.global.themeButton.icon.classList.remove("opacity-fade-in");
-            void this.io.global.themeButton.icon.offsetWidth;
-            this.io.global.themeButton.icon.classList.add("opacity-fade-in");
-            this.io.zIndex.menuButton.icon.src = "/storage/images/menu_dark.png";
-            this.io.zIndex.menuButton.icon.classList.remove("opacity-fade-in");
-            void this.io.zIndex.menuButton.icon.offsetWidth;
-            this.io.zIndex.menuButton.icon.classList.add("opacity-fade-in");
-        } else {
-            document.documentElement.classList.remove("dark");
-            document.documentElement.classList.add("light");
-            window.localStorage.setItem("theme", "light");
-            this.io.global.themeButton.icon.src = "/storage/images/moon.png";
-            this.io.global.themeButton.icon.classList.remove("opacity-fade-in");
-            void this.io.global.themeButton.icon.offsetWidth;
-            this.io.global.themeButton.icon.classList.add("opacity-fade-in");
-            this.io.zIndex.menuButton.icon.src = "/storage/images/menu_light.png";
-            this.io.zIndex.menuButton.icon.classList.remove("opacity-fade-in");
-            void this.io.zIndex.menuButton.icon.offsetWidth;
-            this.io.zIndex.menuButton.icon.classList.add("opacity-fade-in");
-        }
-    }
-    
-    private changeModule(button: HTMLButtonElement, moduleName: string) {
-        button.dispatchEvent(new Event("mouseleave"));
-        this.io.zIndex.module.element.classList.add("opacity-fade-out");
-        setTimeout(() => {
-            this.io.zIndex.module.element.classList.remove("opacity-fade-out");
-            this.io.zIndex.module.element.innerHTML = "";
-            this.io.zIndex.menu.element.classList.add("fade-out-left");
-            setTimeout(() => {
-                this.io.zIndex.menu.element.classList.remove("fade-out-left");
-                this.io.zIndex.menu.element.style.display = "none";                
-                document.dispatchEvent(new Event(`load:${moduleName}`));
-            }, 500);
-        }, 500);
-    }
-    
-    private events() {
-        this.io.global.themeButton.element.addEventListener("click", this.changeTheme);
-        document.addEventListener("load:zIndex", async () => {
-            this.components.webSocketComponent.init();
-            const modules = ((await this.tasks.makeRequestTask.get("/session-modules")).data as [{[key: string]: string}]);
+    private zLoginEvents() {
+        document.addEventListener("load:zLogin", () => {
+            this.io.zLogin.page.element.classList.add("opacity-fade-in");
             this.io.global.app.element.appendChild(this.io.zLogin.page.element);
+            this.io.zLogin.page.element.appendChild(this.io.zLogin.container.element);
+            this.io.zLogin.container.element.appendChild(this.io.zLogin.bar.element);
+            this.io.zLogin.container.element.appendChild(this.io.zLogin.userInput.element);
+            this.io.zLogin.container.element.appendChild(this.io.zLogin.passwordInput.element);
+            this.io.zLogin.container.element.appendChild(this.io.zLogin.button.element);
+            this.io.zLogin.bar.element.appendChild(this.io.zLogin.label.element);
+            this.io.zLogin.bar.element.appendChild(this.io.global.themeButton.element);
+            setTimeout(() => {
+                this.io.zLogin.page.element.classList.remove("opacity-fade-in");
+            }, 300);
+        });
+        this.io.zLogin.button.element.addEventListener("click", async () => {
+            const user = this.io.zLogin.userInput.element.value;                
+            const password = this.io.zLogin.passwordInput.element.value;
+            const response = await this.tasks.makeRequestTask.post("/login", "application/json", { user, password });
+            if (!response.success) {
+                this.io.createNotification(response.message, "red");
+            } else {
+                this.io.zLogin.page.element.classList.add("opacity-fade-out");
+                setTimeout(() => {
+                    this.io.zLogin.page.element.classList.remove("opacity-fade-out");
+                    this.io.zLogin.page.element.remove();
+                    document.dispatchEvent(new Event("load:zIndex"));
+                    this.io.createNotification(response.message, "green");                
+                }, 300);
+            }
+        });
+    }
+    
+    private zIndexEvents() {
+        document.addEventListener("load:zIndex", async () => {
+            if (!this.components.webSocketComponent.connected) {
+                this.components.webSocketComponent.init();
+            }
+            const modules = ((await this.tasks.makeRequestTask.get("/session-modules")).data as [{[key: string]: string}]);
+            const user = (await this.tasks.makeRequestTask.get("/session-user")).data;
+            this.io.zIndex.page.element.classList.add("opacity-fade-in");
+            this.io.zIndex.userName.element.innerText = `Usuário: ${user}`;
+            this.io.global.app.element.appendChild(this.io.zIndex.page.element);
             this.io.zIndex.page.element.appendChild(this.io.zIndex.titleBar.element);
             this.io.zIndex.page.element.appendChild(this.io.zIndex.module.element);
             this.io.zIndex.page.element.appendChild(this.io.zIndex.menu.element);
             this.io.zIndex.titleBar.element.appendChild(this.io.zIndex.menuButton.element);
             this.io.zIndex.titleBar.element.appendChild(this.io.zIndex.userName.element);
             this.io.zIndex.titleBar.element.appendChild(this.io.zIndex.logoutButton.element);
-            this.io.zIndex.themeButtonContainer.element.appendChild(this.io.globals.themeButton.element);
+            this.io.zIndex.themeButtonContainer.element.appendChild(this.io.global.themeButton.element);
             this.io.zIndex.titleBar.element.appendChild(this.io.zIndex.themeButtonContainer.element);
+            setTimeout(() => {
+                this.io.zIndex.page.element.classList.remove("opacity-fade-in");
+            }, 300);
+            this.io.zIndex.menu.element.innerHTML = "";
             modules.forEach(module => {
                 const button = this.io.createButton(module.module, "blue").element;
                 this.io.zIndex.menu.element.appendChild(button);
                 button.addEventListener("click", () => {
-                    this.changeModule(button, module.module);
+                    button.dispatchEvent(new Event("mouseleave"));
+                    this.io.zIndex.module.element.classList.add("opacity-fade-out");
+                    setTimeout(() => {
+                        this.io.zIndex.module.element.classList.remove("opacity-fade-out");
+                        this.io.zIndex.module.element.innerHTML = "";
+                        this.io.zIndex.menu.element.classList.add("fade-out-left");
+                        setTimeout(() => {
+                            this.io.zIndex.menu.element.classList.remove("fade-out-left");
+                            this.io.zIndex.menu.element.style.display = "none";                
+                            document.dispatchEvent(new Event(`load:${module.module}`));
+                        }, 400);
+                    }, 300);
                 });
                 button.addEventListener("mouseenter", () => {
                     let hoverSpan = this.io.createHoverSpan(module.description);
@@ -122,19 +129,43 @@ export class Controller {
                     }, { once: true });
                 });
             });
-            this.io.zIndex.logoutButton.element.addEventListener("click", this.logout);
         });
-        document.addEventListener("load:zLogin", () => {
-            this.io.global.app.element.appendChild(this.io.zLogin.page.element);
-            this.io.zLogin.page.element.appendChild(this.io.zLogin.container.element);
-            this.io.zLogin.container.element.appendChild(this.io.zLogin.bar.element);
-            this.io.zLogin.container.element.appendChild(this.io.zLogin.userInput.element);
-            this.io.zLogin.container.element.appendChild(this.io.zLogin.passwordInput.element);
-            this.io.zLogin.container.element.appendChild(this.io.zLogin.button.element);
-            this.io.zLogin.bar.element.appendChild(this.io.zLogin.label.element);
-            this.io.zLogin.bar.element.appendChild(this.io.global.themeButton.element);
-            this.io.zLogin.button.element.addEventListener("click", this.login);
+        this.io.zIndex.logoutButton.element.addEventListener("click", async () => {
+            const response = await this.tasks.makeRequestTask.delete("/login");
+            if (!response.success) {
+                this.io.createNotification(response.message, "red");
+                return;
+            } else {
+                this.io.createNotification(response.message, "green");
+            }
+            this.io.zIndex.page.element.classList.add("opacity-fade-out");
+            setTimeout(() => {
+                this.io.zIndex.page.element.classList.remove("opacity-fade-out");
+                this.io.zIndex.page.element.remove();
+                document.dispatchEvent(new Event("load:zLogin"));
+            }, 300);
         });
+        this.io.zIndex.menuButton.element.addEventListener("click", () => {
+            if (this.io.zIndex.menu.element.style.display == "none") {
+                this.io.zIndex.menu.element.classList.add("fade-in-left");
+                this.io.zIndex.menu.element.style.display = "flex";
+                setTimeout(() => {
+                    this.io.zIndex.menu.element.classList.remove("fade-in-left");
+                }, 500);
+            } else {
+                this.io.zIndex.menu.element.classList.add("fade-out-left");
+                setTimeout(() => {
+                    this.io.zIndex.menu.element.style.display = "none";
+                    this.io.zIndex.menu.element.classList.remove("fade-out-left");
+                }, 400);
+            }
+        });
+    }
+    
+    private events() {
+        this.globalEvents();
+        this.zLoginEvents();
+        this.zIndexEvents();
     }
     
     public async run_process() {

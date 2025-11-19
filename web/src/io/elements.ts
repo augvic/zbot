@@ -15,7 +15,7 @@ export class Page {
     
     constructor() {
         this.element = document.createElement("div");
-        this.element.className = "w-full h-full flex justify-center overflow-hidden items-center bg-gray-300 dark:bg-gray-900 transition-colors duration-300";
+        this.element.className = "w-full h-full flex flex-col justify-center overflow-hidden items-center bg-gray-300 dark:bg-gray-900 transition-colors duration-300";
     }
     
 }
@@ -26,7 +26,7 @@ export class VerticalContainer {
     
     constructor(width: string, height: string, items: string, justify: string) {
         this.element = document.createElement("div");
-        this.element.className = "flex flex-col bg-white dark:bg-gray-700 rounded-md gap-y-2 p-3 opacity-fade-in transition-colors duration-300";
+        this.element.className = "flex flex-col bg-white dark:bg-gray-700 rounded-md gap-y-2 p-3 transition-colors duration-300";
         this.element.style.width = width;
         this.element.style.height = height;
         this.element.style.justifyContent = justify;
@@ -41,7 +41,7 @@ export class HorizontalContainer {
     
     constructor(width: string, height: string, items: string, justify: string) {
         this.element = document.createElement("div");
-        this.element.className = "flex bg-white dark:bg-gray-700 rounded-md gap-x-2 p-3 opacity-fade-in transition-colors duration-300";
+        this.element.className = "flex bg-white dark:bg-gray-700 rounded-md gap-x-2 p-3 transition-colors duration-300";
         this.element.style.width = width;
         this.element.style.height = height;
         this.element.style.justifyContent = justify;
@@ -95,13 +95,25 @@ export class Input {
     
 }
 
+export class LabelBold {
+    
+    element: HTMLLabelElement
+    
+    constructor(text: string) {
+        this.element = document.createElement("label");
+        this.element.className = "text-black dark:text-white font-bold text-2xl cursor-default transition-colors duration-300 whitespace-nowrap";
+        this.element.innerText = text;
+    }
+    
+}
+
 export class Label {
     
     element: HTMLLabelElement
     
     constructor(text: string) {
         this.element = document.createElement("label");
-        this.element.className = "text-black dark:text-white font-bold text-2xl cursor-default transition-colors duration-300";
+        this.element.className = "text-black dark:text-white cursor-default transition-colors duration-300 whitespace-nowrap";
         this.element.innerText = text;
     }
     
@@ -113,15 +125,22 @@ export class Button {
     
     constructor(text: string, bgColor: string) {
         this.element = document.createElement("button");
-        this.element.className = "rounded-md text-white cursor-pointer transition-colors duration-300";
+        this.element.className = "rounded-md text-white cursor-pointer transition-colors duration-300 p-2";
         this.element.innerText = text;
         if (bgColor == "blue") {
             this.element.classList.add("bg-blue-700");
             this.element.classList.add("hover:bg-blue-900");
-        }
-        if (bgColor == "green") {
+        } else if (bgColor == "green") {
             this.element.classList.add("bg-green-700");
             this.element.classList.add("hover:bg-green-900");
+        } else if (bgColor == "orange") {
+            this.element.classList.add("bg-amber-700");
+            this.element.classList.add("hover:bg-amber-900");
+        } else if (bgColor == "red") {
+            this.element.classList.add("bg-red-700");
+            this.element.classList.add("hover:bg-red-900");
+        } else {
+            this.element.classList.add("hover:bg-gray-300");
         }
     }
     
@@ -132,12 +151,33 @@ export class IconButton {
     element: HTMLButtonElement
     icon: HTMLImageElement
     
-    constructor(src: string) {
+    constructor(src: string, iconSize: number, bgColor: string) {
         this.element = document.createElement("button");
-        this.element.className = "cursor-pointer w-auto h-auto rounded-md transition-colors duration-300 hover:bg-gray-300 dark:hover:bg-gray-900 absolute ml-25 transition-colors duration-300";
+        this.element.className = "rounded-md text-white cursor-pointer transition-colors duration-300 p-1";
         this.icon = document.createElement("img");
         this.icon.src = src;
-        this.icon.className = "opacity-fade-in";
+        if (iconSize == 5) {
+            this.icon.classList.add("size-5");
+        } else if (iconSize == 7) {
+            this.icon.classList.add("size-7");
+        } else {
+            this.icon.classList.add("size-5");
+        }
+        if (bgColor == "blue") {
+            this.element.classList.add("bg-blue-700");
+            this.element.classList.add("hover:bg-blue-900");
+        } else if (bgColor == "green") {
+            this.element.classList.add("bg-green-700");
+            this.element.classList.add("hover:bg-green-900");
+        } else if (bgColor == "orange") {
+            this.element.classList.add("bg-amber-700");
+            this.element.classList.add("hover:bg-amber-900");
+        } else if (bgColor == "red") {
+            this.element.classList.add("bg-red-700");
+            this.element.classList.add("hover:bg-red-900");
+        } else {
+            this.element.classList.add("hover:bg-gray-300");
+        }
         this.element.appendChild(this.icon);
     }
     
@@ -171,9 +211,9 @@ export class Notification {
         setTimeout(() => {
             this.element.classList.remove("fade-in-right");
             this.element.classList.add("fade-out-right");
-            this.element.addEventListener("animationend", () => {
+            setTimeout(() => {
                 this.element.remove()
-            }, { once: true });
+            }, 400);
         }, 3000);
     }
     
@@ -185,7 +225,7 @@ export class LeftMenu {
     
     constructor() {
         this.element = document.createElement("div");
-        this.element.className = "w-[300px] flex-col fixed bg-white/30 dark:bg-gray-700/30 z-40 p-3 gap-y-3 bottom-0 rounded-br-lg rounded-tr-lg";
+        this.element.className = "w-[300px] flex-col fixed bg-white/30 dark:bg-gray-700/30 z-40 p-3 gap-y-3 bottom-0 left-0 rounded-br-lg rounded-tr-lg";
         this.element.style.height = "calc(100vh - 50px)";
         this.element.style.backdropFilter = "blur(6px)";
         this.element.style.display = "none";
@@ -199,7 +239,7 @@ export class HoverSpan {
     
     constructor(text: string) {
         this.element = document.createElement("span");
-        this.element.className = "text-nowrap opacity-fade-in z-50 bg-blue-900 text-white py-1 px-4 rounded-lg absolute left-80 w-auto h-auto cursor-default";
+        this.element.className = "text-nowrap z-50 bg-blue-900 text-white py-1 px-4 rounded-lg absolute left-80 w-auto h-auto cursor-default";
         this.element.style.fontSize = "small";
         this.element.innerText = text;
     }

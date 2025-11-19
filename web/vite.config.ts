@@ -5,6 +5,7 @@ export default defineConfig({
     build: {
         outDir: path.resolve(__dirname, ".package", "storage"),
         emptyOutDir: true,
+        minify: false,
         lib: {
             entry: path.resolve(__dirname, "main.ts"),
             name: "zbot",
