@@ -4,10 +4,13 @@
   "description": "🤖 Automation software.",
   "main": "",
   "scripts": {
-    "build": "vite build && npm run tailwindcss && npm run copy-storage && npm run transfer-to-server",
-    "tailwindcss": "npx @tailwindcss/cli -i ./storage/css/input.css -o ./storage/css/output.css",
-    "copy-storage": "xcopy .\\storage .\\.package\\storage /E /I /Y && copy .\\main.html .\\.package\\main.html /Y",
-    "transfer-to-server": "xcopy .\\.package ..\\server\\storage\\.web /E /Y /I"
+    "pack-w": "vite build && npm run tailwindcss && npm run copy-storage-w && npm run transfer-to-server-w",
+    "pack-l": "vite build && npm run tailwindcss && npm run copy-storage-l && npm run transfer-to-server-l",
+    "copy-storage-w": "xcopy .\\storage .\\.package\\storage /E /I /Y && copy .\\main.html .\\.package\\main.html /Y",
+    "copy-storage-l": "cp -r ./storage ./.package && cp ./main.html ./.package/main.html",
+    "transfer-to-server-w": "xcopy .\\.package ..\\server\\storage\\.web /E /Y /I",
+    "transfer-to-server-l": "cp -r ./.package ../server/storage/.web",
+    "tailwindcss": "npx @tailwindcss/cli -i ./storage/css/input.css -o ./storage/css/output.css"
   },
   "repository": {
     "type": "git",
