@@ -66,31 +66,28 @@ export class Controller {
             const password = this.io.zLogin.passwordInput.element.value;
             const response = await this.tasks.makeRequestTask.post("/login", "application/json", { user, password });
             if (!response.success) {
-                this.io.createNotification(response.message, "red");
+                this.io.global.notification.pop(response.message, "red");
             } else {
                 this.io.zLogin.page.element.classList.add("opacity-fade-out");
                 setTimeout(() => {
                     this.io.zLogin.page.element.classList.remove("opacity-fade-out");
                     this.io.zLogin.page.element.remove();
                     document.dispatchEvent(new Event("load:zIndex"));
-                    this.io.createNotification(response.message, "green");                
+                    this.io.global.notification.pop(response.message, "green");                
                 }, 300);
             }
         });
     }
     
     private zIndexEvents() {
-        document.addEventListener("load:zIndex", async () => {
+        document.addEventListener("load:zIndex", () => {
             if (!this.components.webSocketComponent.connected) {
                 this.components.webSocketComponent.init();
             }
-            const modules = ((await this.tasks.makeRequestTask.get("/session-modules")).data as [{[key: string]: string}]);
-            const user = (await this.tasks.makeRequestTask.get("/session-user")).data;
             this.io.zIndex.page.element.classList.add("opacity-fade-in");
             setTimeout(() => {
                 this.io.zIndex.page.element.classList.remove("opacity-fade-in");
             }, 300);
-            this.io.zIndex.userName.element.innerText = `Usuário: ${user}`;
             this.io.global.app.element.appendChild(this.io.zIndex.page.element);
             this.io.zIndex.page.element.appendChild(this.io.zIndex.titleBar.element);
             this.io.zIndex.page.element.appendChild(this.io.zIndex.module.element);
@@ -102,11 +99,10 @@ export class Controller {
             this.io.zIndex.themeButtonContainer.element.appendChild(this.io.global.themeButton.element);
             this.io.zIndex.titleBar.element.appendChild(this.io.zIndex.themeButtonContainer.element);
             this.io.zIndex.menuWrapper.element.innerHTML = "";
-            modules.forEach(module => {
-                const button = this.io.createButton(module.module, "blue", "100%", "").element;
-                this.io.zIndex.menuWrapper.element.appendChild(button);
-                button.addEventListener("click", () => {
-                    button.dispatchEvent(new Event("mouseleave"));
+            this.io.zIndex.modulesButtons.forEach(button => {
+                this.io.zIndex.menuWrapper.element.appendChild(button.button.element);
+                button.button.element.addEventListener("click", () => {
+                    button.button.element.dispatchEvent(new Event("mouseleave"));
                     this.io.zIndex.module.element.classList.add("opacity-fade-out");
                     setTimeout(() => {
                         this.io.zIndex.module.element.classList.remove("opacity-fade-out");
@@ -115,19 +111,18 @@ export class Controller {
                         setTimeout(() => {
                             this.io.zIndex.menu.element.classList.remove("fade-out-left");
                             this.io.zIndex.menu.element.style.display = "none";                
-                            document.dispatchEvent(new Event(`load:${module.module}`));
+                            document.dispatchEvent(new Event(`load:${button.moduleName}`));
                         }, 400);
                     }, 300);
                 });
-                button.addEventListener("mouseenter", () => {
-                    let hoverSpan = this.io.createHoverSpan(module.description);
-                    hoverSpan.element.classList.add("opacity-fade-in");
-                    button.appendChild(hoverSpan.element);
-                    button.addEventListener("mouseleave", () => {
-                        hoverSpan.element.classList.remove("opacity-fade-in");
-                        hoverSpan.element.classList.add("opacity-fade-out");
+                button.button.element.addEventListener("mouseenter", () => {
+                    button.hoverSpan.element.classList.add("opacity-fade-in");
+                    button.button.element.appendChild(button.hoverSpan.element);
+                    button.button.element.addEventListener("mouseleave", () => {
+                        button.hoverSpan.element.classList.remove("opacity-fade-in");
+                        button.hoverSpan.element.classList.add("opacity-fade-out");
                         setTimeout(() => {
-                            hoverSpan.element.remove();
+                            button.hoverSpan.element.remove();
                         }, 300);
                     }, { once: true });
                 });
@@ -136,10 +131,10 @@ export class Controller {
         this.io.zIndex.logoutButton.element.addEventListener("click", async () => {
             const response = await this.tasks.makeRequestTask.delete("/login");
             if (!response.success) {
-                this.io.createNotification(response.message, "red");
+                this.io.global.notification.pop(response.message, "red");
                 return;
             } else {
-                this.io.createNotification(response.message, "green");
+                this.io.global.notification.pop(response.message, "green");
             }
             this.io.zIndex.page.element.classList.add("opacity-fade-out");
             setTimeout(() => {
@@ -166,7 +161,7 @@ export class Controller {
     }
     
     private zAdminEvents() {
-        document.addEventListener("load:zAdmin", async () => {
+        document.addEventListener("load:zAdmin", () => {
             this.io.zAdmin.moduleWrapper.element.classList.add("opacity-fade-in");
             setTimeout(() => {
                 this.io.zAdmin.moduleWrapper.element.classList.remove("opacity-fade-in");
@@ -209,12 +204,14 @@ export class Controller {
             document.documentElement.classList.remove("light");
             document.documentElement.classList.add("dark");
         }
-        const response = await this.tasks.makeRequestTask.get("/login");
-        if (response.success) {
-            document.dispatchEvent(new Event("load:zIndex"));
-        } else {
-            document.dispatchEvent(new Event("load:zLogin"));
-        }
+        setTimeout(async () => {
+            const response = await this.tasks.makeRequestTask.get("/login");
+            if (response.success) {
+                document.dispatchEvent(new Event("load:zIndex"));
+            } else {
+                document.dispatchEvent(new Event("load:zLogin"));
+            }
+        }, 500);
     }
     
 }

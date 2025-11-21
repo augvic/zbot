@@ -168,9 +168,12 @@ export class Notification {
     
     element: HTMLDivElement
     
-    constructor(message: string, color: string) {
+    constructor() {
         this.element = document.createElement("div");
         this.element.className = "notification fixed z-50 bottom-4 right-5 py-3 px-6 text-white rounded-md cursor-default fade-in-right transition-[bottom] duration-300 ease";
+    }
+    
+    public pop(message: string, color: string) {
         if (color == "green") {
             this.element.classList.add("bg-green-400");
         } else if (color == "orange") {
