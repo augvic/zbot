@@ -6,6 +6,7 @@ from src.tasks.registrations.get_registration.task import GetRegistration
 from src.tasks.registrations.update_registration.task import UpdateRegistration
 from src.tasks.registrations.update_registration.models import RegistrationData
 from src.tasks.application.process_request.task import ProcessRequest
+from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
 from typing import cast
 from werkzeug.datastructures import FileStorage
 
@@ -17,7 +18,8 @@ class Registrations:
         delete_registration_task: DeleteRegistration,
         get_registration_task: GetRegistration,
         update_registration_task: UpdateRegistration,
-        process_request_task: ProcessRequest
+        process_request_task: ProcessRequest,
+        verify_if_user_is_in_session_task: VerifyIfUserIsInSession
     ) -> None:
         self.verify_if_have_access_task = verify_if_have_access_task
         self.create_registration_task = create_registration_task
@@ -25,9 +27,13 @@ class Registrations:
         self.update_registration_task = update_registration_task
         self.get_registration_task = get_registration_task
         self.delete_registration_task = delete_registration_task
+        self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
     
     def include_registration(self) -> tuple[dict[str, bool | str], int]:
         try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
             response = self.verify_if_have_access_task.execute("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
@@ -77,6 +83,9 @@ class Registrations:
     
     def get_registration(self, cnpj: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
             response =  self.verify_if_have_access_task.execute("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
@@ -90,6 +99,9 @@ class Registrations:
     
     def delete_registration(self, cnpj: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
             response =  self.verify_if_have_access_task.execute("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
@@ -103,6 +115,9 @@ class Registrations:
     
     def update_registration(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
             response =  self.verify_if_have_access_task.execute("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401

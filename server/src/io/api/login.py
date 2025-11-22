@@ -54,6 +54,9 @@ class Login:
     
     def logout(self) -> tuple[dict[str, str | bool], int]:
         try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
             response = self.logout_task.execute()
             if response.success:
                 return {"success": True, "message": response.message}, 200

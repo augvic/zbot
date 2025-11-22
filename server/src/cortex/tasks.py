@@ -101,7 +101,8 @@ class Tasks:
         )
         self.logout_task = Logout(
             session_manager=self.components.session_manager,
-            log_system=self.components.logout_log_system
+            log_system=self.components.logout_log_system,
+            request_manager=self.components.request_manager
         )
         self.validate_login_task = ValidateLogin(
             users_client=self.components.users_client,

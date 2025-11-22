@@ -4,6 +4,7 @@ from src.tasks.admin.user.delete_user.task import DeleteUser
 from src.tasks.admin.user.update_user.task import UpdateUser
 from src.tasks.application.process_request.task import ProcessRequest
 from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
+from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
 from typing import cast
 
 class Users:
@@ -14,7 +15,8 @@ class Users:
         create_user_task: CreateUser,
         delete_user_task: DeleteUser,
         update_user_task: UpdateUser,
-        process_request_task: ProcessRequest
+        process_request_task: ProcessRequest,
+        verify_if_user_is_in_session_task: VerifyIfUserIsInSession
     ) -> None:
         self.verify_if_have_access_task = verify_if_have_access_task
         self.get_users_task = get_users_task
@@ -22,9 +24,13 @@ class Users:
         self.delete_user_task = delete_user_task
         self.update_user_task = update_user_task
         self.process_request_task = process_request_task
+        self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
     
     def get_user(self, user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
             response =  self.verify_if_have_access_task.execute("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
@@ -38,6 +44,9 @@ class Users:
     
     def create_user(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
             response =  self.verify_if_have_access_task.execute("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
@@ -70,6 +79,9 @@ class Users:
     
     def delete_user(self, user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
             response =  self.verify_if_have_access_task.execute("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
@@ -83,6 +95,9 @@ class Users:
     
     def update_user(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
             response =  self.verify_if_have_access_task.execute("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401

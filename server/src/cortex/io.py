@@ -27,13 +27,15 @@ class IO:
             get_modules_list_task=self.tasks.get_modules_list_task,
             create_module_task=self.tasks.create_module_task,
             delete_module_task=self.tasks.delete_module_task,
-            process_request_task=self.tasks.process_request_task
+            process_request_task=self.tasks.process_request_task,
+            verify_if_user_is_in_session_task=self.tasks.verify_if_user_is_in_session_task,
         )
         self.permissions_route = Permissions(
             verify_if_have_access_task=self.tasks.verify_if_have_access_task,
             get_permissions_task=self.tasks.get_permissions_task,
             create_permission_task=self.tasks.create_permission_task,
-            delete_permission_task=self.tasks.delete_permission_task
+            delete_permission_task=self.tasks.delete_permission_task,
+            verify_if_user_is_in_session_task=self.tasks.verify_if_user_is_in_session_task,
         )
         self.session_modules_route = SessionModules(
             verify_if_user_is_in_session_task=self.tasks.verify_if_user_is_in_session_task,
@@ -45,7 +47,8 @@ class IO:
             create_user_task=self.tasks.create_user_task,
             delete_user_task=self.tasks.delete_user_task,
             update_user_task=self.tasks.update_user_task,
-            process_request_task=self.tasks.process_request_task
+            process_request_task=self.tasks.process_request_task,
+            verify_if_user_is_in_session_task=self.tasks.verify_if_user_is_in_session_task,
         )
         self.session_user_route = SessionUser(
             verify_if_user_is_in_session_task=self.tasks.verify_if_user_is_in_session_task,
@@ -53,7 +56,8 @@ class IO:
         )
         self.registrations_rpa_route = RegistrationsRpa(
             verify_if_have_acess_task=self.tasks.verify_if_have_access_task,
-            run_registrations_rpa_task=self.tasks.run_registrations_rpa_task
+            run_registrations_rpa_task=self.tasks.run_registrations_rpa_task,
+            verify_if_user_is_in_session_task=self.tasks.verify_if_user_is_in_session_task,
         )
         self.registrations_route = Registrations(
             verify_if_have_access_task=self.tasks.verify_if_have_access_task,
@@ -61,5 +65,6 @@ class IO:
             update_registration_task=self.tasks.update_registration_task,
             get_registration_task=self.tasks.get_registration_task,
             delete_registration_task=self.tasks.delete_registration_task,
-            process_request_task=self.tasks.process_request_task
+            process_request_task=self.tasks.process_request_task,
+            verify_if_user_is_in_session_task=self.tasks.verify_if_user_is_in_session_task,
         )

@@ -23,5 +23,5 @@ class VerifyIfUserIsInSession:
                 self.log_system.write_text(f"❌ IP de usuário ({self.request_manager.get_user_ip()}) não está na sessão. Endpoint: {self.request_manager.get_endpoint()}.")
                 return Response(success=False, message=f"❌ Não está na sessão.")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
+            self.log_system.write_error(f"👤 IP de usuário ({self.request_manager.get_user_ip()}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao verificar se usuário está na sessão. Contate o administrador.")

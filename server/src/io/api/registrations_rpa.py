@@ -1,17 +1,23 @@
 from src.tasks.rpa.run_registrations_rpa.task import RunRegistrationsRpa
 from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
+from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
 
 class RegistrationsRpa:
     
     def __init__(self,
         verify_if_have_acess_task: VerifyIfHaveAccess,
-        run_registrations_rpa_task: RunRegistrationsRpa
+        run_registrations_rpa_task: RunRegistrationsRpa,
+        verify_if_user_is_in_session_task: VerifyIfUserIsInSession
     ) -> None:
         self.verify_if_have_acess_task = verify_if_have_acess_task
         self.run_registrations_rpa_task = run_registrations_rpa_task
+        self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
     
     def refresh(self) -> tuple[dict[str, bool | str], int]:
         try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
             response = self.verify_if_have_acess_task.execute("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
@@ -25,6 +31,9 @@ class RegistrationsRpa:
     
     def turn_on(self) -> tuple[dict[str, str | bool], int]:
         try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
             response = self.verify_if_have_acess_task.execute("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
@@ -38,6 +47,9 @@ class RegistrationsRpa:
     
     def turn_off(self) -> tuple[dict[str, bool | str], int]:
         try:
+            response = self.verify_if_user_is_in_session_task.execute()
+            if not response.success:
+                return {"success": False, "message": response.message}, 401
             response = self.verify_if_have_acess_task.execute("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
