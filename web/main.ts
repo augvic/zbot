@@ -1,3 +1,5 @@
 import { Controller } from "./src/cortex/controller";
 
-new Controller().run_process();
+const controller = new Controller();
+await controller.init();
+controller.run_process();

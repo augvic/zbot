@@ -4,14 +4,15 @@ import { IO } from "./io";
 
 export class Controller {
     
-    components: Components
-    tasks: Tasks
-    io: IO
+    components!: Components
+    tasks!: Tasks
+    io!: IO
     
-    constructor() {
+    public async init() {
         this.components = new Components();
         this.tasks = new Tasks(this.components);
-        this.io = new IO(this.tasks)
+        this.io = new IO();
+        await this.io.init(this.tasks);
         document.body.appendChild(this.io.global.app.element);
         this.events();
     }
@@ -204,14 +205,12 @@ export class Controller {
             document.documentElement.classList.remove("light");
             document.documentElement.classList.add("dark");
         }
-        setTimeout(async () => {
-            const response = await this.tasks.makeRequestTask.get("/login");
-            if (response.success) {
-                document.dispatchEvent(new Event("load:zIndex"));
-            } else {
-                document.dispatchEvent(new Event("load:zLogin"));
-            }
-        }, 500);
+        const response = await this.tasks.makeRequestTask.get("/login");
+        if (response.success) {
+            document.dispatchEvent(new Event("load:zIndex"));
+        } else {
+            document.dispatchEvent(new Event("load:zLogin"));
+        }
     }
     
 }

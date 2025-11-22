@@ -3,16 +3,18 @@ import { Tasks } from "./tasks";
 
 export class IO {
     
-    global: Global
-    zLogin: Zlogin
-    zIndex: Zindex
-    zAdmin: Zadmin
+    global!: Global
+    zLogin!: Zlogin
+    zIndex!: Zindex
+    zAdmin!: Zadmin
     
-    constructor(tasks: Tasks) {
+    public async init(tasks: Tasks) {
         this.global = new Global();
         this.zLogin = new Zlogin();
-        this.zIndex = new Zindex(tasks);
-        this.zAdmin = new Zadmin(tasks);
+        this.zIndex = new Zindex();
+        this.zAdmin = new Zadmin();
+        await this.zIndex.init(tasks);
+        await this.zAdmin.init(tasks);
     }
     
 }
@@ -62,18 +64,18 @@ class Zlogin {
 
 class Zindex {
     
-    page: elements.Page
-    titleBar: elements.Container
-    menuButton: elements.IconButton
+    page!: elements.Page
+    titleBar!: elements.Container
+    menuButton!: elements.IconButton
     userName!: elements.Label
-    logoutButton: elements.IconButton
-    menu: elements.BlurContainer
-    menuWrapper: elements.Wrapper
-    module: elements.Wrapper
-    themeButtonContainer: elements.Wrapper
-    modulesButtons: ModuleButton[]
+    logoutButton!: elements.IconButton
+    menu!: elements.BlurContainer
+    menuWrapper!: elements.Wrapper
+    module!: elements.Wrapper
+    themeButtonContainer!: elements.Wrapper
+    modulesButtons!: ModuleButton[]
     
-    constructor(tasks: Tasks) {
+    public async init(tasks: Tasks) {
         let menuButtonIcon = "";
         if (window.localStorage.getItem("theme") == "light") {
             menuButtonIcon = "/storage/images/menu_light.png";
@@ -82,15 +84,13 @@ class Zindex {
             menuButtonIcon = "/storage/images/menu_dark.png";
         }
         this.modulesButtons = [];
-        (async () => {
-            const modules = ((await tasks.makeRequestTask.get("/session-modules")).data as [{[key: string]: string}]);
-            const user = (await tasks.makeRequestTask.get("/session-user")).data;
-            this.userName = new elements.Label("", false, "md");
-            this.userName.element.innerText = `Usuário: ${user}`;
-            modules.forEach(module => {
-                this.modulesButtons.push({ button: new elements.Button(module.module, "blue", "100%", ""), moduleName: module.module, hoverSpan: new elements.HoverSpan(module.description) });
-            });
-        })();
+        const modules = ((await tasks.makeRequestTask.get("/session-modules")).data as [{[key: string]: string}]);
+        const user = (await tasks.makeRequestTask.get("/session-user")).data;
+        this.userName = new elements.Label("", false, "md");
+        this.userName.element.innerText = `Usuário: ${user}`;
+        modules.forEach(module => {
+            this.modulesButtons.push({ button: new elements.Button(module.module, "blue", "100%", ""), moduleName: module.module, hoverSpan: new elements.HoverSpan(module.description) });
+        });
         this.page = new elements.Page("vertical");
         this.titleBar = new elements.Container("horizontal", "100%", "60px", "center", "");
         this.themeButtonContainer = new elements.Wrapper("horizontal", "100%", "100%", "center", "end");
@@ -105,23 +105,21 @@ class Zindex {
 
 class Zadmin {
     
-    moduleWrapper: elements.Wrapper
-    optionsContainer: elements.Container
-    optionsContainerWrapper: elements.Wrapper
-    viewContainer: elements.Container
-    usersSection: elements.Wrapper
-    usersSectionTopBar: elements.Wrapper
-    searchUserInput: elements.Input
-    searchUserButton: elements.IconButton
-    selectUsersSectionButton: elements.Button
+    moduleWrapper!: elements.Wrapper
+    optionsContainer!: elements.Container
+    optionsContainerWrapper!: elements.Wrapper
+    viewContainer!: elements.Container
+    usersSection!: elements.Wrapper
+    usersSectionTopBar!: elements.Wrapper
+    searchUserInput!: elements.Input
+    searchUserButton!: elements.IconButton
+    selectUsersSectionButton!: elements.Button
     usersSectionTable!: elements.Table
     
-    constructor(tasks: Tasks) {
-        (async () => {
-            const usersTableRows = ((await tasks.makeRequestTask.get("/users/all")).data as [{}]);
-            usersTableRows.unshift({ email: "E-mail", name: "Nome", password: "Senha", user: "Usuário" });
-            this.usersSectionTable = new elements.Table("100%", "95%", usersTableRows);
-        })();
+    public async init(tasks: Tasks) {
+        const usersTableRows = ((await tasks.makeRequestTask.get("/users/all")).data as [{}]);
+        usersTableRows.unshift({ email: "E-mail", name: "Nome", password: "Senha", user: "Usuário" });
+        this.usersSectionTable = new elements.Table("100%", "95%", usersTableRows);
         this.moduleWrapper = new elements.Wrapper("horizontal", "100%", "100%", "center", "center");
         this.optionsContainer = new elements.Container("vertical", "10%", "40%", "center", "center");
         this.optionsContainerWrapper = new elements.Wrapper("vertical", "100%", "100%", "center", "center");
