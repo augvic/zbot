@@ -1,4 +1,4 @@
-import { Controller } from "./src/cortex/controller";
+import { Controller } from "./src/controller_layer/controller_module/controller";
 
 const controller = new Controller();
 await controller.init();

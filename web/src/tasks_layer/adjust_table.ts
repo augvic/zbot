@@ -1,4 +1,4 @@
-import { TableControllerComponent } from "../components/table_controller";
+import { TableControllerComponent } from "../components_layer/table_controller";
 
 export class AdjustTableTask {
     

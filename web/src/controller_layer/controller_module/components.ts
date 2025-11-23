@@ -1,6 +1,6 @@
-import { TableControllerComponent } from "../components/table_controller";
-import { RequestHandlerComponent } from "../components/request_handler";
-import { WebSocketComponent } from "../components/web_socket";
+import { TableControllerComponent } from "../../components_layer/table_controller";
+import { RequestHandlerComponent } from "../../components_layer/request_handler_module";
+import { WebSocketComponent } from "../../components_layer/web_socket";
 
 export class Components {
     

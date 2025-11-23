@@ -1,4 +1,4 @@
-import * as elements from "../io/elements";
+import * as elements from "../../io_layer/elements";
 import { Tasks } from "./tasks";
 
 export class IO {
@@ -73,9 +73,8 @@ class Zindex {
     menuWrapper!: elements.Wrapper
     module!: elements.Wrapper
     themeButtonContainer!: elements.Wrapper
-    modulesButtons!: ModuleButton[]
     
-    public async init(tasks: Tasks) {
+    public async init() {
         let menuButtonIcon = "";
         if (window.localStorage.getItem("theme") == "light") {
             menuButtonIcon = "/storage/images/menu_light.png";
@@ -83,14 +82,7 @@ class Zindex {
         } else {
             menuButtonIcon = "/storage/images/menu_dark.png";
         }
-        this.modulesButtons = [];
-        const modules = ((await tasks.makeRequestTask.get("/session-modules")).data as [{[key: string]: string}]);
-        const user = (await tasks.makeRequestTask.get("/session-user")).data;
         this.userName = new elements.Label("", false, "md");
-        this.userName.element.innerText = `Usuário: ${user}`;
-        modules.forEach(module => {
-            this.modulesButtons.push({ button: new elements.Button(module.module, "blue", "100%", ""), moduleName: module.module, hoverSpan: new elements.HoverSpan(module.description) });
-        });
         this.page = new elements.Page("vertical");
         this.titleBar = new elements.Container("horizontal", "100%", "60px", "center", "");
         this.themeButtonContainer = new elements.Wrapper("horizontal", "100%", "100%", "center", "end");
@@ -119,13 +111,13 @@ class Zadmin {
     public async init(tasks: Tasks) {
         const usersTableRows = ((await tasks.makeRequestTask.get("/users/all")).data as [{}]);
         usersTableRows.unshift({ email: "E-mail", name: "Nome", password: "Senha", user: "Usuário" });
-        this.usersSectionTable = new elements.Table("100%", "95%", usersTableRows);
+        this.usersSectionTable = new elements.Table("100%", "", usersTableRows);
         this.moduleWrapper = new elements.Wrapper("horizontal", "100%", "100%", "center", "center");
         this.optionsContainer = new elements.Container("vertical", "10%", "40%", "center", "center");
         this.optionsContainerWrapper = new elements.Wrapper("vertical", "100%", "100%", "center", "center");
         this.viewContainer = new elements.Container("vertical", "85%", "90%", "center", "center");
         this.usersSection = new elements.Wrapper("vertical", "100%", "100%", "", "");
-        this.usersSectionTopBar = new elements.Wrapper("horizontal", "100%", "5%", "center", "start");
+        this.usersSectionTopBar = new elements.Wrapper("horizontal", "100%", "10%", "center", "start");
         this.searchUserInput = new elements.Input("Pesquisar", "text", "300px", "30px");
         this.searchUserButton = new elements.IconButton("/storage/images/magnifying_glass.png", 5, "blue");
         this.selectUsersSectionButton = new elements.Button("Usuários", "orange", "100%", "");
@@ -133,9 +125,3 @@ class Zadmin {
     }
     
 }
-
-type ModuleButton = {
-    button: elements.Button;
-    moduleName: string;
-    hoverSpan: elements.HoverSpan;
-};

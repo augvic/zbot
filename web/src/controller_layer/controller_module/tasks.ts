@@ -1,5 +1,5 @@
-import { MakeRequestTask } from "../tasks/make_request";
-import { AdjustTableTask } from "../tasks/adjust_table";
+import { MakeRequestTask } from "../../tasks_layer/make_request_module";
+import { AdjustTableTask } from "../../tasks_layer/adjust_table";
 import { Components } from "./components";
 
 export class Tasks {

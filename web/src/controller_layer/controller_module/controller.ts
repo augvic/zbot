@@ -81,7 +81,7 @@ export class Controller {
     }
     
     private zIndexEvents() {
-        document.addEventListener("load:zIndex", () => {
+        document.addEventListener("load:zIndex", async () => {
             if (!this.components.webSocketComponent.connected) {
                 this.components.webSocketComponent.init();
             }
@@ -89,6 +89,8 @@ export class Controller {
             setTimeout(() => {
                 this.io.zIndex.page.element.classList.remove("opacity-fade-in");
             }, 300);
+            const modules = ((await this.tasks.makeRequestTask.get("/session-modules")).data as [{[key: string]: string}]);
+            const user = (await this.tasks.makeRequestTask.get("/session-user")).data;
             this.io.global.app.element.appendChild(this.io.zIndex.page.element);
             this.io.zIndex.page.element.appendChild(this.io.zIndex.titleBar.element);
             this.io.zIndex.page.element.appendChild(this.io.zIndex.module.element);

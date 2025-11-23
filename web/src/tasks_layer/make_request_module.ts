@@ -1,4 +1,4 @@
-import { RequestHandlerComponent } from "../components/request_handler";
+import { RequestHandlerComponent } from "../components_layer/request_handler_module";
 
 export class MakeRequestTask {
     
