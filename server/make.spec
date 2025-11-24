@@ -3,7 +3,7 @@ from PyInstaller.building.api import EXE, PYZ
 import os
 
 analysis = Analysis(
-    scripts=['main.py'],
+    scripts=['tests/cli.py'],
     pathex=[os.path.abspath('.')],
     optimize=0
 )

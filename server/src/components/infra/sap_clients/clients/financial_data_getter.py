@@ -178,6 +178,8 @@ class FinancialDataGetter(SapGui):
         payment_way = self.get_text(f"wnd[0]/usr/lbl[39,{row}]")
         payment_condition = self.get_text(f"wnd[0]/usr/lbl[132,{row}]")
         if payment_way in self.payment_ways_to_ignore or payment_condition in self.payment_conditions_to_ignore:
+            if payment_way == "*":
+                return "skip"
             if not situation == "Crédito":
                 return "skip"
         row_dict["CONTA"] = account
