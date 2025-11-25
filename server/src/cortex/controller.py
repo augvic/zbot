@@ -10,9 +10,6 @@ class Controller:
         self.io = IO(self.tasks)
     
     def run_process(self) -> None:
-        self.components.app.route("/login", methods=["POST"])(self.io.login_route.validate_login)
-        self.components.app.route("/login", methods=["GET"])(self.io.login_route.verify_if_user_is_in_session)
-        self.components.app.route("/login", methods=["DELETE"])(self.io.login_route.logout)
         self.components.app.route("/", methods=["GET"])(self.io.main_route.render_application)
         self.components.app.route("/modules-list", methods=["GET"])(self.io.modules_list_route.get_modules_list)
         self.components.app.route("/modules-list", methods=["POST"])(self.io.modules_list_route.create_module)

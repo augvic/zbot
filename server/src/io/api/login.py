@@ -2,6 +2,7 @@ from src.tasks.auth.validate_login.task import ValidateLogin
 from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
 from src.tasks.auth.logout.task import Logout
 from src.tasks.application.process_request.task import ProcessRequest
+from src.components.infra.wsgi_application import WsgiApplication
 from typing import cast
 
 class Login:
@@ -10,12 +11,16 @@ class Login:
         validate_login_task: ValidateLogin,
         verify_if_user_is_in_session_task: VerifyIfUserIsInSession,
         logout_task: Logout,
-        process_request_task: ProcessRequest
+        process_request_task: ProcessRequest,
+        wsgi_application: WsgiApplication
     ) -> None:
         self.validate_login_task = validate_login_task
         self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
         self.logout_task = logout_task
         self.process_request_task = process_request_task
+        wsgi_application.route("/login", methods=["POST"])(self.validate_login)
+        wsgi_application.route("/login", methods=["GET"])(self.verify_if_user_is_in_session)
+        wsgi_application.route("/login", methods=["DELETE"])(self.logout)
     
     def validate_login(self) -> tuple[dict[str, str | bool], int]:
         try:

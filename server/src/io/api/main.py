@@ -1,9 +1,11 @@
 from src.tasks.application.render_template.task import RenderTemplate
+from src.components.infra.wsgi_application import WsgiApplication
 
 class Main:
     
     def __init__(self,
-        render_template_task: RenderTemplate
+        render_template_task: RenderTemplate,
+        
     ) -> None:
         self.render_template_task = render_template_task
         

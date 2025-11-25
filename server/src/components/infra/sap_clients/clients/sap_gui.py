@@ -23,6 +23,16 @@ class SapGui:
         else:
             raise WindowBusy()
     
+    def init_force(self) -> None:
+        try:
+            gui = GetObject("SAPGUI")
+            app = gui.GetScriptingEngine
+            con = app.Children(0)
+            session = con.Children(0)
+            self.session = session
+        except Exception as error:
+            raise Exception(f"Error in (SapGui) component in (init_force) method: {error}.")
+    
     def open_transaction(self, transaction: str) -> None:
         try:
             self.session.findById("wnd[0]/tbar[0]/okcd").text = "/N" + transaction
