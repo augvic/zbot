@@ -17,7 +17,7 @@ class GetRegistration:
         self.serializer = serializer
         self.log_system = log_system
     
-    def execute(self, cnpj: str) -> Response:
+    def main(self, cnpj: str) -> Response:
         try:
             if cnpj == "all":
                 registrations = self.registrations_client.read_all()    
@@ -26,12 +26,12 @@ class GetRegistration:
             if isinstance(registrations, list):
                 registrations_serialized = self.serializer.serialize_list(registrations)
             elif not registrations:
-                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Cadastro ({cnpj}) não existe.")
+                self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Cadastro ({cnpj}) não existe.")
                 return Response(success=False, message=f"❌ Cadastro ({cnpj}) não existe.", data=[{}])
             else:
                 registrations_serialized = [self.serializer.serialize(registrations)]
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Cadastro(s) coletado(s) com sucesso.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ✅ Cadastro(s) coletado(s) com sucesso.")
             return Response(success=True, message="✅ Cadastro(s) coletado(s) com sucesso.", data=registrations_serialized)
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
+            self.log_system.write_error(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao coletar cadastros. Contate o administrador.")

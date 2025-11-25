@@ -19,7 +19,7 @@ class Login:
     
     def validate_login(self) -> tuple[dict[str, str | bool], int]:
         try:
-            response = self.process_request_task.execute(
+            response = self.process_request_task.main(
                 content_type="application/json",
                 expected_data=[
                     "user",
@@ -31,7 +31,7 @@ class Login:
             )
             if not response.success:
                 return {"success": False, "message": response.message}, 400
-            response =  self.validate_login_task.execute(
+            response =  self.validate_login_task.main(
                 user=cast(str, response.data.get("user")),
                 password=cast(str, response.data.get("password"))
             )
@@ -44,7 +44,7 @@ class Login:
     
     def verify_if_user_is_in_session(self) -> tuple[dict[str, str | bool], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if response.success:
                 return {"success": True, "message": response.message}, 200
             else:
@@ -54,10 +54,10 @@ class Login:
     
     def logout(self) -> tuple[dict[str, str | bool], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.logout_task.execute()
+            response = self.logout_task.main()
             if response.success:
                 return {"success": True, "message": response.message}, 200
             else:

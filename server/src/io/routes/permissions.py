@@ -21,26 +21,26 @@ class Permissions:
     
     def get_user_permissions(self, user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.verify_if_have_access_task.execute("zAdmin")
+            response = self.verify_if_have_access_task.main("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.get_permissions_task.execute(user)
+            response = self.get_permissions_task.main(user)
             return {"success": True, "message": response.message, "data": response.data}, 200
         except Exception as error:
             return {"success": False, "message": f"{error}"}, 500
     
     def create_user_permission(self, user: str, permission: str) -> tuple[dict[str, str | bool], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.verify_if_have_access_task.execute("zAdmin")
+            response = self.verify_if_have_access_task.main("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.create_permission_task.execute(user, permission)
+            response = self.create_permission_task.main(user, permission)
             if response.success:
                 return {"success": True, "message": response.message}, 200
             else:
@@ -50,13 +50,13 @@ class Permissions:
     
     def delete_user_permission(self, user: str, permission: str) -> tuple[dict[str, str | bool], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response =  self.verify_if_have_access_task.execute("zAdmin")
+            response =  self.verify_if_have_access_task.main("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.delete_permission_task.execute(user, permission)
+            response = self.delete_permission_task.main(user, permission)
             if response.success:
                 return {"success": True, "message": response.message}, 200
             else:

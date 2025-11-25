@@ -34,74 +34,74 @@ class CreateRegistration:
     
     def _verify_not_nullables(self, new_registration: NewRegistration) -> Response | None:
         if not new_registration.cnpj:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o CNPJ.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o CNPJ.")
             return Response(success=False, message="❌ Preencha o CNPJ.")
         if not new_registration.seller:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o vendedor.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o vendedor.")
             return Response(success=False, message="❌ Preencha o vendedor.")
         if not new_registration.email:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o e-mail.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o e-mail.")
             return Response(success=False, message="❌ Preencha o e-mail.")
         if not new_registration.cpf:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o CPF.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o CPF.")
             return Response(success=False, message="❌ Preencha o CPF.")
         if not new_registration.cpf_person:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o representante legal.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o representante legal.")
             return Response(success=False, message="❌ Preencha o representante legal.")
         if not new_registration.tax_regime:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o regime tributário.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o regime tributário.")
             return Response(success=False, message="❌ Preencha o regime tributário.")
         if not new_registration.client_type:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o tipo do cliente.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Preencha o tipo do cliente.")
             return Response(success=False, message="❌ Preencha o tipo do cliente.")
         if not new_registration.article_association_doc:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Envie o contrato social.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Envie o contrato social.")
             return Response(success=False, message="❌ Envie o contrato social.")
     
     def _verify_types(self, new_registration: NewRegistration) -> Response | None:
         if not isinstance(new_registration.cnpj, str):
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ CNPJ deve ser string type.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ CNPJ deve ser string type.")
             return Response(success=False, message="❌ CNPJ deve ser string type.")
         if not isinstance(new_registration.seller, str):
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Vendedor deve ser string type.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Vendedor deve ser string type.")
             return Response(success=False, message="❌ Vendedor deve ser string type.")
         if not isinstance(new_registration.email, str):
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ E-mail deve ser string type.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ E-mail deve ser string type.")
             return Response(success=False, message="❌ E-mail deve ser string type.")
         if not isinstance(new_registration.cpf, str):
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ CPF deve ser string type.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ CPF deve ser string type.")
             return Response(success=False, message="❌ CPF deve ser string type.")
         if not isinstance(new_registration.cpf_person, str):
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Representante legal deve ser string type.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Representante legal deve ser string type.")
             return Response(success=False, message="❌ Representante legal deve ser string type.")
         if not isinstance(new_registration.tax_regime, str):
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Regime tributário deve ser string type.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Regime tributário deve ser string type.")
             return Response(success=False, message="❌ Regime tributário deve ser string type.")
         if not isinstance(new_registration.client_type, str):
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Tipo do cliente deve ser string type.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Tipo do cliente deve ser string type.")
             return Response(success=False, message="❌ Tipo do cliente deve ser string type.")
         if new_registration.suggested_limit:
             if not isinstance(new_registration.suggested_limit, float):
-                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Limite sugerido deve ser float type.")
+                self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Limite sugerido deve ser float type.")
                 return Response(success=False, message="❌ Limite sugerido deve ser float type.")
     
     def _verify_data(self, new_registration: NewRegistration) -> Response | None:
         new_registration.cnpj = "".join(number for number in new_registration.cnpj if number.isdigit())
         if len(new_registration.cnpj) != 14:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ CNPJ ({new_registration.cnpj}) inválido.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ CNPJ ({new_registration.cnpj}) inválido.")
             return Response(success=False, message="❌ CNPJ inválido.")
         new_registration.cpf = "".join(number for number in new_registration.cpf if number.isdigit())
         if len(new_registration.cpf) != 11:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ CPF ({new_registration.cpf}) inválido.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ CPF ({new_registration.cpf}) inválido.")
             return Response(success=False, message="❌ CPF inválido.")
         if not "@" in new_registration.email or not "." in new_registration.email:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ E-mail inválido.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ E-mail inválido.")
             return Response(success=False, message="❌ E-mail inválido.")
         if new_registration.tax_regime not in ["SIMPLES", "CUMULATIVO", "NÃO CUMULATIVO"]:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Regime tributário deve ser: SIMPLES, CUMULATIVO ou NÃO CUMULATIVO.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Regime tributário deve ser: SIMPLES, CUMULATIVO ou NÃO CUMULATIVO.")
             return Response(success=False, message="❌ Regime tributário deve ser: SIMPLES, CUMULATIVO ou NÃO CUMULATIVO.")
         if new_registration.client_type not in ["REVENDA", "MINHA EMPRESA"]:
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Tipo do cliente deve ser: REVENDA ou MINHA EMPRESA.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Tipo do cliente deve ser: REVENDA ou MINHA EMPRESA.")
             return Response(success=False, message="❌ Tipo do cliente deve ser: REVENDA ou MINHA EMPRESA.")
     
     def _sanitize(self, new_registration: NewRegistration) -> NewRegistration:
@@ -110,7 +110,7 @@ class CreateRegistration:
         new_registration.cpf_person = new_registration.cpf_person.upper()
         return new_registration
     
-    def execute(self, new_registration: NewRegistration) -> Response:
+    def main(self, new_registration: NewRegistration) -> Response:
         try:
             response = self._verify_not_nullables(new_registration)
             if response:
@@ -124,7 +124,7 @@ class CreateRegistration:
             new_registration = self._sanitize(new_registration)
             registration_exists = self.registrations_client.read(new_registration.cnpj)
             if registration_exists:
-                self.log_system.write_text(f"👤 Por usuário: {self.session_manager.get_from_session("user")}.\n❌ Tentativa de inclusão de cadastro já existente: {new_registration.cnpj}.")
+                self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Tentativa de inclusão de cadastro já existente ({new_registration.cnpj}).")
                 return Response(success=False, message="❌ Tentativa de inclusão de cadastro já existente ({new_registration.cnpj}).")
             federal_revenue_data = self.federal_revenue_api.get_data(new_registration.cnpj)
             self.registrations_client.create(
@@ -179,8 +179,8 @@ class CreateRegistration:
             if new_registration.bank_doc:
                 doc_list.append(new_registration.bank_doc)
             self.docs_handler.save_docs(cnpj=new_registration.cnpj, docs=doc_list)
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}). ✅ Novo cadastro incluído com sucesso ({new_registration.cnpj}).")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ✅ Novo cadastro incluído com sucesso ({new_registration.cnpj}).")
             return Response(success=True, message=f"✅ Novo cadastro incluído com sucesso ({new_registration.cnpj}).")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
+            self.log_system.write_error(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao incluir novo cadastro. Contate o administrador.")

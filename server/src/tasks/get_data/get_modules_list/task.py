@@ -17,11 +17,11 @@ class GetModulesList:
         self.serializer = serializer
         self.log_system = log_system
     
-    def execute(self) -> Response:
+    def main(self) -> Response:
         try:
             modules = self.serializer.serialize_list(self.modules_client.read_all())
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Módulos coletados.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ✅ Módulos coletados.")
             return Response(success=True, message="✅ Módulos coletados.", data=modules)
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
+            self.log_system.write_error(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao coletar lista de módulos. Contate o administrador.")

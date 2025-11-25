@@ -14,11 +14,11 @@ class RenderTemplate:
         self.log_system = log_system
         self.request_manager = request_manager
     
-    def execute(self, template: str) -> Response:
+    def main(self, template: str) -> Response:
         try:
             template_return = self.template_renderer.render(template)
-            self.log_system.write_text(f"👤 Pelo IP ({self.request_manager.get_user_ip()}): ✅ Template coletado.")
+            self.log_system.write_text(f"👤 Usuário ({self.request_manager.get_user_ip()}): ✅ Template coletado.")
             return Response(success=True, message="✅ Template coletado.", data=template_return)
         except Exception as error:
-            self.log_system.write_error(f"👤 Pelo IP ({self.request_manager.get_user_ip()}): ❌ Erro: {error}.")
+            self.log_system.write_error(f"👤 Usuário ({self.request_manager.get_user_ip()}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao retornar template. Contate o administrador.")

@@ -18,7 +18,7 @@ class ProcessRequest:
         self.session_manager = session_manager
         self.request_manager = request_manager
     
-    def execute(self, content_type: str, expected_data: list[str], expected_files: list[str], optional_data: list[str], optional_files: list[str]) -> Response:
+    def main(self, content_type: str, expected_data: list[str], expected_files: list[str], optional_data: list[str], optional_files: list[str]) -> Response:
         try:
             user = self.session_manager.get_from_session("user")
         except:
@@ -27,11 +27,11 @@ class ProcessRequest:
         try:
             request_processed = self.request_processor.process(content_type, expected_data, expected_files, optional_data, optional_files)
             if request_processed.success:
-                self.log_system.write_text(f"👤 Por usuário ({user}): ✅ Requisição bem sucedida: {request_processed.message}.")
+                self.log_system.write_text(f"👤 Usuário ({user}): ✅ Requisição bem sucedida: {request_processed.message}.")
                 return Response(success=True, message=f"✅ Requisição bem sucedida: {request_processed.message}", data=request_processed.data, files=request_processed.files)
             else:
-                self.log_system.write_text(f"👤 Por usuário ({user}): ❌ Requisição inválida: {request_processed.message}.")
+                self.log_system.write_text(f"👤 Usuário ({user}): ❌ Requisição inválida: {request_processed.message}.")
                 return Response(success=False, message=f"❌ Requisição inválida: {request_processed.message}", data={}, files={})
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({user}): ❌ Erro: {error}.")
+            self.log_system.write_error(f"👤 Usuário ({user}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao processar requisição. Contate o administrador.")

@@ -11,11 +11,11 @@ class GetSessionModules:
         self.session_manager = session_manager
         self.log_system = log_system
     
-    def execute(self) -> Response:
+    def main(self) -> Response:
         try:
             session_modules = self.session_manager.get_from_session("session_modules")
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ✅ Módulos de sessão coletados: {session_modules}.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ✅ Módulos de sessão coletados: {session_modules}.")
             return Response(success=True, message="✅ Módulos de sessão coletados.", data=session_modules)
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
+            self.log_system.write_error(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao coletar módulos da sessão.")

@@ -15,10 +15,10 @@ class RegistrationsRpa:
     
     def refresh(self) -> tuple[dict[str, bool | str], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.verify_if_have_acess_task.execute("zRegRpa")
+            response = self.verify_if_have_acess_task.main("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
             memory = self.run_registrations_rpa_task.memory_to_str()
@@ -31,13 +31,13 @@ class RegistrationsRpa:
     
     def turn_on(self) -> tuple[dict[str, str | bool], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.verify_if_have_acess_task.execute("zRegRpa")
+            response = self.verify_if_have_acess_task.main("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.run_registrations_rpa_task.execute()
+            response = self.run_registrations_rpa_task.main()
             if response.success:
                 return {"success": True, "message": response.message}, 200
             else:
@@ -47,10 +47,10 @@ class RegistrationsRpa:
     
     def turn_off(self) -> tuple[dict[str, bool | str], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.verify_if_have_acess_task.execute("zRegRpa")
+            response = self.verify_if_have_acess_task.main("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
             response = self.run_registrations_rpa_task.stop_rpa()

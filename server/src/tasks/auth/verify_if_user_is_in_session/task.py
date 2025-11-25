@@ -14,14 +14,14 @@ class VerifyIfUserIsInSession:
         self.log_system = log_system
         self.request_manager = request_manager
     
-    def execute(self) -> Response:
+    def main(self) -> Response:
         try:
             if self.session_manager.is_user_in_session():
-                self.log_system.write_text(f"✅ Usuário ({self.session_manager.get_from_session("user")}) está na sessão. Endpoint: {self.request_manager.get_endpoint()}.")
-                return Response(success=True, message=f"✅ Usuário: {self.session_manager.get_from_session("user")} está na sessão.")
+                self.log_system.write_text(f"✅ Usuário ({self.session_manager.get_from_session("user")}) está na sessão.")
+                return Response(success=True, message=f"✅ Usuário ({self.session_manager.get_from_session("user")}) está na sessão.")
             else:
-                self.log_system.write_text(f"❌ IP de usuário ({self.request_manager.get_user_ip()}) não está na sessão. Endpoint: {self.request_manager.get_endpoint()}.")
+                self.log_system.write_text(f"❌ Usuário ({self.request_manager.get_user_ip()}) não está na sessão.")
                 return Response(success=False, message=f"❌ Não está na sessão.")
         except Exception as error:
-            self.log_system.write_error(f"👤 IP de usuário ({self.request_manager.get_user_ip()}): ❌ Erro: {error}.")
+            self.log_system.write_error(f"👤 Usuário ({self.request_manager.get_user_ip()}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao verificar se usuário está na sessão. Contate o administrador.")

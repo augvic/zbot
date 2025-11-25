@@ -17,19 +17,19 @@ class DeleteModule:
         self.session_manager = session_manager
         self.log_system = log_system
     
-    def execute(self, module: str) -> Response:
+    def main(self, module: str) -> Response:
         try:
             module_exists = self.modules_client.read(module)
             if module_exists == None:
-                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao deletar módulo: ❌ Módulo ({module}) não existe.")
+                self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}) ao deletar módulo: ❌ Módulo ({module}) não existe.")
                 return Response(success=False, message=f"❌ Módulo ({module}) não existe.")
             if module == "zAdmin":
-                self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao deletar módulo: ❌ zAdmin não pode ser removido.")
+                self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}) ao deletar módulo: ❌ zAdmin não pode ser removido.")
                 return Response(success=False, message="❌ zAdmin não pode ser removido.")
             self.modules_client.delete(module)
             self.permisssions_client.delete_all(module)
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}) ao deletar módulo:✅ Módulo ({module}) removido.")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}) ao deletar módulo:✅ Módulo ({module}) removido.")
             return Response(success=True, message=f"✅ Módulo ({module}) removido.")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
+            self.log_system.write_error(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao deletar módulo ({module}). Contate o administrador.")

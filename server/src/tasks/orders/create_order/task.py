@@ -15,7 +15,7 @@ class CreateOrder:
         self.log_system = log_system
         self.session_manager = session_manager
     
-    def execute(self, order_model: OrderModel) -> Response:
+    def main(self, order_model: OrderModel) -> Response:
         try:
             doc_number = self.order_creator.create(
                 Order(
@@ -39,9 +39,9 @@ class CreateOrder:
                     comissions=[Comission(key=comission.key, code=comission.code, percentage=comission.percentage) for comission in order_model.comissions]
                 )
             )
-            self.log_system.write_text(f"👤 Por usuário ({self.session_manager.get_from_session("user")}):✅ Sucesso ao criar documento no SAP ({doc_number}).")
+            self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ✅ Sucesso ao criar documento no SAP ({doc_number}).")
             return Response(success=True, message=f"✅ Sucesso ao criar documento no SAP ({doc_number}).")
         except Exception as error:
-            self.log_system.write_error(f"👤 Por usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
+            self.log_system.write_error(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
             self.order_creator.go_home()
             raise Exception("❌ Erro interno ao criar documento no SAP. Contate o administrador.")

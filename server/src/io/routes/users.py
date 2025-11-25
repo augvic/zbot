@@ -28,13 +28,13 @@ class Users:
     
     def get_user(self, user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response =  self.verify_if_have_access_task.execute("zAdmin")
+            response =  self.verify_if_have_access_task.main("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.get_users_task.execute(user)
+            response = self.get_users_task.main(user)
             if response.success:
                 return {"success": True, "message": response.message, "data": response.data}, 200
             else:
@@ -44,13 +44,13 @@ class Users:
     
     def create_user(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response =  self.verify_if_have_access_task.execute("zAdmin")
+            response =  self.verify_if_have_access_task.main("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.process_request_task.execute(
+            response = self.process_request_task.main(
                 content_type="application/json",
                 expected_data=[
                     "user",
@@ -64,7 +64,7 @@ class Users:
             )
             if not response.success:
                 return {"success": False, "message": response.message}, 400
-            response = self.create_user_task.execute(
+            response = self.create_user_task.main(
                 user=cast(str, response.data.get("user")),
                 name=cast(str, response.data.get("name")),
                 email=cast(str, response.data.get("email")),
@@ -79,13 +79,13 @@ class Users:
     
     def delete_user(self, user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response =  self.verify_if_have_access_task.execute("zAdmin")
+            response =  self.verify_if_have_access_task.main("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.delete_user_task.execute(user)
+            response = self.delete_user_task.main(user)
             if response.success:
                 return {"success": True, "message": response.message}, 200
             else:
@@ -95,13 +95,13 @@ class Users:
     
     def update_user(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response =  self.verify_if_have_access_task.execute("zAdmin")
+            response =  self.verify_if_have_access_task.main("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.process_request_task.execute(
+            response = self.process_request_task.main(
                 content_type="application/json",
                 expected_data=[
                     "user",
@@ -115,7 +115,7 @@ class Users:
             )
             if not response.success:
                 return {"success": False, "message": response.message}, 400
-            response = self.update_user_task.execute(
+            response = self.update_user_task.main(
                 user=cast(str, response.data.get("user")),
                 name=cast(str, response.data.get("name")),
                 email=cast(str, response.data.get("email")),

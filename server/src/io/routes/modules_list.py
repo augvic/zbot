@@ -25,26 +25,26 @@ class ModulesList:
     
     def get_modules_list(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.verify_if_have_access_task.execute("zAdmin")
+            response = self.verify_if_have_access_task.main("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.get_modules_list_task.execute()
+            response = self.get_modules_list_task.main()
             return {"success": True, "data": response.data}, 200
         except Exception as error:
             return {"success": False, "message": f"{error}"}, 500
     
     def create_module(self) -> tuple[dict[str, str | bool], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.verify_if_have_access_task.execute("zAdmin")
+            response = self.verify_if_have_access_task.main("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.process_request_task.execute(
+            response = self.process_request_task.main(
                 content_type= "application/json",
                 expected_data=[
                     "module",
@@ -56,7 +56,7 @@ class ModulesList:
             )
             if not response.success:
                 return {"success": False, "message": response.message}, 400
-            response = self.create_module_task.execute(
+            response = self.create_module_task.main(
                 cast(str, response.data.get("module")),
                 cast(str, response.data.get("description"))
             )
@@ -69,13 +69,13 @@ class ModulesList:
     
     def delete_module(self, module: str) -> tuple[dict[str, str | bool], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.verify_if_have_access_task.execute("zAdmin")
+            response = self.verify_if_have_access_task.main("zAdmin")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.delete_module_task.execute(module)
+            response = self.delete_module_task.main(module)
             if response.success:
                 return {"success": True, "message": response.message}, 200
             else:

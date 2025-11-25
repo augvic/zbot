@@ -31,13 +31,13 @@ class Registrations:
     
     def include_registration(self) -> tuple[dict[str, bool | str], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.verify_if_have_access_task.execute("zRegRpa")
+            response = self.verify_if_have_access_task.main("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.process_request_task.execute(
+            response = self.process_request_task.main(
                 content_type="multipart/form-data",
                 expected_data=[
                     "cnpj",
@@ -60,7 +60,7 @@ class Registrations:
             )
             if not response.success:
                 return {"success": False, "message": f"{response.message}"}, 400
-            response = self.create_registration_task.execute(
+            response = self.create_registration_task.main(
                 NewRegistration(
                     cnpj=cast(str, response.data.get("cnpj")),
                     seller=cast(str, response.data.get("seller")),
@@ -83,13 +83,13 @@ class Registrations:
     
     def get_registration(self, cnpj: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response =  self.verify_if_have_access_task.execute("zRegRpa")
+            response =  self.verify_if_have_access_task.main("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.get_registration_task.execute(cnpj)
+            response = self.get_registration_task.main(cnpj)
             if response.success:
                 return {"success": True, "message": response.message, "data": response.data}, 200
             else:
@@ -99,13 +99,13 @@ class Registrations:
     
     def delete_registration(self, cnpj: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response =  self.verify_if_have_access_task.execute("zRegRpa")
+            response =  self.verify_if_have_access_task.main("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.delete_registration_task.execute(cnpj)
+            response = self.delete_registration_task.main(cnpj)
             if response.success:
                 return {"success": True, "message": response.message}, 200
             else:
@@ -115,13 +115,13 @@ class Registrations:
     
     def update_registration(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
-            response = self.verify_if_user_is_in_session_task.execute()
+            response = self.verify_if_user_is_in_session_task.main()
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response =  self.verify_if_have_access_task.execute("zRegRpa")
+            response =  self.verify_if_have_access_task.main("zRegRpa")
             if not response.success:
                 return {"success": False, "message": response.message}, 401
-            response = self.process_request_task.execute(
+            response = self.process_request_task.main(
                 content_type="application/json",
                 expected_data=[
                     "cnpj",
@@ -155,7 +155,7 @@ class Registrations:
             )
             if not response.success:
                 return {"success": False, "message": response.message}, 400
-            response = self.update_registration_task.execute(
+            response = self.update_registration_task.main(
                 RegistrationData(
                     cnpj=cast(str, response.data.get("cnpj")),
                     opening=cast(str, response.data.get("opening")),

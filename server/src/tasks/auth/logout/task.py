@@ -14,12 +14,12 @@ class Logout:
         self.log_system = log_system
         self.request_manager = request_manager
     
-    def execute(self) -> Response:
+    def main(self) -> Response:
         try:
             user = self.session_manager.get_from_session("user")
             self.session_manager.clear_session()
-            self.log_system.write_text(f"👤 Por usuário ({user}): ✅ Logout realizado.")
+            self.log_system.write_text(f"👤 Usuário ({user}): ✅ Logout realizado.")
             return Response(success=True, message="✅ Logout realizado.")
         except Exception as error:
-            self.log_system.write_error(f"👤 IP de usuário ({self.request_manager.get_user_ip()}): ❌ Erro: {error}.")
+            self.log_system.write_error(f"👤 Usuário ({self.request_manager.get_user_ip()}): ❌ Erro: {error}.")
             raise Exception("❌ Erro interno ao fazer logout. Contate o administrador.")

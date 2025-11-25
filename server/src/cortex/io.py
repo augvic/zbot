@@ -1,12 +1,12 @@
-from src.io.api.login import Login
-from src.io.api.main import Main
-from src.io.api.modules_list import ModulesList
-from src.io.api.permissions import Permissions
-from src.io.api.session_modules import SessionModules
-from src.io.api.users import Users
-from src.io.api.session_user import SessionUser
-from src.io.api.registrations_rpa import RegistrationsRpa
-from src.io.api.registrations import Registrations
+from src.io.routes.login import Login
+from src.io.routes.main import Main
+from src.io.routes.modules_list import ModulesList
+from src.io.routes.permissions import Permissions
+from src.io.routes.session_modules import SessionModules
+from src.io.routes.users import Users
+from src.io.routes.session_user import SessionUser
+from src.io.routes.registrations_rpa import RegistrationsRpa
+from src.io.routes.registrations import Registrations
 from .tasks import Tasks
 
 class IO:
