@@ -1,7 +1,7 @@
-from src.components.infra.sap_clients.clients.financial_data_getter import FinancialDataGetter
-from src.components.infra.sap_clients.models import FinancialData
-from src.components.infra.pos_fr_api.component import PositivoFederalRevenueApi
-from src.components.infra.pos_fr_api.models import FederalRevenueData
+from src.modules.sap_handler.sap_handler import SapHandler
+from src.modules.sap_handler.models import FinancialData
+from src.modules.positivo_federal_revenue_api.positivo_federal_revenue_api import PositivoFederalRevenueApi
+from src.modules.positivo_federal_revenue_api.models import FederalRevenueData
 from pandas import DataFrame, set_option
 from sys import exit
 from datetime import datetime
@@ -118,8 +118,8 @@ class Cli:
                             print("❗ Informe uma raiz de CNPJ válida.\n")
                         else:
                             break
-                    task = FinancialDataGetter()
-                    data = task.get_data(cnpj_root=cnpj_root)
+                    task = SapHandler()
+                    data = task.financial_data_getter.get_data(cnpj_root=cnpj_root)
                     self._print_financial_data(data=data)
                     break
                 else:

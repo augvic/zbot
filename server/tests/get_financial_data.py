@@ -1,4 +1,4 @@
-from src.components.infra.sap_clients.clients.financial_data_getter import FinancialDataGetter
+from src.modules.sap_handler.sap_handler import SapHandler
 from datetime import datetime
 from pandas import DataFrame, set_option
 from tabulate import tabulate
@@ -8,8 +8,8 @@ try:
         print("==================================================")
         print(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>")
         cnpj = input("Informe a raiz do CNPJ: ")
-        data_getter = FinancialDataGetter()
-        data = data_getter.get_data(cnpj)
+        data_getter = SapHandler()
+        data = data_getter.financial_data_getter.get_data(cnpj)
         list_to_print = []
         list_to_print.append(f"🟦 Raiz do CNPJ: {data.cnpj_root}.\n")
         if "Sem limite ativo." in [data.limit, data.maturity]:

@@ -1,4 +1,4 @@
-from src.components.infra.supplier_client.client import SupplierHandler
+from src.modules.supplier_handler.supplier_handler import SupplierHandler
 
 supplier = SupplierHandler()
 supplier.login()

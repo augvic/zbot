@@ -2,7 +2,7 @@ from src.tasks.auth.validate_login.task import ValidateLogin
 from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
 from src.tasks.auth.logout.task import Logout
 from src.tasks.application.process_request.task import ProcessRequest
-from src.components.infra.wsgi_application import WsgiApplication
+from src.modules.wsgi_application import WsgiApplication
 from typing import cast
 
 class Login:
