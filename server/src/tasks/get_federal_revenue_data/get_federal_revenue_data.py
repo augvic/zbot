@@ -1,5 +1,5 @@
-from src.modules.infra.pos_fr_api.component import PositivoFederalRevenueApi
-from src.modules.infra.pos_fr_api.models import *
+from src.modules.positivo_federal_revenue_api.positivo_federal_revenue_api import PositivoFederalRevenueApi
+from src.modules.positivo_federal_revenue_api.models import *
 from src.modules.dataclass_serializer import DataclassSerializer
 from src.modules.log_system import LogSystem
 from src.modules.session_manager import SessionManager

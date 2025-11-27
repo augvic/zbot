@@ -1,4 +1,4 @@
-from src.modules.infra.database_clients.clients.registrations_client import RegistrationsClient
+from src.modules.database_handler.database_handler import DatabaseHandler
 from src.modules.session_manager import SessionManager
 from src.modules.log_system import LogSystem
 from src.modules.date_utility import DateUtility
@@ -7,12 +7,12 @@ from .models import Response, RegistrationData
 class UpdateRegistration:
     
     def __init__(self,
-        registrations_client: RegistrationsClient,
+        database_handler: DatabaseHandler,
         session_manager: SessionManager,
         log_system: LogSystem,
         date_utility: DateUtility
     ) -> None:
-        self.registrations_client = registrations_client
+        self.database_handler = database_handler
         self.session_manager = session_manager
         self.log_system = log_system
         self.date_utility = date_utility
@@ -186,7 +186,7 @@ class UpdateRegistration:
             response = self._verify_types(registration_data)
             if response:
                 return response
-            registration_exists = self.registrations_client.read(registration_data.cnpj)
+            registration_exists = self.database_handler.registrations_client.read(registration_data.cnpj)
             if registration_exists == None:
                 self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Cadastro não existe.")
                 return Response(success=False, message="❌ Usuário não existe.")
@@ -215,7 +215,7 @@ class UpdateRegistration:
                 and registration_exists.cpf_person == registration_data.cpf_person:
                     self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ⚠️ Nenhum dado do cadastro ({registration_data.cnpj}) modificado.")
                     return Response(success=True, message="⚠️ Nenhum dado do cadastro modificado.")
-            self.registrations_client.update(
+            self.database_handler.registrations_client.update(
                 cnpj=registration_data.cnpj,
                 opening=registration_data.opening,
                 company_name=registration_data.company_name,

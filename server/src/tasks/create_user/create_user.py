@@ -1,4 +1,4 @@
-from src.modules.infra.database_clients.clients.users_client import UsersClient
+from src.modules.database_handler.database_handler import DatabaseHandler
 from src.modules.session_manager import SessionManager
 from src.modules.log_system import LogSystem
 from .models import Response
@@ -6,11 +6,11 @@ from .models import Response
 class CreateUser:
     
     def __init__(self,
-        users_client: UsersClient,
+        database_handler: DatabaseHandler,
         session_manager: SessionManager,
         log_system: LogSystem
     ) -> None:
-        self.users_client = users_client
+        self.database_handler = database_handler
         self.session_manager = session_manager
         self.log_system = log_system
     
@@ -22,7 +22,7 @@ class CreateUser:
             if not str(user).isdigit():
                 self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}) ao criar usuário: ❌ Usuário deve ser somente números.")
                 return Response(success=False, message="❌ Usuário deve ser somente números.")
-            if self.users_client.read(user):
+            if self.database_handler.users_client.read(user):
                 self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}) ao criar usuário: ❌ Usuário ({user}) já existe.")
                 return Response(success=False, message=f"❌ Usuário ({user}) já existe.")
             if not name:
@@ -37,7 +37,7 @@ class CreateUser:
             if not password:
                 self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}) ao criar usuário: ❌ Preencha a senha.")
                 return Response(success=False, message="❌ Preencha a senha.")
-            self.users_client.create(user, name, email, password)
+            self.database_handler.users_client.create(user, name, email, password)
             self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}) ao criar usuário: ✅ Usuário ({user}) criado.")
             return Response(success=True, message=f"✅ Usuário ({user}) criado.")
         except Exception as error:

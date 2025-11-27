@@ -1,3 +1,4 @@
-from src.cortex.controller import Controller
+from src.compositor.compositor import Compositor
 
-Controller().run_process()
+compositor = Compositor()
+compositor.interactions.cli.main()

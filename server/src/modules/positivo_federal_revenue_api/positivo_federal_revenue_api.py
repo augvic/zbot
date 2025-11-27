@@ -42,7 +42,7 @@ class PositivoFederalRevenueApi:
         except:
             isSimples = "Não"
         if isSimples == "Sim":
-            regime_tributario = {"regime_tributario": "SIMPLES", "ano": "-"}
+            regime_tributario = "SIMPLES"
         else:
             regime_tributario = [
                 {
@@ -53,8 +53,9 @@ class PositivoFederalRevenueApi:
             ]
             if regime_tributario:
                 regime_tributario = max(regime_tributario, key=lambda x: x["ano"])
+                regime_tributario = regime_tributario["regime_tributario"]
             else:
-                regime_tributario = {"regime_tributario": "LUCRO", "ano": "-"}
+                regime_tributario = "LUCRO"
         cnaes_comissao = ["45.12-9", "45.30-7", "45.42-1", "46.11-7", "46.12-5", "46.13-3", "46.14-1", "46.15-0", "46.16-8", "46.17-6", "46.18-4", "46.19-2", "66.19-3"]
         recebimento_comissao = "NÃO OK"
         for cnae in response["estabelecimento"]["atividades_secundarias"]:

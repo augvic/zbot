@@ -1,8 +1,8 @@
-from src.tasks.auth.validate_login.task import ValidateLogin
-from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
-from src.tasks.auth.logout.task import Logout
-from src.tasks.application.process_request.task import ProcessRequest
-from src.modules.wsgi_application import WsgiApplication
+from src.tasks.validate_login.validate_login import ValidateLogin
+from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession
+from src.tasks.logout.logout import Logout
+from src.tasks.process_request.process_request import ProcessRequest
+from src.tasks.register_route import RegisterRoute
 from typing import cast
 
 class Login:
@@ -12,15 +12,15 @@ class Login:
         verify_if_user_is_in_session_task: VerifyIfUserIsInSession,
         logout_task: Logout,
         process_request_task: ProcessRequest,
-        wsgi_application: WsgiApplication
+        register_route_task: RegisterRoute
     ) -> None:
         self.validate_login_task = validate_login_task
         self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
         self.logout_task = logout_task
         self.process_request_task = process_request_task
-        wsgi_application.route("/login", methods=["POST"])(self.validate_login)
-        wsgi_application.route("/login", methods=["GET"])(self.verify_if_user_is_in_session)
-        wsgi_application.route("/login", methods=["DELETE"])(self.logout)
+        register_route_task.main("/login", ["POST"], self.validate_login)
+        register_route_task.main("/login", ["GET"], self.verify_if_user_is_in_session)
+        register_route_task.main("/login", ["DELETE"], self.logout)
     
     def validate_login(self) -> tuple[dict[str, str | bool], int]:
         try:

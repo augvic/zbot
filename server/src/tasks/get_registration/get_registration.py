@@ -1,4 +1,4 @@
-from src.modules.infra.database_clients.clients.registrations_client import RegistrationsClient
+from src.modules.database_handler.database_handler import DatabaseHandler
 from src.modules.sqla_serializer import SqlaSerializer
 from src.modules.session_manager import SessionManager
 from src.modules.log_system import LogSystem
@@ -7,12 +7,12 @@ from .models import Response
 class GetRegistration:
     
     def __init__(self,
-        registrations_client: RegistrationsClient,
+        database_handler: DatabaseHandler,
         session_manager: SessionManager,
         serializer: SqlaSerializer,
         log_system: LogSystem
     ) -> None:
-        self.registrations_client = registrations_client
+        self.database_handler = database_handler
         self.session_manager = session_manager
         self.serializer = serializer
         self.log_system = log_system
@@ -20,9 +20,9 @@ class GetRegistration:
     def main(self, cnpj: str) -> Response:
         try:
             if cnpj == "all":
-                registrations = self.registrations_client.read_all()    
+                registrations = self.database_handler.registrations_client.read_all()    
             else:
-                registrations = self.registrations_client.read(cnpj)
+                registrations = self.database_handler.registrations_client.read(cnpj)
             if isinstance(registrations, list):
                 registrations_serialized = self.serializer.serialize_list(registrations)
             elif not registrations:

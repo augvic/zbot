@@ -1,12 +1,13 @@
-from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
-from src.tasks.registrations.create_registration.task import CreateRegistration
-from src.tasks.registrations.create_registration.models import NewRegistration
-from src.tasks.registrations.delete_registration.task import DeleteRegistration
-from src.tasks.registrations.get_registration.task import GetRegistration
-from src.tasks.registrations.update_registration.task import UpdateRegistration
-from src.tasks.registrations.update_registration.models import RegistrationData
-from src.tasks.application.process_request.task import ProcessRequest
-from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
+from src.tasks.verify_if_have_access.verify_if_have_access import VerifyIfHaveAccess
+from src.tasks.create_registration.create_registration import CreateRegistration
+from src.tasks.create_registration.models import NewRegistration
+from src.tasks.delete_registration.delete_registration import DeleteRegistration
+from src.tasks.get_registration.get_registration import GetRegistration
+from src.tasks.update_registration.update_registration import UpdateRegistration
+from src.tasks.update_registration.models import RegistrationData
+from src.tasks.process_request.process_request import ProcessRequest
+from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession
+from src.tasks.register_route import RegisterRoute
 from typing import cast
 from werkzeug.datastructures import FileStorage
 
@@ -19,7 +20,8 @@ class Registrations:
         get_registration_task: GetRegistration,
         update_registration_task: UpdateRegistration,
         process_request_task: ProcessRequest,
-        verify_if_user_is_in_session_task: VerifyIfUserIsInSession
+        verify_if_user_is_in_session_task: VerifyIfUserIsInSession,
+        register_route_task: RegisterRoute
     ) -> None:
         self.verify_if_have_access_task = verify_if_have_access_task
         self.create_registration_task = create_registration_task
@@ -28,6 +30,10 @@ class Registrations:
         self.get_registration_task = get_registration_task
         self.delete_registration_task = delete_registration_task
         self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
+        register_route_task.main("/registrations", ["POST"], self.include_registration)
+        register_route_task.main("/registrations/<cnpj>", ["GET"], self.get_registration)
+        register_route_task.main("/registrations/<cnpj>", ["DELETE"], self.delete_registration)
+        register_route_task.main("/registrations", ["PUT"], self.update_registration)
     
     def include_registration(self) -> tuple[dict[str, bool | str], int]:
         try:

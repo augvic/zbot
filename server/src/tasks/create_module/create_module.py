@@ -25,7 +25,7 @@ class CreateModule:
             if description == "":
                 self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}) ao criar módulo: ❌ Preencha a descrição.")
                 return Response(success=False, message="❌ Preencha a descrição.")
-            self.modules_client.create(module, description)
+            self.database_handler.modules_client.create(module, description)
             self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}) ao criar módulo: ✅ Módulo ({module}) adicionado.")
             return Response(success=True, message=f"✅ Módulo ({module}) adicionado.")
         except Exception as error:

@@ -1,14 +1,17 @@
-from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
-from src.tasks.auth.get_session_modules.task import GetSessionModules
+from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession
+from src.tasks.get_session_modules.get_session_modules import GetSessionModules
+from src.tasks.register_route import RegisterRoute
 
 class SessionModules:
     
     def __init__(self,
         verify_if_user_is_in_session_task: VerifyIfUserIsInSession,
-        get_session_modules_task: GetSessionModules
+        get_session_modules_task: GetSessionModules,
+        register_route_task: RegisterRoute
     ) -> None:
         self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
         self.get_session_modules_task = get_session_modules_task
+        register_route_task.main("/session-modules", ["GET"], self.get_session_modules)
     
     def get_session_modules(self) -> tuple[dict[str, str | bool | list[str]], int]:
         try:

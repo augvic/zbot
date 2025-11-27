@@ -55,8 +55,14 @@ class GoDeepBrowser:
                     sleep(3)
     
     def init(self, headless: bool) -> None:
-        self._instance_chrome(headless=headless)
-        self._login()
+        try:
+            self._instance_chrome(headless=headless)
+            self._login()
+        except Exception as error:
+            raise Exception(f"Error in (GoDeepBrowser) component in (init) method: {error}.")
     
     def quit(self) -> None:
-        self.driver.quit()
+        try:
+            self.driver.quit()
+        except Exception as error:
+            raise Exception(f"Error in (GoDeepBrowser) component in (quit) method: {error}.")

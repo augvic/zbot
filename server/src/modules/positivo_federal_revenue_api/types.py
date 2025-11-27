@@ -65,7 +65,7 @@ class CleanedResponse(TypedDict):
     situacao_cadastral: str
     natureza_juridica: str
     natureza_juridica_id: str
-    regime_tributario: dict[str, str]
+    regime_tributario: str
     cnaes: list[dict[str, str]]
     recebimento_comissao: str
     logradouro: str

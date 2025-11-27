@@ -1,4 +1,4 @@
-from src.modules.infra.database_clients.clients.users_client import UsersClient
+from src.modules.database_handler.database_handler import DatabaseHandler
 from src.modules.session_manager import SessionManager
 from src.modules.log_system import LogSystem
 from .models import Response
@@ -6,11 +6,11 @@ from .models import Response
 class UpdateUser:
     
     def __init__(self,
-        users_client: UsersClient,
+        database_handler: DatabaseHandler,
         session_manager: SessionManager,
         log_system: LogSystem
     ) -> None:
-        self.users_client = users_client
+        self.database_handler = database_handler
         self.session_manager = session_manager
         self.log_system = log_system
     
@@ -21,7 +21,7 @@ class UpdateUser:
         password: str
     ) -> Response:
         try:
-            user_exists = self.users_client.read(user)
+            user_exists = self.database_handler.users_client.read(user)
             if user_exists == None:
                 self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Usuário ({user}) não existe.")
                 return Response(success=False, message="❌ Usuário não existe.")
@@ -46,7 +46,7 @@ class UpdateUser:
             if user_exists.name == name and user_exists.email == email and user_exists.password == password:
                 self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ⚠️ Nenhum dado do usuário modificado.")
                 return Response(success=True, message="⚠️ Nenhum dado do usuário modificado.")
-            self.users_client.update(user, name, email, password)
+            self.database_handler.users_client.update(user, name, email, password)
             self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ✅ Usuário ({user}) atualizado.")
             return Response(success=True, message="✅ Usuário atualizado.")
         except Exception as error:

@@ -1,5 +1,5 @@
-from src.modules.infra.sap_clients.clients.order_creator import OrderCreator
-from src.modules.infra.sap_clients.models import *
+from src.modules.sap_handler.sap_handler import SapHandler
+from src.modules.sap_handler.models import *
 from src.modules.session_manager import SessionManager
 from src.modules.log_system import LogSystem
 from .models import *
@@ -7,17 +7,17 @@ from .models import *
 class CreateOrder:
     
     def __init__(self,
-        order_creator: OrderCreator,
+        sap_handler: SapHandler,
         log_system: LogSystem,
         session_manager: SessionManager
     ) -> None:
-        self.order_creator = order_creator
+        self.sap_handler = sap_handler
         self.log_system = log_system
         self.session_manager = session_manager
     
     def main(self, order_model: OrderModel) -> Response:
         try:
-            doc_number = self.order_creator.create(
+            doc_number = self.sap_handler.order_creator.create(
                 Order(
                     doc_type=order_model.doc_type,
                     organization=order_model.organization,
@@ -43,5 +43,5 @@ class CreateOrder:
             return Response(success=True, message=f"✅ Sucesso ao criar documento no SAP ({doc_number}).")
         except Exception as error:
             self.log_system.write_error(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Erro: {error}.")
-            self.order_creator.go_home()
+            self.sap_handler.sap_gui.go_home()
             raise Exception("❌ Erro interno ao criar documento no SAP. Contate o administrador.")

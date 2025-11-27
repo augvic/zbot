@@ -1,17 +1,22 @@
-from src.tasks.rpa.run_registrations_rpa.task import RunRegistrationsRpa
-from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
-from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
+from src.tasks.run_registrations_rpa.run_registrations_rpa import RunRegistrationsRpa
+from src.tasks.verify_if_have_access.verify_if_have_access import VerifyIfHaveAccess
+from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession
+from src.tasks.register_route import RegisterRoute
 
 class RegistrationsRpa:
     
     def __init__(self,
         verify_if_have_acess_task: VerifyIfHaveAccess,
         run_registrations_rpa_task: RunRegistrationsRpa,
-        verify_if_user_is_in_session_task: VerifyIfUserIsInSession
+        verify_if_user_is_in_session_task: VerifyIfUserIsInSession,
+        register_route_task: RegisterRoute
     ) -> None:
         self.verify_if_have_acess_task = verify_if_have_acess_task
         self.run_registrations_rpa_task = run_registrations_rpa_task
         self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
+        register_route_task.main("/registrations-rpa", ["GET"], self.refresh)
+        register_route_task.main("/registrations-rpa", ["POST"], self.turn_on)
+        register_route_task.main("/registrations-rpa", ["DELETE"], self.turn_off)
     
     def refresh(self) -> tuple[dict[str, bool | str], int]:
         try:

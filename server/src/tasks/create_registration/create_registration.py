@@ -1,8 +1,5 @@
-from src.modules.infra.pos_fr_api.component import PositivoFederalRevenueApi
-from src.modules.infra.database_clients.clients.registrations_client import RegistrationsClient
-from src.modules.infra.database_clients.clients.nceas_client import NceasClient
-from src.modules.infra.database_clients.clients.state_registrations_client import StateRegistrationsClient
-from src.modules.infra.database_clients.clients.suframa_registrations_client import SuframaRegistrationsClient
+from src.modules.positivo_federal_revenue_api.positivo_federal_revenue_api import PositivoFederalRevenueApi
+from src.modules.database_handler.database_handler import DatabaseHandler
 from src.modules.log_system import LogSystem
 from src.modules.date_utility import DateUtility
 from src.modules.registrations_docs_handler import RegistrationsDocsHandler
@@ -13,20 +10,14 @@ class CreateRegistration:
     
     def __init__(self,
         federal_revenue_api: PositivoFederalRevenueApi,
-        registrations_client: RegistrationsClient,
-        state_registrations_client: StateRegistrationsClient,
-        suframa_registrations_client: SuframaRegistrationsClient,
-        nceas_client: NceasClient,
+        database_handler: DatabaseHandler,
         log_system: LogSystem,
         date_utility: DateUtility,
         docs_handler: RegistrationsDocsHandler,
         session_manager: SessionManager
     ) -> None:
         self.federal_revenue_api = federal_revenue_api
-        self.registrations_client = registrations_client
-        self.state_registrations_client = state_registrations_client
-        self.suframa_registrations_client = suframa_registrations_client
-        self.nceas_client = nceas_client
+        self.database_handler = database_handler
         self.log_system = log_system
         self.date_utility = date_utility
         self.docs_handler = docs_handler
@@ -122,12 +113,12 @@ class CreateRegistration:
             if response:
                 return response
             new_registration = self._sanitize(new_registration)
-            registration_exists = self.registrations_client.read(new_registration.cnpj)
+            registration_exists = self.database_handler.registrations_client.read(new_registration.cnpj)
             if registration_exists:
                 self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ❌ Tentativa de inclusão de cadastro já existente ({new_registration.cnpj}).")
                 return Response(success=False, message="❌ Tentativa de inclusão de cadastro já existente ({new_registration.cnpj}).")
             federal_revenue_data = self.federal_revenue_api.get_data(new_registration.cnpj)
-            self.registrations_client.create(
+            self.database_handler.registrations_client.create(
                 cnpj=new_registration.cnpj,
                 opening=federal_revenue_data.opening,
                 company_name=federal_revenue_data.company_name,
@@ -158,19 +149,19 @@ class CreateRegistration:
                 cpf_person=new_registration.cpf_person
             )
             for ncea in federal_revenue_data.ncea:
-                self.nceas_client.create(
+                self.database_handler.nceas_client.create(
                     cnpj=new_registration.cnpj,
                     ncea=ncea["code"],
                     description=ncea["description"]
                 )
             for state_registration in federal_revenue_data.state_registrations:
-                self.state_registrations_client.create(
+                self.database_handler.state_registrations_client.create(
                     cnpj=new_registration.cnpj,
                     state_registration=state_registration["state_registration"],
                     status=state_registration["status"]
                 )
             for suframa_registration in federal_revenue_data.suframa_registrations:
-                self.suframa_registrations_client.create(
+                self.database_handler.suframa_registrations_client.create(
                     cnpj=new_registration.cnpj,
                     suframa_registration=suframa_registration["suframa_registration"],
                     status=suframa_registration["status"]

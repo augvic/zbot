@@ -1,6 +1,4 @@
-from src.modules.infra.database_clients.clients.users_client import UsersClient
-from src.modules.infra.database_clients.clients.permissions_client import PermissionsClient
-from src.modules.infra.database_clients.clients.modules_client import ModulesClient
+from src.modules.database_handler.database_handler import DatabaseHandler
 from src.modules.session_manager import SessionManager
 from src.modules.log_system import LogSystem
 from .models import Response
@@ -8,32 +6,28 @@ from .models import Response
 class ValidateLogin:
     
     def __init__(self,
-        users_client: UsersClient,
-        permissions_client: PermissionsClient,
-        modules_client: ModulesClient,
+        database_handler: DatabaseHandler,
         session_manager: SessionManager,
         log_system: LogSystem
     ) -> None:
-        self.users_client = users_client
-        self.permissions_client = permissions_client
-        self.modules_client = modules_client
+        self.database_handler = database_handler
         self.session_manager = session_manager
         self.log_system = log_system
     
     def main(self, user: str, password: str) -> Response:
         try:
-            user_orm = self.users_client.read(user)
+            user_orm = self.database_handler.users_client.read(user)
             if user_orm == None:
                 self.log_system.write_text(f"👤 Usuário ({user}): ❌ Usuário não encontrado.")
                 return Response(success=False, message="❌ Usuário não encontrado.")
             if user_orm.password != password:
                 self.log_system.write_text(f"👤 Usuário ({user}): ❌ Senha incorreta.")
                 return Response(success=False, message="❌ Login inválido.")
-            modules = self.modules_client.read_all()
+            modules = self.database_handler.modules_client.read_all()
             modules_descriptions = {}
             for module in modules:
                 modules_descriptions[module.module] = module.description
-            user_permissions = self.permissions_client.read_all_from_user(user)
+            user_permissions = self.database_handler.permissions_client.read_all_from_user(user)
             permissions_list: list[dict[str, str]] = []
             for user_permission in user_permissions:
                 permissions_list.append({"module": user_permission.module, "description": modules_descriptions[user_permission.module]})

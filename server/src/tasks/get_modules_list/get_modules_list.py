@@ -1,4 +1,4 @@
-from src.modules.infra.database_clients.clients.modules_client import ModulesClient
+from src.modules.database_handler.database_handler import DatabaseHandler
 from src.modules.sqla_serializer import SqlaSerializer
 from src.modules.session_manager import SessionManager
 from src.modules.log_system import LogSystem
@@ -7,19 +7,19 @@ from .models import Response
 class GetModulesList:
     
     def __init__(self,
-        modules_client: ModulesClient,
+        database_handler: DatabaseHandler,
         session_manager: SessionManager,
         serializer: SqlaSerializer,
         log_system: LogSystem
     ) -> None:
-        self.modules_client = modules_client
+        self.database_handler = database_handler
         self.session_manager = session_manager
         self.serializer = serializer
         self.log_system = log_system
     
     def main(self) -> Response:
         try:
-            modules = self.serializer.serialize_list(self.modules_client.read_all())
+            modules = self.serializer.serialize_list(self.database_handler.modules_client.read_all())
             self.log_system.write_text(f"👤 Usuário ({self.session_manager.get_from_session("user")}): ✅ Módulos coletados.")
             return Response(success=True, message="✅ Módulos coletados.", data=modules)
         except Exception as error:

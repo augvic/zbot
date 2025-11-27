@@ -1,9 +1,10 @@
-from src.tasks.get_data.get_modules_list.task import GetModulesList
-from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
-from src.tasks.admin.module.create_module.task import CreateModule
-from src.tasks.admin.module.delete_module.task import DeleteModule
-from src.tasks.application.process_request.task import ProcessRequest
-from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
+from src.tasks.get_modules_list.get_modules_list import GetModulesList
+from src.tasks.verify_if_have_access.verify_if_have_access import VerifyIfHaveAccess
+from src.tasks.create_module.create_module import CreateModule
+from src.tasks.delete_module.delete_module import DeleteModule
+from src.tasks.process_request.process_request import ProcessRequest
+from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession
+from src.tasks.register_route import RegisterRoute
 from typing import cast
 
 class ModulesList:
@@ -14,7 +15,8 @@ class ModulesList:
         create_module_task: CreateModule,
         delete_module_task: DeleteModule,
         process_request_task: ProcessRequest,
-        verify_if_user_is_in_session_task: VerifyIfUserIsInSession
+        verify_if_user_is_in_session_task: VerifyIfUserIsInSession,
+        register_route_task: RegisterRoute
     ) -> None:
         self.verify_if_have_access_task = verify_if_have_access_task
         self.get_modules_list_task = get_modules_list_task
@@ -22,6 +24,9 @@ class ModulesList:
         self.delete_module_task = delete_module_task
         self.process_request_task = process_request_task
         self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
+        register_route_task.main("/modules-list", ["GET"], self.get_modules_list)
+        register_route_task.main("/modules-list", ["POST"], self.create_module)
+        register_route_task.main("/modules-list/<module>", ["DELETE"], self.delete_module)
     
     def get_modules_list(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:

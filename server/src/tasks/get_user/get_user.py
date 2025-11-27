@@ -1,4 +1,4 @@
-from src.modules.infra.database_clients.clients.users_client import UsersClient
+from src.modules.database_handler.database_handler import DatabaseHandler
 from src.modules.sqla_serializer import SqlaSerializer
 from src.modules.session_manager import SessionManager
 from src.modules.log_system import LogSystem
@@ -7,12 +7,12 @@ from .models import Response
 class GetUser:
     
     def __init__(self,
-        users_client: UsersClient,
+        database_handler: DatabaseHandler,
         session_manager: SessionManager,
         serializer: SqlaSerializer,
         log_system: LogSystem
     ) -> None:
-        self.users_client = users_client
+        self.database_handler = database_handler
         self.session_manager = session_manager
         self.serializer = serializer
         self.log_system = log_system
@@ -20,9 +20,9 @@ class GetUser:
     def main(self, user: str) -> Response:
         try:
             if user == "all":
-                users = self.users_client.read_all()    
+                users = self.database_handler.users_client.read_all()    
             else:
-                users = self.users_client.read(user)
+                users = self.database_handler.users_client.read(user)
             if isinstance(users, list):
                 users_serialized = self.serializer.serialize_list(users)
             elif not users:

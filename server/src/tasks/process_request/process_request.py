@@ -1,4 +1,4 @@
-from src.modules.logic.request_processor.component import RequestProcessor
+from src.modules.request_processor.request_processor import RequestProcessor
 from src.modules.log_system import LogSystem
 from src.modules.session_manager import SessionManager
 from src.modules.request_manager import RequestManager

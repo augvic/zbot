@@ -1,6 +1,6 @@
 from src.modules.log_system import LogSystem
 from src.modules.date_utility import DateUtility
-from src.modules.socketio_application import SocketIoApplication
+from src.modules.wsgi_application import WsgiApplication
 from src.modules.application_thread import ApplicationThread
 from src.modules.time_utility import TimeUtility
 from src.modules.session_manager import SessionManager
@@ -14,14 +14,14 @@ class RunRegistrationsRpa:
         session_manager: SessionManager,
         thread: ApplicationThread,
         date_utility: DateUtility,
-        socketio: SocketIoApplication
+        wsgi_application: WsgiApplication
     ) -> None:
         self.time_utility = time_utility
         self.log_system = log_system
         self.session_manager = session_manager
         self.thread = thread
         self.date_utility = date_utility
-        self.socketio = socketio
+        self.socketio = wsgi_application.socketio
         self.is_running = False
         self.stop = False
         self.memory: list[str] = []

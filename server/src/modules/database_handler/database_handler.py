@@ -33,7 +33,7 @@ class DatabaseHandler:
         self.comissions_queue_client = ComissionsQueueClient(self.session_construct)
         self.items_queue_client = ItemsQueueClient(self.session_construct)
         self.modules_client = ModulesClient(self.session_construct)
-        self.nceas_clients = NceasClient(self.session_construct)
+        self.nceas_client = NceasClient(self.session_construct)
         self.orders_queue_client = OrdersQueueClient(self.session_construct)
         self.partners_queue_client = PartnersQueueClient(self.session_construct)
         self.permissions_client = PermissionsClient(self.session_construct)

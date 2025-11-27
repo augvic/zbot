@@ -278,23 +278,26 @@ class OrderInteractor:
             raise OrderNotExistsError(order=order)
     
     def change_order(self, headless: bool, order: str, status: str = "", observation: str = "") -> None:
-        self.go_deep_browser.init(headless)
-        self._access_order(order=order)
-        if status:
-            for i in range(1, 4):
-                try: 
-                    status_element = self.go_deep_browser.driver.find_element(by=By.NAME, value=f"distribution_centers[{i}][status]")
-                    status_element = Select(status_element)
-                    status_element.select_by_visible_text(text=status)
-                except:
-                    continue
-        if observation:
-            observation_element = self.go_deep_browser.driver.find_element(by=By.ID, value="comment")
-            observation_element.clear()
-            observation_element.send_keys(observation)
-        save_button = self.go_deep_browser.driver.find_element(by=By.ID, value="save")
-        save_button.click()
-        self.go_deep_browser.quit()
+        try:
+            self.go_deep_browser.init(headless)
+            self._access_order(order=order)
+            if status:
+                for i in range(1, 4):
+                    try: 
+                        status_element = self.go_deep_browser.driver.find_element(by=By.NAME, value=f"distribution_centers[{i}][status]")
+                        status_element = Select(status_element)
+                        status_element.select_by_visible_text(text=status)
+                    except:
+                        continue
+            if observation:
+                observation_element = self.go_deep_browser.driver.find_element(by=By.ID, value="comment")
+                observation_element.clear()
+                observation_element.send_keys(observation)
+            save_button = self.go_deep_browser.driver.find_element(by=By.ID, value="save")
+            save_button.click()
+            self.go_deep_browser.quit()
+        except Exception as error:
+            raise Exception(f"Error in (OrderInteractor) component in (change_order) method: {error}.")
     
     def get_order_data_for_credit_analysis(self, headless: bool, order: str) -> Order:
         try:

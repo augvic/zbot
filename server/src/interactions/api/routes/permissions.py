@@ -1,8 +1,9 @@
-from src.tasks.auth.get_permissions.task import GetPermissions
-from src.tasks.admin.permission.create_permission.task import CreatePermission
-from src.tasks.admin.permission.delete_permission.task import DeletePermission
-from src.tasks.auth.verify_if_have_access.task import VerifyIfHaveAccess
-from src.tasks.auth.verify_if_user_is_in_session.task import VerifyIfUserIsInSession
+from src.tasks.get_permissions.get_permissions import GetPermissions
+from src.tasks.create_permission.create_permission import CreatePermission
+from src.tasks.delete_permission.delete_permission import DeletePermission
+from src.tasks.verify_if_have_access.verify_if_have_access import VerifyIfHaveAccess
+from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession
+from src.tasks.register_route import RegisterRoute
 
 class Permissions:
     
@@ -11,13 +12,17 @@ class Permissions:
         get_permissions_task: GetPermissions,
         create_permission_task: CreatePermission,
         delete_permission_task: DeletePermission,
-        verify_if_user_is_in_session_task: VerifyIfUserIsInSession
+        verify_if_user_is_in_session_task: VerifyIfUserIsInSession,
+        register_route_task: RegisterRoute
     ) -> None:
         self.verify_if_have_access_task = verify_if_have_access_task
         self.get_permissions_task = get_permissions_task
         self.create_permission_task = create_permission_task
         self.delete_permission_task = delete_permission_task
         self.verify_if_user_is_in_session_task = verify_if_user_is_in_session_task
+        register_route_task.main("/permissions/<user>", ["GET"], self.get_user_permissions)
+        register_route_task.main("/permissions/<user>/<permission>", ["POST"], self.create_user_permission)
+        register_route_task.main("/permissions/<user>/<permission>", ["DELETE"], self.delete_user_permission)
     
     def get_user_permissions(self, user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
