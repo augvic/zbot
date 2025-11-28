@@ -1,4 +1,5 @@
 from ..models.database_models import PartnerQueue
+
 from sqlalchemy.orm import sessionmaker
 
 class PartnersQueueClient:

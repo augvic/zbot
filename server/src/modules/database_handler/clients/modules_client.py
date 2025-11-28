@@ -1,4 +1,5 @@
 from ..models.database_models import Module
+
 from sqlalchemy.orm import sessionmaker
 
 class ModulesClient:

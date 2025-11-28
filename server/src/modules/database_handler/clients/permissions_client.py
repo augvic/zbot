@@ -1,4 +1,5 @@
 from ..models.database_models import Permission
+
 from sqlalchemy.orm import sessionmaker
 
 class PermissionsClient:

@@ -1,4 +1,5 @@
 from ..models.database_models import Ncea
+
 from sqlalchemy.orm import sessionmaker
 
 class NceasClient:

@@ -1,5 +1,6 @@
 from datetime import datetime
 from babel.numbers import format_currency
+
 from .models import CreditAnalysisResponse
 
 class CreditAnalyzer:

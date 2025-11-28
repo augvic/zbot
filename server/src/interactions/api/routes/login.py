@@ -3,6 +3,7 @@ from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import 
 from src.tasks.logout.logout import Logout
 from src.tasks.process_request.process_request import ProcessRequest
 from src.tasks.register_route import RegisterRoute
+
 from typing import cast
 
 class Login:

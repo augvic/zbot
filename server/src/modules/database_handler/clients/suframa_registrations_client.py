@@ -1,4 +1,5 @@
 from ..models.database_models import SuframaRegistration
+
 from sqlalchemy.orm import sessionmaker
 
 class SuframaRegistrationsClient:

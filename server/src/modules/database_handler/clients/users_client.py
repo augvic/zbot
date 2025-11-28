@@ -1,4 +1,5 @@
 from ..models.database_models import User
+
 from sqlalchemy.orm import sessionmaker
 
 class UsersClient:

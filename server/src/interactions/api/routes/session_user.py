@@ -1,6 +1,7 @@
 from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession
 from src.tasks.get_session_user.get_session_user import GetSessionUser
 from src.tasks.register_route import RegisterRoute
+
 from typing import Any
 
 class SessionUser:

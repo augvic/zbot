@@ -1,4 +1,5 @@
 from ..models.database_models import ComissionQueue
+
 from sqlalchemy.orm import sessionmaker
 
 class ComissionsQueueClient:

@@ -1,4 +1,5 @@
 from ..models.database_models import Registration
+
 from sqlalchemy.orm import sessionmaker
 
 class RegistrationsClient:

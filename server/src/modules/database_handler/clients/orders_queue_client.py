@@ -1,4 +1,5 @@
 from ..models.database_models import OrderQueue
+
 from sqlalchemy.orm import sessionmaker
 
 class OrdersQueueClient:

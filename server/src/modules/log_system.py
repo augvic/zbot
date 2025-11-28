@@ -9,7 +9,7 @@ class LogSystem:
             if getattr(sys, "frozen", False):
                 self.base_path = path.dirname(sys.executable)
             else:
-                self.base_path = path.join(path.dirname(__file__), "..", "..", "..")
+                self.base_path = path.join(path.dirname(__file__), "..", "..")
             self.log_dir = path.abspath(path.join(self.base_path, "storage", ".logs", folder))
             makedirs(self.log_dir, exist_ok=True)
         except Exception as error:

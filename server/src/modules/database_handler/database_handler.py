@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import path, makedirs
 import sys
+
 from .models.database_models import Base
 from .clients.comissions_queue_client import ComissionsQueueClient
 from .clients.items_queue_client import ItemsQueueClient
@@ -23,7 +24,7 @@ class DatabaseHandler:
         if getattr(sys, "frozen", False):
             base_path = path.dirname(sys.executable) 
         else:
-            base_path = path.join(path.dirname(__file__), "..", "..", "..", "..", "..")
+            base_path = path.join(path.dirname(__file__), "..", "..", "..")
         BASE_DIR = path.abspath(path.join(base_path, "storage", ".databases"))
         makedirs(BASE_DIR, exist_ok=True)
         url = f"sqlite:///{BASE_DIR}/{db}.db"

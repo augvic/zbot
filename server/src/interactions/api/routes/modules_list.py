@@ -5,6 +5,7 @@ from src.tasks.delete_module.delete_module import DeleteModule
 from src.tasks.process_request.process_request import ProcessRequest
 from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession
 from src.tasks.register_route import RegisterRoute
+
 from typing import cast
 
 class ModulesList:

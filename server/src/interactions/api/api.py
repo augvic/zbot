@@ -26,6 +26,7 @@ from src.tasks.get_registration.get_registration import GetRegistration
 from src.tasks.run_registrations_rpa.run_registrations_rpa import RunRegistrationsRpa
 from src.tasks.register_route import RegisterRoute
 from src.tasks.run_wsgi_application import RunWsgiApplication
+
 from .routes.login import Login
 from .routes.main import Main
 from .routes.modules_list import ModulesList
