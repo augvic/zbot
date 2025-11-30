@@ -3,24 +3,21 @@ from ..models.dummy_models import UserDummy
 class UsersClientDummy:
     
     def __init__(self):
-        try:
-            self.users = {
-                "72776": UserDummy(user="72776", name="Augusto", email="", password="AHVH#72776"),
-            }
-        except Exception as error:
-            raise Exception(f"Error in (UsersClientDummy) component in (__init__) method: {error}.")
+        self.users = {
+            "72776": UserDummy(user="72776", name="Augusto", email="", password="AHVH#72776"),
+        }
     
     def create(self, user: str, name: str, email: str, password: str) -> None:
         try:
             self.users[user] = UserDummy(user=user, name=name, email=email, password=password)
         except Exception as error:
-            raise Exception(f"Error in (UsersClientDummy) component in (create) method: {error}.")
+            raise Exception(f"Error in (UsersClientDummy) module in (create) method: {error}")
     
     def read(self, user: str) -> UserDummy | None:
         try:
             return self.users.get(user)
         except Exception as error:
-            raise Exception(f"Error in (UsersClientDummy) component in (read) method: {error}.")
+            raise Exception(f"Error in (UsersClientDummy) module in (read) method: {error}")
     
     def read_all(self) -> list[UserDummy]:
         try:
@@ -29,7 +26,7 @@ class UsersClientDummy:
                 users_list.append(user)
             return users_list
         except Exception as error:
-            raise Exception(f"Error in (UsersClientDummy) component in (read_all) method: {error}.")
+            raise Exception(f"Error in (UsersClientDummy) module in (read_all) method: {error}")
     
     def update(self, user: str, name: str = "", email: str = "", password: str = "") -> None:
         try:
@@ -39,11 +36,11 @@ class UsersClientDummy:
                 user_dummy.email = email
                 user_dummy.password = password
         except Exception as error:
-            raise Exception(f"Error in (UsersClientDummy) component in (update) method: {error}.")
+            raise Exception(f"Error in (UsersClientDummy) module in (update) method: {error}")
     
     def delete(self, user: str) -> None:
         try:
             if user in self.users:
                 del self.users[user]
         except Exception as error:
-            raise Exception(f"Error in (UsersClientDummy) component in (delete) method: {error}.")
+            raise Exception(f"Error in (UsersClientDummy) module in (delete) method: {error}")

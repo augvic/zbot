@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from datetime import date
 from pandas import DataFrame
 
@@ -40,7 +41,7 @@ class Item:
     is_parent_item: bool
 
 @dataclass
-class Order:
+class OrderData:
     
     doc_type: str
     organization: str

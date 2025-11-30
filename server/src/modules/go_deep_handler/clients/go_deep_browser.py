@@ -59,10 +59,10 @@ class GoDeepBrowser:
             self._instance_chrome(headless=headless)
             self._login()
         except Exception as error:
-            raise Exception(f"Error in (GoDeepBrowser) component in (init) method: {error}.")
+            raise Exception(f"Error in (GoDeepBrowser) module in (init) method: {error}")
     
     def quit(self) -> None:
         try:
             self.driver.quit()
         except Exception as error:
-            raise Exception(f"Error in (GoDeepBrowser) component in (quit) method: {error}.")
+            raise Exception(f"Error in (GoDeepBrowser) module in (quit) method: {error}")

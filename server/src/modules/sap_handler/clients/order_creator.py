@@ -1,5 +1,6 @@
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
+
 from .sap_gui import SapGui
 from ..errors import *
 from ..models import *
@@ -9,7 +10,7 @@ class OrderCreator:
     def __init__(self, sap_gui: SapGui) -> None:
         self.sap_gui = sap_gui
     
-    def _open_transaction(self, order: Order, is_create_transaction: bool) -> None:
+    def _open_transaction(self, order: OrderData, is_create_transaction: bool) -> None:
         if order.doc_type == "ZCOT":
             if is_create_transaction:
                 self.sap_gui.open_transaction("VA21")
@@ -21,7 +22,7 @@ class OrderCreator:
             else:
                 self.sap_gui.open_transaction("VA02")
     
-    def _fill_out_the_creation_form(self, order: Order) -> None:
+    def _fill_out_the_creation_form(self, order: OrderData) -> None:
         self.sap_gui.set_text(r"wnd[0]/usr/ctxtVBAK-AUART", order.doc_type)
         self.sap_gui.set_text(r"wnd[0]/usr/ctxtVBAK-VKORG", order.organization) 
         self.sap_gui.set_text(r"wnd[0]/usr/ctxtVBAK-VTWEG", order.channel)
@@ -30,16 +31,16 @@ class OrderCreator:
         self.sap_gui.set_text(r"wnd[0]/usr/ctxtVBAK-VKGRP", order.team)
         self.sap_gui.press_enter("0")
     
-    def _fill_out_sales_name(self, order: Order) -> None:
+    def _fill_out_sales_name(self, order: OrderData) -> None:
         self.sap_gui.set_text(r"wnd[0]/usr/subSUBSCREEN_HEADER:SAPMV45A:4021/txtVBKD-BSTKD", order.order_name)
     
     def _fill_out_sales_date(self) -> None:
         self.sap_gui.set_text(r"wnd[0]/usr/subSUBSCREEN_HEADER:SAPMV45A:4021/ctxtVBKD-BSTDK", datetime.now().strftime("%d.%m.%Y")) 
     
-    def _fill_out_issuer(self, order: Order) -> None:
+    def _fill_out_issuer(self, order: OrderData) -> None:
         self.sap_gui.set_text(r"wnd[0]/usr/subSUBSCREEN_HEADER:SAPMV45A:4021/subPART-SUB:SAPMV45A:4701/ctxtKUAGV-KUNNR", order.issuer)
     
-    def _fill_out_receiver(self, order: Order) -> None:
+    def _fill_out_receiver(self, order: OrderData) -> None:
         self.sap_gui.set_text(r"wnd[0]/usr/subSUBSCREEN_HEADER:SAPMV45A:4021/subPART-SUB:SAPMV45A:4701/ctxtKUWEV-KUNNR", order.receiver)
     
     def _fill_out_validity(self) -> None:
@@ -47,13 +48,13 @@ class OrderCreator:
         validity = validity.strftime("%d.%m.%Y")
         self.sap_gui.set_text(r"wnd[0]/usr/tabsTAXI_TABSTRIP_OVERVIEW/tabpT\01/ssubSUBSCREEN_BODY:SAPMV45A:4400/ssubHEADER_FRAME:SAPMV45A:4440/ctxtVBAK-BNDDT", validity)
     
-    def _fill_out_payment_condition(self, order: Order) -> None:
+    def _fill_out_payment_condition(self, order: OrderData) -> None:
         self.sap_gui.set_text(r"wnd[0]/usr/tabsTAXI_TABSTRIP_OVERVIEW/tabpT\01/ssubSUBSCREEN_BODY:SAPMV45A:4400/ssubHEADER_FRAME:SAPMV45A:4440/ctxtVBKD-ZTERM", order.payment_condition)
     
-    def _fill_out_incoterm(self, order: Order) -> None:
+    def _fill_out_incoterm(self, order: OrderData) -> None:
         self.sap_gui.set_text(r"wnd[0]/usr/tabsTAXI_TABSTRIP_OVERVIEW/tabpT\01/ssubSUBSCREEN_BODY:SAPMV45A:4400/ssubHEADER_FRAME:SAPMV45A:4440/ctxtVBKD-INCO1", order.incoterm) 
     
-    def _fill_out_reason(self, order: Order) -> None:
+    def _fill_out_reason(self, order: OrderData) -> None:
         self.sap_gui.set_key(r"wnd[0]/usr/tabsTAXI_TABSTRIP_OVERVIEW/tabpT\01/ssubSUBSCREEN_BODY:SAPMV45A:4400/ssubHEADER_FRAME:SAPMV45A:4440/cmbVBAK-AUGRU", order.reason)
     
     def _check_full_supply(self) -> None:
@@ -62,28 +63,28 @@ class OrderCreator:
     def _go_to_header(self) -> None:
         self.sap_gui.press_button(r"wnd[0]/usr/subSUBSCREEN_HEADER:SAPMV45A:4021/btnBT_HEAD")
     
-    def _fill_out_table(self, order: Order) -> None:
+    def _fill_out_table(self, order: OrderData) -> None:
         self.sap_gui.set_key(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\01/ssubSUBSCREEN_BODY:SAPMV45A:4301/cmbVBKD-PLTYP", order.table)
         self.sap_gui.press_enter("0")
     
     def _go_to_tab_expedition(self) -> None:
         self.sap_gui.select_tab(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\02")
     
-    def _fill_out_expedition(self, order: Order) -> None:
+    def _fill_out_expedition(self, order: OrderData) -> None:
         self.sap_gui.set_text(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\02/ssubSUBSCREEN_BODY:SAPMV45A:4302/ctxtVBKD-VSART", order.expedition)
         self.sap_gui.press_enter("0")
     
     def _go_to_tab_contability(self) -> None:
         self.sap_gui.select_tab(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\05")
     
-    def _fill_out_payment_way(self, order: Order) -> None:
+    def _fill_out_payment_way(self, order: OrderData) -> None:
         self.sap_gui.set_text(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\05/ssubSUBSCREEN_BODY:SAPMV45A:4311/ctxtVBKD-ZLSCH", order.payment_way)
         self.sap_gui.press_enter("0")
     
     def _go_to_tab_partners(self) -> None:
         self.sap_gui.select_tab(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\08")
     
-    def _fill_out_partners(self, order: Order) -> None:
+    def _fill_out_partners(self, order: OrderData) -> None:
         for partner in order.partners:
             for row in range(0, 20):
                 key = self.sap_gui.get_key(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\08/ssubSUBSCREEN_BODY:SAPMV45A:4352/subSUBSCREEN_PARTNER_OVERVIEW:SAPLV09C:1000/tblSAPLV09CGV_TC_PARTNER_OVERVIEW/cmbGVS_TC_DATA-REC-PARVW[0,{row}]")
@@ -97,7 +98,7 @@ class OrderCreator:
     def _go_to_tab_additional_data(self) -> None:
         self.sap_gui.select_tab(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\09")
     
-    def _fill_out_additional_data(self, order: Order) -> None:
+    def _fill_out_additional_data(self, order: OrderData) -> None:
         self.sap_gui.set_selection_indexes(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\09/ssubSUBSCREEN_BODY:SAPMV45A:4152/subSUBSCREEN_TEXT:SAPLV70T:2100/cntlSPLITTER_CONTAINER/shellcont/shellcont/shell/shellcont[1]/shell", (0, 0))
         self.sap_gui.select_item(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\09/ssubSUBSCREEN_BODY:SAPMV45A:4152/subSUBSCREEN_TEXT:SAPLV70T:2100/cntlSPLITTER_CONTAINER/shellcont/shellcont/shell/shellcont[0]/shell", ("9002", "Column1"))
         self.sap_gui.ensure_visible_horizontal_item(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\09/ssubSUBSCREEN_BODY:SAPMV45A:4152/subSUBSCREEN_TEXT:SAPLV70T:2100/cntlSPLITTER_CONTAINER/shellcont/shellcont/shell/shellcont[0]/shell", ("9002", "Column1"))
@@ -109,7 +110,7 @@ class OrderCreator:
     def _go_to_tab_items_summary(self) -> None:
         self.sap_gui.select_tab(r"wnd[0]/usr/tabsTAXI_TABSTRIP_OVERVIEW/tabpT\02")
     
-    def _fill_out_items(self, order: Order) -> None:
+    def _fill_out_items(self, order: OrderData) -> None:
         row = 0
         for item in order.items:
             if item.is_parent_item:
@@ -200,7 +201,7 @@ class OrderCreator:
             else:
                 break
     
-    def _fill_out_items_values_guarantee(self, order: Order) -> None:
+    def _fill_out_items_values_guarantee(self, order: OrderData) -> None:
         row = 0
         for item in order.items:
             self._access_item(row)    
@@ -226,7 +227,7 @@ class OrderCreator:
         self.sap_gui.press_button(r"wnd[1]/usr/btnBUTTON_1")
         self.sap_gui.press_button(r"wnd[1]/tbar[0]/btn[0]")
     
-    def _fill_out_comission(self, order: Order) -> None:
+    def _fill_out_comission(self, order: OrderData) -> None:
         self._access_item(0)
         self._access_additional_data_b()
         row = 0
@@ -239,7 +240,7 @@ class OrderCreator:
         self.sap_gui.press_enter("0")
         self._reply_comission()
     
-    def _get_order_id(self, order: Order) -> str:
+    def _get_order_id(self, order: OrderData) -> str:
         self._open_transaction(order, is_create_transaction=False)
         return str(self.sap_gui.get_text(r"wnd[0]/usr/ctxtVBAK-VBELN"))
     
@@ -264,11 +265,11 @@ class OrderCreator:
                 pass
             return
     
-    def _fill_out_initial_data(self, order: Order) -> None:
+    def _fill_out_initial_data(self, order: OrderData) -> None:
         self._open_transaction(order, True)
         self._fill_out_the_creation_form(order)
     
-    def _fill_out_sales_data(self, order: Order) -> None:
+    def _fill_out_sales_data(self, order: OrderData) -> None:
         self._fill_out_sales_name(order)
         self._fill_out_sales_date()
         self._fill_out_issuer(order)
@@ -285,7 +286,7 @@ class OrderCreator:
         self.sap_gui.press_enter("0")
         self._check_full_supply()
     
-    def _fill_out_header(self, order: Order) -> None:
+    def _fill_out_header(self, order: OrderData) -> None:
         self._go_to_header()
         if order.table:
             self._fill_out_table(order)        
@@ -301,7 +302,7 @@ class OrderCreator:
             self._fill_out_additional_data(order)
         self.sap_gui.press_back("0")
     
-    def _fill_out_items_summary(self, order: Order) -> None:
+    def _fill_out_items_summary(self, order: OrderData) -> None:
         self._go_to_tab_items_summary()
         self._fill_out_items(order)
         try:
@@ -311,7 +312,7 @@ class OrderCreator:
         self._fill_out_items_values_guarantee(order)
         self._fill_out_comission(order)
     
-    def create(self, order: Order) -> str:
+    def create(self, order: OrderData) -> str:
         try:
             self.sap_gui.init()
             self._fill_out_initial_data(order)
@@ -323,4 +324,4 @@ class OrderCreator:
             self.sap_gui.go_home()
             return id
         except Exception as error:
-            raise Exception(f"Error in (OrderCreator) component in (create) method: {error}.")
+            raise Exception(f"Error in (OrderCreator) module in (create) method: {error}")

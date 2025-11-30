@@ -26,14 +26,14 @@ class ComissionsQueueClient:
             session.refresh(to_create)
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (ComissionsQueueClient) component in (create) method: {error}.")
+            raise Exception(f"Error in (ComissionsQueueClient) module in (create) method: {error}")
     
     def read(self, order: str) -> list[ComissionQueue]:
         try:
             session = self.session_construct()
             return session.query(ComissionQueue).filter(ComissionQueue.order_ref == order).all()
         except Exception as error:
-            raise Exception(f"Error in (ComissionsQueueClient) component in (read) method: {error}.")
+            raise Exception(f"Error in (ComissionsQueueClient) module in (read) method: {error}")
     
     def delete(self, order: str) -> None:
         try:
@@ -43,4 +43,4 @@ class ComissionsQueueClient:
                 session.delete(delete_element)
             session.commit()
         except Exception as error:
-            raise Exception(f"Error in (ComissionsQueueClient) component in (delete) method: {error}.")
+            raise Exception(f"Error in (ComissionsQueueClient) module in (delete) method: {error}")

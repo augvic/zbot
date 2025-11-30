@@ -6,6 +6,7 @@ from os import getenv
 from re import sub
 from unicodedata import normalize
 from dotenv import load_dotenv
+
 from .models import *
 from .errors import RequestError, RequestResponseError
 from .types import *
@@ -132,4 +133,4 @@ class PositivoFederalRevenueApi:
                 comission_receipt = response["recebimento_comissao"]
             )
         except Exception as error:
-            raise Exception(f"Error in (PositivoFederalRevenueApi) component in (get_data) method: {error}.")
+            raise Exception(f"Error in (PositivoFederalRevenueApi) module in (get_data) method: {error}")

@@ -1,4 +1,5 @@
 from threading import Thread
+
 from typing import Callable
 
 class ApplicationThread(Thread):
@@ -7,4 +8,4 @@ class ApplicationThread(Thread):
         try:
             super().__init__(target=target, *args, **kwargs)
         except Exception as error:
-            raise Exception(f"Error in (ApplicationThread) component in (init) method: {error}.")
+            raise Exception(f"Error in (ApplicationThread) module in (init) method: {error}")

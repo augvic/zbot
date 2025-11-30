@@ -21,21 +21,21 @@ class UsersClient:
             session.refresh(to_create)
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (UsersClient) component in (create) method: {error}.")
+            raise Exception(f"Error in (UsersClient) module in (create) method: {error}")
     
     def read(self, user: str) -> User | None:
         try:
             session = self.session_construct()
             return session.query(User).filter(User.user == user).first()
         except Exception as error:
-            raise Exception(f"Error in (UsersClient) component in (read) method: {error}.")
+            raise Exception(f"Error in (UsersClient) module in (read) method: {error}")
     
     def read_all(self) -> list[User]:
         try:
             session = self.session_construct()
             return session.query(User).all()
         except Exception as error:
-            raise Exception(f"Error in (UsersClient) component in (read_all) method: {error}.")
+            raise Exception(f"Error in (UsersClient) module in (read_all) method: {error}")
     
     def update(self, user: str, name: str = "", email: str = "", password: str = "") -> None:
         try:
@@ -51,7 +51,7 @@ class UsersClient:
                 session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (UsersClient) component in (update) method: {error}.")
+            raise Exception(f"Error in (UsersClient) module in (update) method: {error}")
     
     def delete(self, user: str) -> None:
         try:
@@ -60,4 +60,4 @@ class UsersClient:
             session.delete(to_delete)
             session.commit()
         except Exception as error:
-            raise Exception(f"Error in (UsersClient) component in (delete) method: {error}.")
+            raise Exception(f"Error in (UsersClient) module in (delete) method: {error}")

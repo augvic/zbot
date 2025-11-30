@@ -1,5 +1,6 @@
 from os import makedirs, path
 import sys
+
 from werkzeug.datastructures import FileStorage
 
 class RegistrationsDocsHandler:
@@ -15,4 +16,4 @@ class RegistrationsDocsHandler:
             for doc in docs:
                 doc.save(f"{dir_to_create}/{doc.filename}")
         except Exception as error:
-            raise Exception(f"Error in (RegistrationsDocsHandler) component in (save_docs) method: {error}.")
+            raise Exception(f"Error in (RegistrationsDocsHandler) module in (save_docs) method: {error}")

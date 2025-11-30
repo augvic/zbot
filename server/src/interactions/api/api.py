@@ -1,8 +1,8 @@
 from src.tasks.create_module.create_module import CreateModule
 from src.tasks.delete_module.delete_module import DeleteModule
-from src.tasks.create_permission.create_permission import CreatePermission
+from src.tasks.create_permission.permission import CreatePermission
 from src.tasks.delete_permission.delete_permission import DeletePermission
-from src.tasks.create_user.create_user import CreateUser
+from src.tasks.create_user.user import CreateUser
 from src.tasks.delete_user.delete_user import DeleteUser
 from src.tasks.get_user.get_user import GetUser
 from src.tasks.update_user.update_user import UpdateUser 
@@ -15,7 +15,7 @@ from src.tasks.logout.logout import Logout
 from src.tasks.validate_login.validate_login import ValidateLogin
 from src.tasks.verify_if_have_access.verify_if_have_access import VerifyIfHaveAccess
 from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession
-from src.tasks.get_federal_revenue_data.get_federal_revenue_data import GetFederalRevenueData
+from src.tasks.get_federal_revenue_data.federal_revenue_data import GetFederalRevenueData
 from src.tasks.get_financial_data.get_financial_data import GetFinancialData
 from src.tasks.get_modules_list.get_modules_list import GetModulesList
 from src.tasks.create_order.create_order import CreateOrder
@@ -25,7 +25,7 @@ from src.tasks.update_registration.update_registration import UpdateRegistration
 from src.tasks.get_registration.get_registration import GetRegistration
 from src.tasks.run_registrations_rpa.run_registrations_rpa import RunRegistrationsRpa
 from src.tasks.register_route import RegisterRoute
-from src.tasks.run_wsgi_application import RunWsgiApplication
+from src.tasks.internal.wsgi_application_actions import RunWsgiApplication
 
 from .routes.login import Login
 from .routes.main import Main

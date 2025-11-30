@@ -1,6 +1,6 @@
 from src.tasks.get_financial_data.get_financial_data import GetFinancialData
-from src.tasks.get_federal_revenue_data.get_federal_revenue_data import GetFederalRevenueData
-from src.tasks.date_tasks import DateTasks
+from src.tasks.get_federal_revenue_data.federal_revenue_data import GetFederalRevenueData
+from src.tasks.internal.utilitites import DateTasks
 from src.tasks.convert_df_to_str import ConvertDfToStr
 
 from pandas import DataFrame

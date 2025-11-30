@@ -18,21 +18,21 @@ class ModulesClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (ModulesClient) component in (create) method: {error}.")
+            raise Exception(f"Error in (ModulesClient) module in (create) method: {error}")
     
     def read(self, module: str) -> Module | None:
         try:
             session = self.session_construct()
             return session.query(Module).filter(Module.module == module).first()
         except Exception as error:
-            raise Exception(f"Error in (ModulesClient) component in (read) method: {error}.")
+            raise Exception(f"Error in (ModulesClient) module in (read) method: {error}")
     
     def read_all(self) -> list[Module]:
         try:
             session = self.session_construct()
             return session.query(Module).all()
         except Exception as error:
-            raise Exception(f"Error in (ModulesClient) component in (read_all) method: {error}.")
+            raise Exception(f"Error in (ModulesClient) module in (read_all) method: {error}")
     
     def delete(self, module: str) -> None:
         try:
@@ -42,4 +42,4 @@ class ModulesClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (ModulesClient) component in (delete) method: {error}.")
+            raise Exception(f"Error in (ModulesClient) module in (delete) method: {error}")

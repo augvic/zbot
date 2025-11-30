@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, date
 from re import sub
 from pandas import DataFrame, concat
+
 from .sap_gui import SapGui
 from ..models import *
 from ..types import *
@@ -325,4 +326,4 @@ class FinancialDataGetter:
                 fbl5n_table = sanitized_data["fbl5n_table"]
             )
         except Exception as error:
-            raise Exception(f"Error in (FinancialDataGetter) component in (get_data) method: {error}.")
+            raise Exception(f"Error in (FinancialDataGetter) module in (get_data) method: {error}")

@@ -4,6 +4,8 @@ from os import path, getenv
 from dotenv import load_dotenv
 import sys
 
+from typing import Callable
+
 class WsgiApplication:
     
     def __init__(self):
@@ -15,3 +17,15 @@ class WsgiApplication:
         self.app = Flask(__name__, template_folder=TEMPLATE, static_folder=STATIC)
         self.app.secret_key = getenv("FLASK")
         self.socketio = SocketIO(self.app)
+    
+    def run(self) -> None:
+        try:
+            self.socketio.run(self.app, host="127.0.0.1", debug=True)
+        except Exception as error:
+            raise Exception(f"Error in (WsgiApplication) module in (run) method: {error}")
+    
+    def register_route(self, endpoint: str, methods: list[str], function: Callable) -> None:
+        try:
+            self.app.route(endpoint, methods=methods)(function)
+        except Exception as error:
+            raise Exception(f"Error in (WsgiApplication) module in (register_route) method: {error}")

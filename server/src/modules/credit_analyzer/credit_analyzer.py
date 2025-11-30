@@ -64,4 +64,4 @@ class CreditAnalyzer:
             response = self._mount_response(status=status, message=message)
             return response
         except Exception as error:
-            raise Exception(f"Error in (CreditAnalyzer) component in (analyze) method: {error}.")
+            raise Exception(f"Error in (CreditAnalyzer) module in (analyze) method: {error}")

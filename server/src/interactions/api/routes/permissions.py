@@ -1,5 +1,5 @@
 from src.tasks.get_permissions.get_permissions import GetPermissions
-from src.tasks.create_permission.create_permission import CreatePermission
+from src.tasks.create_permission.permission import CreatePermission
 from src.tasks.delete_permission.delete_permission import DeletePermission
 from src.tasks.verify_if_have_access.verify_if_have_access import VerifyIfHaveAccess
 from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession

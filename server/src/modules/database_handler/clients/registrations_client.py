@@ -73,21 +73,21 @@ class RegistrationsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (RegistrationsClient) component in (create) method: {error}.")
+            raise Exception(f"Error in (RegistrationsClient) module in (create) method: {error}")
     
     def read(self, cnpj: str) -> Registration | None:
         try:
             session = self.session_construct()
             return session.query(Registration).filter(Registration.cnpj == cnpj).first()
         except Exception as error:
-            raise Exception(f"Error in (RegistrationsClient) component in (read) method: {error}.")
+            raise Exception(f"Error in (RegistrationsClient) module in (read) method: {error}")
         
     def read_all(self) -> list[Registration]:
         try:
             session = self.session_construct()
             return session.query(Registration).all()
         except Exception as error:
-            raise Exception(f"Error in (RegistrationsClient) component in (read_all) method: {error}.")
+            raise Exception(f"Error in (RegistrationsClient) module in (read_all) method: {error}")
     
     def update(self,
         cnpj: str,
@@ -168,7 +168,7 @@ class RegistrationsClient:
                 session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (RegistrationsClient) component in (update) method: {error}.")
+            raise Exception(f"Error in (RegistrationsClient) module in (update) method: {error}")
     
     def delete(self, cnpj: str) -> None:
         try:
@@ -178,4 +178,4 @@ class RegistrationsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (RegistrationsClient) component in (delete) method: {error}.")
+            raise Exception(f"Error in (RegistrationsClient) module in (delete) method: {error}")

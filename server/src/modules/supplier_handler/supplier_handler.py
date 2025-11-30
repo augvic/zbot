@@ -7,7 +7,9 @@ from dotenv import load_dotenv
 import math
 import sys
 import pandas
+
 from .models import Response
+
 from typing import Any
 
 class SupplierHandler:
@@ -108,7 +110,7 @@ class SupplierHandler:
             self.access_token = response_login_dict_2.get("access_token")
             self.logged_in = True
         except Exception as error:
-            raise Exception(f"Error on (SupplierHandler) component on (login) method: {error}")
+            raise Exception(f"Error on (SupplierHandler) module on (login) method: {error}")
     
     def order_pre_autorization(self,
         cnpj_client: str,
@@ -150,4 +152,4 @@ class SupplierHandler:
             else:
                 return Response(success=False, message=f"Erro desconhecido: {response_dict}.")
         except Exception as error:
-            raise Exception(f"Error in (SupplierHandler) component in (order_pre_authorization) method: {error}.")
+            raise Exception(f"Error in (SupplierHandler) module in (order_pre_authorization) method: {error}")

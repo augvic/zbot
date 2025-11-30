@@ -1,5 +1,5 @@
 from src.tasks.get_user.get_user import GetUser
-from src.tasks.create_user.create_user import CreateUser
+from src.tasks.create_user.user import CreateUser
 from src.tasks.delete_user.delete_user import DeleteUser
 from src.tasks.update_user.update_user import UpdateUser
 from src.tasks.process_request.process_request import ProcessRequest

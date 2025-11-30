@@ -1,7 +1,7 @@
+from typing import TypedDict
+
 from datetime import date
-from typing import TypedDict
 from pandas import DataFrame
-from typing import TypedDict
 
 class FinancialDict(TypedDict):
     

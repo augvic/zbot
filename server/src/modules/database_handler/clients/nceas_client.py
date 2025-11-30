@@ -23,14 +23,14 @@ class NceasClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (NceasClient) component in (create) method: {error}.")
+            raise Exception(f"Error in (NceasClient) module in (create) method: {error}")
     
     def read_all(self, cnpj: str) -> list[Ncea]:
         try:
             session = self.session_construct()
             return session.query(Ncea).filter(Ncea.cnpj == cnpj).all()
         except Exception as error:
-            raise Exception(f"Error in (NceasClient) component in (read_all) method: {error}.")
+            raise Exception(f"Error in (NceasClient) module in (read_all) method: {error}")
     
     def delete(self, cnpj: str) -> None:
         try:
@@ -41,4 +41,4 @@ class NceasClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (NceasClient) component in (delete) method: {error}.")
+            raise Exception(f"Error in (NceasClient) module in (delete) method: {error}")

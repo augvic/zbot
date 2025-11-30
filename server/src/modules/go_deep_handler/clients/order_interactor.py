@@ -298,7 +298,7 @@ class OrderInteractor:
             save_button.click()
             self.go_deep_browser.quit()
         except Exception as error:
-            raise Exception(f"Error in (OrderInteractor) component in (change_order) method: {error}.")
+            raise Exception(f"Error in (OrderInteractor) module in (change_order) method: {error}")
     
     def get_order_data_for_credit_analysis(self, headless: bool, order: str) -> Order:
         try:
@@ -313,7 +313,7 @@ class OrderInteractor:
                 total_value = value
             )
         except Exception as error:
-            raise Exception(f"Error in (OrderInteractor) component in (get_order_data_for_credit_analysis) method: {error}.")
+            raise Exception(f"Error in (OrderInteractor) module in (get_order_data_for_credit_analysis) method: {error}")
     
     def get_order_data(self, headless: bool, order: str) -> Order:
         try:
@@ -385,4 +385,4 @@ class OrderInteractor:
                 comission_percentage = comission_percentage
             )
         except Exception as error:
-            raise Exception(f"Error in (OrderInteractor) component in (get_order_data) method: {error}.")
+            raise Exception(f"Error in (OrderInteractor) module in (get_order_data) method: {error}")

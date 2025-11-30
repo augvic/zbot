@@ -23,14 +23,14 @@ class StateRegistrationsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (StateRegistrationsClient) component in (create) method: {error}.")
+            raise Exception(f"Error in (StateRegistrationsClient) module in (create) method: {error}")
     
     def read_all(self, cnpj: str) -> list[StateRegistration]:
         try:
             session = self.session_construct()
             return session.query(StateRegistration).filter(StateRegistration.cnpj == cnpj).all()
         except Exception as error:
-            raise Exception(f"Error in (StateRegistrationsClient) component in (read_all) method: {error}.")
+            raise Exception(f"Error in (StateRegistrationsClient) module in (read_all) method: {error}")
     
     def delete(self, cnpj: str) -> None:
         try:
@@ -41,4 +41,4 @@ class StateRegistrationsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (StateRegistrationsClient) component in (delete) method: {error}.")
+            raise Exception(f"Error in (StateRegistrationsClient) module in (delete) method: {error}")

@@ -23,14 +23,14 @@ class SuframaRegistrationsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (SuframaRegistrationsClient) component in (create) method: {error}.")
+            raise Exception(f"Error in (SuframaRegistrationsClient) module in (create) method: {error}")
     
     def read_all(self, cnpj: str) -> list[SuframaRegistration]:
         try:
             session = self.session_construct()
             return session.query(SuframaRegistration).filter(SuframaRegistration.cnpj == cnpj).all()
         except Exception as error:
-            raise Exception(f"Error in (SuframaRegistrationsClient) component in (read_all) method: {error}.")
+            raise Exception(f"Error in (SuframaRegistrationsClient) module in (read_all) method: {error}")
     
     def delete(self, cnpj: str) -> None:
         try:
@@ -41,4 +41,4 @@ class SuframaRegistrationsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"Error in (SuframaRegistrationsClient) component in (delete) method: {error}.")
+            raise Exception(f"Error in (SuframaRegistrationsClient) module in (delete) method: {error}")
