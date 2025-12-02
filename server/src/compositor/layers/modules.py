@@ -1,4 +1,4 @@
-from src.modules.dataclass_serializer import DataclassSerializer
+from src.modules.model_serializer import DataclassSerializer
 from src.modules.sqla_serializer import SqlaSerializer
 from src.modules.log_system import LogSystem
 from src.modules.registrations_docs_handler import RegistrationsDocsHandler
@@ -13,7 +13,7 @@ from src.modules.supplier_handler.supplier_handler import SupplierHandler
 from src.modules.request_manager import RequestManager
 from src.modules.session_manager import SessionManager
 from src.modules.template_manager import TemplateManager
-from src.modules.wsgi_application import WsgiApplication
+from modules.wsgi_application.wsgi_application import WsgiApplication
 from src.modules.credit_analyzer.credit_analyzer import CreditAnalyzer
 from src.modules.request_processor.request_processor import RequestProcessor
 from src.modules.dataframe_handler import DataFrameHandler

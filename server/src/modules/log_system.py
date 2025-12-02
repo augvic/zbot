@@ -5,15 +5,12 @@ import sys
 class LogSystem:
     
     def __init__(self, folder: str) -> None:
-        try:
-            if getattr(sys, "frozen", False):
-                self.base_path = path.dirname(sys.executable)
-            else:
-                self.base_path = path.join(path.dirname(__file__), "..", "..")
-            self.log_dir = path.abspath(path.join(self.base_path, "storage", ".logs", folder))
-            makedirs(self.log_dir, exist_ok=True)
-        except Exception as error:
-            raise Exception(f"Error in (LogSystem) module in (__init__) method: {error}")
+        if getattr(sys, "frozen", False):
+            self.base_path = path.dirname(sys.executable)
+        else:
+            self.base_path = path.join(path.dirname(__file__), "..", "..")
+        self.log_dir = path.abspath(path.join(self.base_path, "storage", ".logs", folder))
+        makedirs(self.log_dir, exist_ok=True)
     
     def write_text(self, text: str) -> None:
         try:

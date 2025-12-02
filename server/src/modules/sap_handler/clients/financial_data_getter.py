@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from re import sub
 from pandas import DataFrame, concat
 
@@ -88,7 +88,7 @@ class FinancialDataGetter:
         self.sap_gui.check_field("wnd[0]/usr/chkRF02L-D0210")
         self.sap_gui.press_enter("0")
     
-    def _get_fd33_data(self, cnpj_root: str) -> tuple[float, date | str]:
+    def _get_fd33_data(self, cnpj_root: str) -> tuple[float, datetime | str]:
         self.sap_gui.open_transaction("FD33")
         self._fill_out_fd33_form(cnpj_root=cnpj_root)
         limit = self.sap_gui.get_text("wnd[0]/usr/txtKNKK-KLIMK")
@@ -96,7 +96,7 @@ class FinancialDataGetter:
         limit = float(limit)
         maturity = self.sap_gui.get_text("wnd[0]/usr/ctxtKNKK-NXTRV")
         if not maturity == "":
-            maturity = datetime.strptime(maturity, "%d.%m.%Y").date()
+            maturity = datetime.strptime(maturity, "%d.%m.%Y")
         else:
             limit = 0.0
             maturity = "Sem limite ativo."

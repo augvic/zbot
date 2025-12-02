@@ -1,18 +1,18 @@
 from dataclasses import dataclass
 
-from datetime import date
+from datetime import datetime
 from pandas import DataFrame
 
 @dataclass
 class FinancialData:
     
-    cnpj_root: str = ""
-    limit: str | float = ""
-    maturity: str | date = ""
-    in_open: str | float = ""
-    margin: str | float = ""
-    overdue_nfs: str = ""
-    fbl5n_table: DataFrame | None = None
+    cnpj_root: str
+    limit: str | float
+    maturity: str | datetime
+    in_open: str | float
+    margin: str | float
+    overdue_nfs: str
+    fbl5n_table: DataFrame | None
 
 @dataclass
 class Partner:
@@ -41,7 +41,7 @@ class Item:
     is_parent_item: bool
 
 @dataclass
-class OrderData:
+class Order:
     
     doc_type: str
     organization: str
