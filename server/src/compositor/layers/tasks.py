@@ -14,7 +14,7 @@ from src.tasks.get_session_user.get_session_user import GetSessionUser
 from src.tasks.logout.logout import Logout
 from src.tasks.validate_login.validate_login import ValidateLogin
 from src.tasks.verify_if_have_access.verify_if_have_access import VerifyIfHaveAccess
-from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession
+from tasks.verify_if_user_is_in_session_task import VerifyIfUserIsInSession
 from src.tasks.get_federal_revenue_data.federal_revenue_data import GetFederalRevenueData
 from src.tasks.get_financial_data.get_financial_data import GetFinancialData
 from src.tasks.get_modules_list.get_modules_list import GetModulesList
@@ -24,9 +24,9 @@ from src.tasks.delete_registration.delete_registration import DeleteRegistration
 from src.tasks.update_registration.update_registration import UpdateRegistration
 from src.tasks.get_registration.get_registration import GetRegistration
 from src.tasks.run_registrations_rpa.run_registrations_rpa import RunRegistrationsRpa
-from src.tasks.register_route import RegisterRoute
+from tasks.register_route_task import RegisterRoute
 from src.tasks.internal.wsgi_application_actions import RunWsgiApplication
-from src.tasks.convert_df_to_str import ConvertDfToStr
+from tasks.convert_df_to_str_task import ConvertDfToStr
 from src.tasks.internal.utilitites import DateTasks
 
 from .modules import Modules

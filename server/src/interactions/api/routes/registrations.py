@@ -6,8 +6,8 @@ from src.tasks.get_registration.get_registration import GetRegistration
 from src.tasks.update_registration.update_registration import UpdateRegistration
 from src.tasks.update_registration.models import RegistrationData
 from src.tasks.process_request.process_request import ProcessRequest
-from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession
-from src.tasks.register_route import RegisterRoute
+from tasks.verify_if_user_is_in_session_task import VerifyIfUserIsInSession
+from tasks.register_route_task import RegisterRoute
 
 from typing import cast
 from werkzeug.datastructures import FileStorage

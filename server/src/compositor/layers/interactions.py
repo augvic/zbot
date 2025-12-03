@@ -1,5 +1,5 @@
 from src.interactions.api.api import Api
-from src.interactions.cli import Cli
+from interactions.cli.cli import Cli
 
 from .tasks import Tasks
 

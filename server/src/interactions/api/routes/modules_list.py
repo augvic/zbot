@@ -3,8 +3,8 @@ from src.tasks.verify_if_have_access.verify_if_have_access import VerifyIfHaveAc
 from src.tasks.create_module.create_module import CreateModule
 from src.tasks.delete_module.delete_module import DeleteModule
 from src.tasks.process_request.process_request import ProcessRequest
-from src.tasks.verify_if_user_is_in_session.verify_if_user_is_in_session import VerifyIfUserIsInSession
-from src.tasks.register_route import RegisterRoute
+from tasks.verify_if_user_is_in_session_task import VerifyIfUserIsInSession
+from tasks.register_route_task import RegisterRoute
 
 from typing import cast
 

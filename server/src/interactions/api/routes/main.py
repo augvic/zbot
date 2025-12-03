@@ -1,5 +1,5 @@
 from src.tasks.render_template.render_template import RenderTemplate
-from src.tasks.register_route import RegisterRoute
+from tasks.register_route_task import RegisterRoute
 
 class Main:
     
