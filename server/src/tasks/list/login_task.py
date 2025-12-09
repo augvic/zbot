@@ -1,7 +1,7 @@
-from src.engines.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
-from src.engines.cli_session_manager_engine import CliSessionManagerEngine
-from src.engines.log_engine import LogEngine
-from src.engines.database_engine.database_engine import DatabaseEngine
+from src.engines.list.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
+from src.engines.list.cli_session_manager_engine import CliSessionManagerEngine
+from src.engines.list.log_engine import LogEngine
+from src.engines.list.database_engine.database_engine import DatabaseEngine
 
 from dataclasses import dataclass
 
@@ -42,8 +42,8 @@ class LoginTask:
                 permissions_list.append({"module": user_permission.module, "description": modules_descriptions[user_permission.module]})
             self.session_manager_engine.save_in_session("user", user)
             self.session_manager_engine.save_in_session("session_modules", permissions_list)
-            self.log_engine.write_text(f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Login realizado com sucesso.")
+            self.log_engine.write_text("tasks/login_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Login realizado com sucesso.")
             return Response(success=True, message=f"✅ Login realizado com sucesso.")
         except Exception as error:
-            self.log_engine.write_error(f"❌ Error in (LoginTask) task in (main) method: {error}")
+            self.log_engine.write_error("tasks/login_task", f"❌ Error in (LoginTask) task in (main) method: {error}")
             raise Exception("❌ Erro interno ao processar login. Contate o administrador.")

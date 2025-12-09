@@ -1,11 +1,11 @@
-from src.engines.federal_revenue_api_engine.federal_revenue_api_engine import FederalRevenueApiEngine
-from src.engines.log_engine import LogEngine
-from src.engines.serializer_engine import SerializerEngine
-from src.engines.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
-from src.engines.cli_session_manager_engine import CliSessionManagerEngine
+from src.engines.list.federal_revenue_api_engine.federal_revenue_api_engine import FederalRevenueApiEngine
+from src.engines.list.log_engine import LogEngine
+from src.engines.list.serializer_engine import SerializerEngine
+from src.engines.list.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
+from src.engines.list.cli_session_manager_engine import CliSessionManagerEngine
 
 from dataclasses import dataclass
-from src.engines.federal_revenue_api_engine.models import FederalRevenueData
+from src.engines.list.federal_revenue_api_engine.models import FederalRevenueData
 
 @dataclass
 class Response:
@@ -39,8 +39,8 @@ class GetFederalRevenueDataTask:
             if len(cnpj) != 14:
                 return Response(success=False, message="❌ CNPJ ({cnpj}) não possui 14 dígitos.", data=None)
             data = self.federal_revenue_api_engine.get_data(cnpj=cnpj)
-            self.log_engine.write_text(f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Dados da receita coletados: {self.serializer_engine.serialize_dataclass(data)}.")
+            self.log_engine.write_text("tasks/get_federal_revenue_data_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Dados da receita coletados: {self.serializer_engine.serialize_dataclass(data)}.")
             return Response(success=True, message="✅ Dados da receita coletados.", data=data)
         except Exception as error:
-            self.log_engine.write_error(f"❌ Error in (GetFederalRevenueDataTask) task in (main) method: {error}")
+            self.log_engine.write_error("tasks/get_federal_revenue_data_task", f"❌ Error in (GetFederalRevenueDataTask) task in (main) method: {error}")
             raise Exception("❌ Erro interno ao obter dados da Receita Federal. Contate o administrador.")

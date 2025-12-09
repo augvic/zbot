@@ -1,9 +1,9 @@
-from src.engines.database_engine.database_engine import DatabaseEngine
-from src.engines.log_engine import LogEngine
-from src.engines.registrations_docs_engine import RegistrationsDocsEngine
-from src.engines.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
-from src.engines.cli_session_manager_engine import CliSessionManagerEngine
-from src.engines.date_engine import DateEngine
+from src.engines.list.database_engine.database_engine import DatabaseEngine
+from src.engines.list.log_engine import LogEngine
+from src.engines.list.registrations_docs_engine import RegistrationsDocsEngine
+from src.engines.list.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
+from src.engines.list.cli_session_manager_engine import CliSessionManagerEngine
+from src.engines.list.date_engine import DateEngine
 
 from dataclasses import dataclass
 from werkzeug.datastructures import FileStorage
@@ -223,8 +223,8 @@ class UpdateRegistrationTask:
             if registration_data.bank_doc:
                 doc_list.append(registration_data.bank_doc)
             self.registrations_docs_engine.save_docs(cnpj=registration_data.cnpj, docs=doc_list)
-            self.log_engine.write_text(f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Cadastro ({registration_data.cnpj}) atualizado.")
+            self.log_engine.write_text("tasks_update_registration_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Cadastro ({registration_data.cnpj}) atualizado.")
             return Response(success=True, message="✅ Cadastro atualizado.", data=[])
         except Exception as error:
-            self.log_engine.write_error(f"❌ Error in (UpdateRegistrationTask) task in (main) method: {error}")
+            self.log_engine.write_error("tasks_update_registration_task", f"❌ Error in (UpdateRegistrationTask) task in (main) method: {error}")
             raise Exception("❌ Erro interno ao atualizar cadastro. Contate o administrador.")

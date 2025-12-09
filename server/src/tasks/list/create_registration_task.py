@@ -1,10 +1,4 @@
-from src.engines.federal_revenue_api_engine.federal_revenue_api_engine import FederalRevenueApiEngine
-from src.engines.database_engine.database_engine import DatabaseEngine
-from src.engines.log_engine import LogEngine
-from src.engines.date_engine import DateEngine
-from src.engines.registrations_docs_engine import RegistrationsDocsEngine
-from src.engines.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
-from src.engines.cli_session_manager_engine import CliSessionManagerEngine
+from src.engines.engines import Engines
 
 from dataclasses import dataclass
 from werkzeug.datastructures import FileStorage
@@ -32,22 +26,9 @@ class RegistrationData:
 
 class CreateRegistrationTask:
     
-    def __init__(self,
-        federal_revenue_api_engine: FederalRevenueApiEngine,
-        database_engine: DatabaseEngine,
-        log_engine: LogEngine,
-        date_engine: DateEngine,
-        registrations_docs_engine: RegistrationsDocsEngine,
-        session_manager_engine: WsgiSessionManagerEngine | CliSessionManagerEngine,
-        need_authentication: bool
-    ) -> None:
-        self.federal_revenue_api_engine = federal_revenue_api_engine
-        self.database_engine = database_engine
-        self.log_engine = log_engine
-        self.date_engine = date_engine
-        self.registrations_docs_engine = registrations_docs_engine
-        self.session_manager_engine = session_manager_engine
-        self.need_authentication = need_authentication
+    def __init__(self, engines: Engines) -> None:
+        self.engines = engines
+        self.runtime = "cli"
     
     def _verify_data(self, registration_data: RegistrationData) -> Response | None:
         registration_data.cnpj = "".join(number for number in registration_data.cnpj if number.isdigit())
@@ -69,6 +50,9 @@ class CreateRegistrationTask:
         registration_data.cpf_person = registration_data.cpf_person.upper()
         return registration_data
     
+    def set_runtime(self, runtime: str) -> None:
+        self.runtime = runtime
+    
     def main(self,
         cnpj: str,
         seller: str,
@@ -82,15 +66,14 @@ class CreateRegistrationTask:
         bank_doc: FileStorage | None,
     ) -> Response:
         try:
-            if self.need_authentication:
-                if not self.session_manager_engine.is_user_in_session():
-                    return Response(success=False, message="❌ Necessário fazer login.", data=[])
-                if not self.session_manager_engine.have_user_module_access("zRegRpa"):
-                    return Response(success=False, message="❌ Sem acesso.", data=[])
-            registration_exists = self.database_engine.registrations_client.read(cnpj)
+            if self.runtime == "cli":
+                self.session_manager_engine = self.engines.cli_session_engine
+            else:
+                self.session_manager_engine = self.engines.wsgi_engine.session_manager
+            registration_exists = self.engines.database_engine.registrations_client.read(cnpj)
             if registration_exists:
                 return Response(success=False, message="❌ Tentativa de inclusão de cadastro já existente ({new_registration.cnpj}).", data=[])
-            federal_revenue_data = self.federal_revenue_api_engine.get_data(cnpj)
+            federal_revenue_data = self.engines.federal_revenue_api_engine.get_data(cnpj)
             registration_data = RegistrationData(
                 cnpj=cnpj,
                 email=email,
@@ -107,7 +90,7 @@ class CreateRegistrationTask:
             if response:
                 return response
             registration_data = self._sanitize(registration_data)
-            self.database_engine.registrations_client.create(
+            self.engines.database_engine.registrations_client.create(
                 cnpj=registration_data.cnpj,
                 opening=federal_revenue_data.opening,
                 company_name=federal_revenue_data.company_name,
@@ -129,7 +112,7 @@ class CreateRegistrationTask:
                 status="Cadastrar",
                 registration_date_hour="-",
                 charge_date_hour="-",
-                federal_revenue_consult_date=self.date_engine.get_today_str(),
+                federal_revenue_consult_date=self.engines.date_engine.get_today_str(),
                 doc_resent=False,
                 client_type=registration_data.client_type,
                 suggested_limit=registration_data.suggested_limit,
@@ -138,19 +121,19 @@ class CreateRegistrationTask:
                 cpf_person=registration_data.cpf_person
             )
             for ncea in federal_revenue_data.ncea:
-                self.database_engine.nceas_client.create(
+                self.engines.database_engine.nceas_client.create(
                     cnpj=registration_data.cnpj,
                     ncea=ncea["code"],
                     description=ncea["description"]
                 )
             for state_registration in federal_revenue_data.state_registrations:
-                self.database_engine.state_registrations_client.create(
+                self.engines.database_engine.state_registrations_client.create(
                     cnpj=registration_data.cnpj,
                     state_registration=state_registration["state_registration"],
                     status=state_registration["status"]
                 )
             for suframa_registration in federal_revenue_data.suframa_registrations:
-                self.database_engine.suframa_registrations_client.create(
+                self.engines.database_engine.suframa_registrations_client.create(
                     cnpj=registration_data.cnpj,
                     suframa_registration=suframa_registration["suframa_registration"],
                     status=suframa_registration["status"]
@@ -158,9 +141,9 @@ class CreateRegistrationTask:
             doc_list = [registration_data.article_association_doc]
             if registration_data.bank_doc:
                 doc_list.append(registration_data.bank_doc)
-            self.registrations_docs_engine.save_docs(cnpj=registration_data.cnpj, docs=doc_list)
-            self.log_engine.write_text(f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Novo cadastro incluído com sucesso ({registration_data.cnpj}).")
+            self.engines.registrations_docs_engine.save_docs(cnpj=registration_data.cnpj, docs=doc_list)
+            self.engines.log_engine.write_text("tasks/create_registration_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Novo cadastro incluído com sucesso ({registration_data.cnpj}).")
             return Response(success=True, message=f"✅ Novo cadastro incluído com sucesso ({registration_data.cnpj}).", data=[])
         except Exception as error:
-            self.log_engine.write_error(f"❌ Error in (CreateRegistrationTask) task in (main) method: {error}")
+            self.engines.log_engine.write_error("tasks/create_registration_task", f"❌ Error in (CreateRegistrationTask) task in (main) method: {error}")
             raise Exception("❌ Erro interno ao incluir novo cadastro. Contate o administrador.")

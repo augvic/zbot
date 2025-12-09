@@ -1,8 +1,8 @@
-from src.engines.database_engine.database_engine import DatabaseEngine
-from src.engines.log_engine import LogEngine
-from src.engines.serializer_engine import SerializerEngine
-from src.engines.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
-from src.engines.cli_session_manager_engine import CliSessionManagerEngine
+from src.engines.list.database_engine.database_engine import DatabaseEngine
+from src.engines.list.log_engine import LogEngine
+from src.engines.list.serializer_engine import SerializerEngine
+from src.engines.list.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
+from src.engines.list.cli_session_manager_engine import CliSessionManagerEngine
 
 from dataclasses import dataclass
 
@@ -45,8 +45,8 @@ class GetRegistrationTask:
                 return Response(success=False, message=f"❌ Cadastro ({cnpj}) não existe.", data=[])
             else:
                 registrations_serialized = [self.serializer_engine.serialize_sqla(registrations)]
-            self.log_engine.write_text(f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Cadastro(s) coletado(s) com sucesso.")
+            self.log_engine.write_text("tasks/get_registration_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Cadastro(s) coletado(s) com sucesso.")
             return Response(success=True, message="✅ Cadastro(s) coletado(s) com sucesso.", data=registrations_serialized)
         except Exception as error:
-            self.log_engine.write_error(f"❌ Error in (GetRegistrationTask) task in (main) method: {error}")
+            self.log_engine.write_error("tasks/get_registration_task", f"❌ Error in (GetRegistrationTask) task in (main) method: {error}")
             raise Exception("❌ Erro interno ao coletar cadastros. Contate o administrador.")

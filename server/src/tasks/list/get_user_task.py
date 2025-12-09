@@ -1,8 +1,8 @@
-from src.engines.database_engine.database_engine import DatabaseEngine
-from src.engines.log_engine import LogEngine
-from src.engines.serializer_engine import SerializerEngine
-from src.engines.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
-from src.engines.cli_session_manager_engine import CliSessionManagerEngine
+from src.engines.list.database_engine.database_engine import DatabaseEngine
+from src.engines.list.log_engine import LogEngine
+from src.engines.list.serializer_engine import SerializerEngine
+from src.engines.list.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
+from src.engines.list.cli_session_manager_engine import CliSessionManagerEngine
 
 from dataclasses import dataclass
 
@@ -45,8 +45,8 @@ class GetUserTask:
                 return Response(success=False, message=f"❌ Usuário ({user}) não existe.", data=[{}])
             else:
                 users_serialized = [self.serializer_engine.serialize_sqla(users)]
-            self.log_engine.write_text(f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Usuário(s) coletado(s) com sucesso.")
+            self.log_engine.write_text("tasks/get_user_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Usuário(s) coletado(s) com sucesso.")
             return Response(success=True, message="✅ Usuário(s) coletado(s) com sucesso.", data=users_serialized)
         except Exception as error:
-            self.log_engine.write_error(f"❌ Error in (GetUserTask) task in (main) method: {error}")
+            self.log_engine.write_error("tasks/get_user_task", f"❌ Error in (GetUserTask) task in (main) method: {error}")
             raise Exception("❌ Erro interno ao coletar usuários. Contate o administrador.")

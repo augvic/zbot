@@ -1,8 +1,8 @@
-from src.engines.database_engine.database_engine import DatabaseEngine
-from src.engines.log_engine import LogEngine
-from src.engines.serializer_engine import SerializerEngine
-from src.engines.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
-from src.engines.cli_session_manager_engine import CliSessionManagerEngine
+from src.engines.list.database_engine.database_engine import DatabaseEngine
+from src.engines.list.log_engine import LogEngine
+from src.engines.list.serializer_engine import SerializerEngine
+from src.engines.list.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
+from src.engines.list.cli_session_manager_engine import CliSessionManagerEngine
 
 from dataclasses import dataclass
 
@@ -36,8 +36,8 @@ class GetPermissionsTask:
                 if not self.session_manager_engine.have_user_module_access("zAdmin"):
                     return Response(success=False, message="❌ Sem acesso.", data=[])
             permissions = self.serializer_engine.serialize_sqla_list(self.database_engine.permissions_client.read_all_from_user(user))
-            self.log_engine.write_text(f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Permissões coletadas: {permissions}")
+            self.log_engine.write_text("tasks/get_permissions_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Permissões coletadas: {permissions}")
             return Response(success=True, message="✅ Permissões coletadas.", data=permissions)
         except Exception as error:
-            self.log_engine.write_error(f"❌ Error in (GetPermissionsTask) task in (main) method: {error}")
+            self.log_engine.write_error("tasks/get_permissions_task", f"❌ Error in (GetPermissionsTask) task in (main) method: {error}")
             raise Exception("❌ Erro interno ao coletar permissões. Contate o administrador.")

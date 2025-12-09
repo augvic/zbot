@@ -5,6 +5,7 @@ class zBot:
     def __init__(self) -> None:
         self.engines = Engines()
         self.tasks = None
+        self.rpas = None
         self.api = None
         self.cli = None
     

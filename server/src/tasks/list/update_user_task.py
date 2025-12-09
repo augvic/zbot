@@ -1,7 +1,7 @@
-from src.engines.database_engine.database_engine import DatabaseEngine
-from src.engines.log_engine import LogEngine
-from src.engines.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
-from src.engines.cli_session_manager_engine import CliSessionManagerEngine
+from src.engines.list.database_engine.database_engine import DatabaseEngine
+from src.engines.list.log_engine import LogEngine
+from src.engines.list.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
+from src.engines.list.cli_session_manager_engine import CliSessionManagerEngine
 
 from dataclasses import dataclass
 
@@ -55,8 +55,8 @@ class UpdateUserTask:
             if user_exists.name == name and user_exists.email == email and user_exists.password == password:
                 return Response(success=True, message="⚠️ Nenhum dado do usuário modificado.", data=[])
             self.database_engine.users_client.update(user, name, email, password)
-            self.log_engine.write_text(f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Usuário ({user}) atualizado.")
+            self.log_engine.write_text("tasks/update_user_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Usuário ({user}) atualizado.")
             return Response(success=True, message="✅ Usuário atualizado.", data=[])
         except Exception as error:
-            self.log_engine.write_error(f"❌ Error in (UpdateUserTask) task in (main) method: {error}")
+            self.log_engine.write_error("tasks/update_user_task", f"❌ Error in (UpdateUserTask) task in (main) method: {error}")
             raise Exception("❌ Erro interno ao atualizar usuário. Contate o administrador.")
