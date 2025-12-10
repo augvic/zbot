@@ -1,7 +1,4 @@
-from src.engines.list.database_engine.database_engine import DatabaseEngine
-from src.engines.list.log_engine import LogEngine
-from src.engines.list.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
-from src.engines.list.cli_session_manager_engine import CliSessionManagerEngine
+from src.engines.engines import Engines
 
 from dataclasses import dataclass
 
@@ -14,16 +11,9 @@ class Response:
 
 class UpdateUserTask:
     
-    def __init__(self,
-        database_engine: DatabaseEngine,
-        log_engine: LogEngine,
-        session_manager_engine: WsgiSessionManagerEngine | CliSessionManagerEngine,
-        need_authentication: bool
-    ) -> None:
-        self.database_engine = database_engine
-        self.log_engine = log_engine
-        self.session_manager_engine = session_manager_engine
-        self.need_authentication = need_authentication
+    def __init__(self, engines: Engines) -> None:
+        self.engines = engines
+        self.runtime = "cli"
     
     def main(self,
         user: str,
@@ -32,12 +22,11 @@ class UpdateUserTask:
         password: str
     ) -> Response:
         try:
-            if self.need_authentication:
-                if not self.session_manager_engine.is_user_in_session():
-                    return Response(success=False, message="❌ Necessário fazer login.", data=[])
-                if not self.session_manager_engine.have_user_module_access("zAdmin"):
-                    return Response(success=False, message="❌ Sem acesso.", data=[])
-            user_exists = self.database_engine.users_client.read(user)
+            if self.runtime == "cli":
+                self.session_manager_engine = self.engines.cli_session_engine
+            else:
+                self.session_manager_engine = self.engines.wsgi_engine.session_manager
+            user_exists = self.engines.database_engine.users_client.read(user)
             if user_exists == None:
                 return Response(success=False, message="❌ Usuário não existe.", data=[])
             if not user:
@@ -54,9 +43,9 @@ class UpdateUserTask:
                 return Response(success=False, message="❌ Preencha a senha.", data=[])
             if user_exists.name == name and user_exists.email == email and user_exists.password == password:
                 return Response(success=True, message="⚠️ Nenhum dado do usuário modificado.", data=[])
-            self.database_engine.users_client.update(user, name, email, password)
-            self.log_engine.write_text("tasks/update_user_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Usuário ({user}) atualizado.")
+            self.engines.database_engine.users_client.update(user, name, email, password)
+            self.engines.log_engine.write_text("tasks/update_user_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Usuário ({user}) atualizado.")
             return Response(success=True, message="✅ Usuário atualizado.", data=[])
         except Exception as error:
-            self.log_engine.write_error("tasks/update_user_task", f"❌ Error in (UpdateUserTask) task in (main) method: {error}")
+            self.engines.log_engine.write_error("tasks/update_user_task", f"❌ Error in (UpdateUserTask) task in (main) method: {error}")
             raise Exception("❌ Erro interno ao atualizar usuário. Contate o administrador.")

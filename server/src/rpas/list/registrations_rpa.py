@@ -13,6 +13,7 @@ class RegistrationsRpa:
     
     def __init__(self, engines: Engines) -> None:
         self.engines = engines
+        self.runtime = "cli"
         self.is_running = False
         self.stop = False
         self.memory: list[str] = []
@@ -77,6 +78,9 @@ class RegistrationsRpa:
         except Exception as error:
             self.engines.log_engine.write_error("rpas/registrations_rpa", f"❌ Error in (RegistrationsRpaTask) task in (run) method: {error}")
             raise Exception("❌ Erro interno ao desligar RPA. Contate o administrador.")
+    
+    def set_runtime(self, runtime: str) -> None:
+        self.runtime = runtime
     
     def main(self, runtime: str) -> Response:
         try:

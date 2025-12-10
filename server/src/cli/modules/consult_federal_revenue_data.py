@@ -1,16 +1,13 @@
-from src.tasks.get_federal_revenue_data_task import GetFederalRevenueDataTask
-from src.engines.date_engine import DateEngine
+from src.tasks.tasks import Tasks
+from src.engines.engines import Engines
 
-from src.engines.federal_revenue_api_engine.models import FederalRevenueData
+from src.engines.list.federal_revenue_api_engine.models import FederalRevenueData
 
 class ConsultFederalRevenueData:
     
-    def __init__(self,
-        get_federal_revenue_data_task: GetFederalRevenueDataTask,
-        date_engine: DateEngine
-    ) -> None:
-        self.get_federal_revenue_data_task = get_federal_revenue_data_task
-        self.date_utility = date_engine
+    def __init__(self, engines: Engines, tasks: Tasks) -> None:
+        self.engines = engines
+        self.tasks = tasks
     
     def _print_federal_revenue_data(self, data: FederalRevenueData) -> None:
         list_to_print = [
@@ -40,13 +37,13 @@ class ConsultFederalRevenueData:
     def main(self) -> None:
         try:
             print(f"✅ Selecionado o módulo: 1 - Consultar Dados da Receita Federal.\n")
-            print(f"⌚ <{self.date_utility.get_today_str_with_time()}>")
+            print(f"⌚ <{self.engines.date_engine.get_today_str_with_time()}>")
             print('↩️ Digite "VOLTAR" para retornar.')
             cnpj = input("🏪 Informe o CNPJ: ")
             if cnpj == "VOLTAR":
                 print("")
                 return
-            response = self.get_federal_revenue_data_task.main(cnpj=cnpj)
+            response = self.tasks.get_federal_revenue_data_task.main(cnpj=cnpj)
             if not response.success:
                 print(response.message + "\n")
                 return

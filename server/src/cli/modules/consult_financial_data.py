@@ -1,21 +1,15 @@
-from src.tasks.get_financial_data_task import GetFinancialDataTask
-from src.engines.date_engine import DateEngine
-from src.engines.dataframe_engine import DataFrameEngine
+from src.engines.engines import Engines
+from src.tasks.tasks import Tasks
 
 from pandas import DataFrame
 from datetime import datetime
-from src.engines.sap_engine.models import FinancialData
+from src.engines.list.sap_engine.models import FinancialData
 
 class ConsultFinancialData:
     
-    def __init__(self,
-        get_financial_data_task: GetFinancialDataTask,
-        date_engine: DateEngine,
-        dataframe_engine: DataFrameEngine,
-    ) -> None:
-        self.get_financial_data_task = get_financial_data_task
-        self.date_utility = date_engine
-        self.dataframe_handler = dataframe_engine
+    def __init__(self, engines: Engines, tasks: Tasks) -> None:
+        self.engines = engines
+        self.tasks = tasks
     
     def _print_financial_data(self, data: FinancialData) -> None:
         list_to_print = []
@@ -25,7 +19,7 @@ class ConsultFinancialData:
             list_to_print.append(f"🟦 Limite: Sem limite ativo.\n")
         else:
             if isinstance(data.maturity, datetime):
-                list_to_print.append(f"🟦 Vencimento do Limite: {self.date_utility.convert_to_string(data.maturity)}.\n")
+                list_to_print.append(f"🟦 Vencimento do Limite: {self.engines.date_engine.convert_to_string(data.maturity)}.\n")
             list_to_print.append(f"🟦 Limite: {f"R$ {data.limit:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")}.\n")
         if data.in_open == "Sem valores em aberto.":
             list_to_print.append(f"🟦 Valor em Aberto: Nenhum.\n")
@@ -44,19 +38,19 @@ class ConsultFinancialData:
             data_to_print += print_element
         print(f"{data_to_print}\n")
         if isinstance(data.fbl5n_table, DataFrame):
-            table = self.dataframe_handler.convert_to_string(data.fbl5n_table)
+            table = self.engines.dataframe_engine.convert_to_string(data.fbl5n_table)
             print(f"{table}\n")
     
     def main(self) -> None:
         try:
             print(f"✅ Selecionado o módulo: 2 - Consultar Dados Financeiros de Cliente.\n")
-            print(f"⌚ <{self.date_utility.get_today_str_with_time()}>")
+            print(f"⌚ <{self.engines.date_engine.get_today_str_with_time()}>")
             print('↩️ Digite "VOLTAR" para retornar.')
             cnpj_root = input("Informe a raiz do CNPJ: ")
             if cnpj_root == "VOLTAR":
                 print("")
                 return
-            response = self.get_financial_data_task.main(cnpj_root=cnpj_root)
+            response = self.tasks.get_financial_data_task.main(cnpj_root=cnpj_root)
             if not response.success:
                 print(response.message + "\n")
                 return

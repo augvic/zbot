@@ -1,9 +1,4 @@
-from src.engines.list.database_engine.database_engine import DatabaseEngine
-from src.engines.list.log_engine import LogEngine
-from src.engines.list.registrations_docs_engine import RegistrationsDocsEngine
-from src.engines.list.wsgi_engine.wsgi_session_manager_engine import WsgiSessionManagerEngine
-from src.engines.list.cli_session_manager_engine import CliSessionManagerEngine
-from src.engines.list.date_engine import DateEngine
+from src.engines.engines import Engines
 
 from dataclasses import dataclass
 from werkzeug.datastructures import FileStorage
@@ -47,20 +42,9 @@ class RegistrationData:
 
 class UpdateRegistrationTask:
     
-    def __init__(self,
-        session_manager_engine: WsgiSessionManagerEngine | CliSessionManagerEngine,
-        database_engine: DatabaseEngine,
-        log_engine: LogEngine,
-        registrations_docs_engine: RegistrationsDocsEngine,
-        date_engine: DateEngine,
-        need_authentication: bool
-    ) -> None:
-        self.database_engine = database_engine
-        self.log_engine = log_engine
-        self.registrations_docs_engine = registrations_docs_engine
-        self.session_manager_engine = session_manager_engine
-        self.date_engine = date_engine
-        self.need_authentication = need_authentication
+    def __init__(self, engines: Engines) -> None:
+        self.engines = engines
+        self.runtime = "cli"
     
     def _verify_data(self, registration_data: RegistrationData) -> Response | None:
         registration_data.cnpj = "".join(number for number in registration_data.cnpj if number.isdigit())
@@ -75,7 +59,7 @@ class UpdateRegistrationTask:
             return Response(success=False, message="❌ Regime tributário deve ser: SIMPLES, CUMULATIVO ou NÃO CUMULATIVO.", data=[])
         if registration_data.client_type not in ["REVENDA", "MINHA EMPRESA"]:
             return Response(success=False, message="❌ Tipo do cliente deve ser: REVENDA ou MINHA EMPRESA.", data=[])
-        is_date = self.date_engine.is_date(registration_data.opening)
+        is_date = self.engines.date_engine.is_date(registration_data.opening)
         if not is_date:
             return Response(success=False, message="❌ Data deve ser no formato (dd/mm/aaaa).", data=[])
         if not registration_data.status in ["Cadastrar", "Aguardando Assinatura", "Erro"]:
@@ -97,6 +81,9 @@ class UpdateRegistrationTask:
         registration_data.email = registration_data.email.lower()
         registration_data.cpf_person = registration_data.cpf_person.upper()
         return registration_data
+    
+    def set_runtime(self, runtime: str) -> None:
+        self.runtime = runtime
     
     def main(self,
         cnpj: str,
@@ -127,12 +114,11 @@ class UpdateRegistrationTask:
         article_association_doc: FileStorage | None,
     ) -> Response:
         try:
-            if self.need_authentication:
-                if not self.session_manager_engine.is_user_in_session():
-                    return Response(success=False, message="❌ Necessário fazer login.", data=[])
-                if not self.session_manager_engine.have_user_module_access("zRegRpa"):
-                    return Response(success=False, message="❌ Sem acesso.", data=[])
-            registration_exists = self.database_engine.registrations_client.read(cnpj)
+            if self.runtime == "cli":
+                self.session_manager_engine = self.engines.cli_session_engine
+            else:
+                self.session_manager_engine = self.engines.wsgi_engine.session_manager
+            registration_exists = self.engines.database_engine.registrations_client.read(cnpj)
             if not registration_exists:
                 return Response(success=False, message="❌ Cadastro não existe.", data=[])
             if registration_exists.opening == opening \
@@ -191,7 +177,7 @@ class UpdateRegistrationTask:
             if response:
                 return response
             registration_data = self._sanitize(registration_data)
-            self.database_engine.registrations_client.update(
+            self.engines.database_engine.registrations_client.update(
                 cnpj=registration_data.cnpj,
                 opening=registration_data.opening,
                 company_name=registration_data.company_name,
@@ -222,9 +208,9 @@ class UpdateRegistrationTask:
                 doc_list.append(registration_data.article_association_doc)
             if registration_data.bank_doc:
                 doc_list.append(registration_data.bank_doc)
-            self.registrations_docs_engine.save_docs(cnpj=registration_data.cnpj, docs=doc_list)
-            self.log_engine.write_text("tasks_update_registration_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Cadastro ({registration_data.cnpj}) atualizado.")
+            self.engines.registrations_docs_engine.save_docs(cnpj=registration_data.cnpj, docs=doc_list)
+            self.engines.log_engine.write_text("tasks_update_registration_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Cadastro ({registration_data.cnpj}) atualizado.")
             return Response(success=True, message="✅ Cadastro atualizado.", data=[])
         except Exception as error:
-            self.log_engine.write_error("tasks_update_registration_task", f"❌ Error in (UpdateRegistrationTask) task in (main) method: {error}")
+            self.engines.log_engine.write_error("tasks_update_registration_task", f"❌ Error in (UpdateRegistrationTask) task in (main) method: {error}")
             raise Exception("❌ Erro interno ao atualizar cadastro. Contate o administrador.")

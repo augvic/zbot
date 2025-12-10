@@ -20,8 +20,8 @@ from tasks.get_registration_task import GetRegistration
 from tasks.registrations_rpa_task import RegistrationsRpa
 from src.engines.wsgi_application.wsgi_application import WsgiApplication
 
-from .routes.login import Login
-from .routes.main import Main
+from .routes.login_route import Login
+from .routes.main_route import Main
 from .routes.modules_list import ModulesList
 from .routes.permissions import Permissions
 from .routes.registrations_rpa import RegistrationsRpa
