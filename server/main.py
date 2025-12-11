@@ -1,4 +1,4 @@
-from src.compositor.compositor import Compositor
+from src.zbot import zBot
 
-compositor = Compositor()
-compositor.interactions.cli.main()
+if __name__ == "__main__":
+    zBot().main()

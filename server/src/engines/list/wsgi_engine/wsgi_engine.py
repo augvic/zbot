@@ -34,7 +34,7 @@ class WsgiEngine:
     
     def run(self) -> None:
         try:
-            self.socketio.run(self.app, host="127.0.0.1", debug=True)
+            self.socketio.run(self.app, host="127.0.0.1", debug=False, use_reloader=False)
         except Exception as error:
             raise Exception(f"❌ Error in (WsgiEngine) engine in (run) method: {error}")
     

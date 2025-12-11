@@ -50,16 +50,12 @@ class RegistrationsRpa:
             self.stop = False
             self.is_running = False
     
-    def memory_to_str(self) -> Response:
+    def memory_to_str(self) -> str:
         try:
-            if not self.session_manager_engine.is_user_in_session():
-                return Response(success=False, message="❌ Necessário fazer login.", data="")
-            if not self.session_manager_engine.have_user_module_access("zRegRpa"):
-                return Response(success=False, message="❌ Sem acesso.", data="")
             memory_string = ""
             for message in self.memory:
                 memory_string += message + "\n"
-            return Response(success=True, message="✅ Memória coletada.", data=memory_string)
+            return memory_string
         except Exception as error:
             self.engines.log_engine.write_error("rpas/registrations_rpa", f"❌ Error in (RegistrationsRpaTask) task in (memory_to_str) method: {error}")
             raise Exception("❌ Erro interno ao coletar memória do RPA. Contate o administrador.")
@@ -82,9 +78,9 @@ class RegistrationsRpa:
     def set_runtime(self, runtime: str) -> None:
         self.runtime = runtime
     
-    def main(self, runtime: str) -> Response:
+    def main(self) -> Response:
         try:
-            if runtime == "cli":
+            if self.runtime == "cli":
                 self.session_manager_engine = self.engines.cli_session_engine
             else:
                 self.session_manager_engine = self.engines.wsgi_engine.session_manager
