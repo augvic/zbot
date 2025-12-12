@@ -13,6 +13,7 @@ class Cli:
         self.consult_financial_data = ConsultFinancialData(self.engines, self.tasks)
     
     def main(self) -> None:
+        self.engines.cli_session_engine.save_in_session("user", self.engines.environ_engine.get_os_user())
         try:
             while True:
                 list_to_print = [

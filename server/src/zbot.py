@@ -14,6 +14,6 @@ class zBot:
         self.cli = Cli(self.tasks, self.engines)
     
     def main(self) -> None:
-        self.engines.thread_engine.add_thread(self.api.main)
+        #self.engines.thread_engine.add_thread(self.api.main)
         self.engines.thread_engine.add_thread(self.cli.main)
         self.engines.thread_engine.start_threads()

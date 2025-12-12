@@ -26,7 +26,7 @@ class GetFederalRevenueDataTask:
             else:
                 self.session_manager_engine = self.engines.wsgi_engine.session_manager
             if len(cnpj) != 14:
-                return Response(success=False, message="❌ CNPJ ({cnpj}) não possui 14 dígitos.", data=None)
+                return Response(success=False, message=f"❌ CNPJ ({cnpj}) não possui 14 dígitos.", data=None)
             data = self.engines.federal_revenue_api_engine.get_data(cnpj=cnpj)
             self.engines.log_engine.write_text("tasks/get_federal_revenue_data_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Dados da receita coletados: {self.engines.serializer_engine.serialize_dataclass(data)}.")
             return Response(success=True, message="✅ Dados da receita coletados.", data=data)
