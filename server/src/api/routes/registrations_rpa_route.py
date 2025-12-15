@@ -31,6 +31,7 @@ class RegistrationsRpaRoute:
                 return {"success": False, "message": "❌ Usuário não está na sessão."}, 401
             if not self.engines.wsgi_engine.session_manager.have_user_module_access("zRegRpa"):
                 return {"success": False, "message": "❌ Sem autorização."}, 401
+            self.rpas.registrations_rpa.set_runtime("api")
             response = self.rpas.registrations_rpa.main()
             if response.success:
                 return {"success": True, "message": response.message}, 200

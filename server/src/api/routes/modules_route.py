@@ -22,7 +22,7 @@ class ModulesRoute:
             return {"success": True, "data": response.data}, 200
         except Exception as error:
             self.engines.log_engine.write_error("api/modules_route", f"❌ Error in (ModulesRoute) in (get_modules_list) method: {error}")
-            return {"success": False, "message": f"{error}"}, 500
+            return {"success": False, "message": f"❌ Erro interno ao coletar módulos. Contate o administrador."}, 500
     
     def create_module(self) -> tuple[dict[str, str | bool], int]:
         try:
@@ -40,17 +40,20 @@ class ModulesRoute:
             )
             if not response.success:
                 return {"success": False, "message": response.message}, 400
+            module = cast(str, response.data.get("module"))
+            description = cast(str, response.data.get("description"))
             response = self.tasks.create_module_task.main(
-                cast(str, response.data.get("module")),
-                cast(str, response.data.get("description"))
+                module,
+                description
             )
             if response.success:
+                self.engines.log_engine.write_text("api/modules_route", f"👤 Usuário ({self.engines.wsgi_engine.session_manager.get_session_user()}): ✅ Módulo ({module}) adicionado.")
                 return {"success": True, "message": response.message}, 200
             else:
                 return {"success": False, "message": response.message}, 400
         except Exception as error:
             self.engines.log_engine.write_error("api/modules_route", f"❌ Error in (ModulesRoute) in (create_module) method: {error}")
-            return {"success": False, "message": f"{error}"}, 500
+            return {"success": False, "message": f"❌ Erro interno ao criar módulo. Contate o administrador."}, 500
     
     def delete_module(self, module: str) -> tuple[dict[str, str | bool], int]:
         try:
@@ -60,9 +63,10 @@ class ModulesRoute:
                 return {"success": False, "message": "❌ Sem autorização."}, 401
             response = self.tasks.delete_module_task.main(module)
             if response.success:
+                self.engines.log_engine.write_text("api/modules_route", f"👤 Usuário ({self.engines.wsgi_engine.session_manager.get_session_user()}): ✅ Módulo ({module}) removido.")
                 return {"success": True, "message": response.message}, 200
             else:
                 return {"success": True, "message": response.message}, 400
         except Exception as error:
             self.engines.log_engine.write_error("api/modules_route", f"❌ Error in (ModulesRoute) in (delete_module) method: {error}")
-            return {"success": False, "message": f"{error}"}, 500
+            return {"success": False, "message": f"❌ Erro interno ao deletar módulo. Contate o administrador."}, 500

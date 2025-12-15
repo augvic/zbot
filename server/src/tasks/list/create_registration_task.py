@@ -28,7 +28,6 @@ class CreateRegistrationTask:
     
     def __init__(self, engines: Engines) -> None:
         self.engines = engines
-        self.runtime = "cli"
     
     def _verify_data(self, registration_data: RegistrationData) -> Response | None:
         registration_data.cnpj = "".join(number for number in registration_data.cnpj if number.isdigit())
@@ -48,10 +47,7 @@ class CreateRegistrationTask:
         registration_data.seller = registration_data.seller.upper()
         registration_data.email = registration_data.email.lower()
         registration_data.cpf_person = registration_data.cpf_person.upper()
-        return registration_data
-    
-    def set_runtime(self, runtime: str) -> None:
-        self.runtime = runtime
+        return registration_data 
     
     def main(self,
         cnpj: str,
@@ -66,10 +62,6 @@ class CreateRegistrationTask:
         bank_doc: FileStorage | None,
     ) -> Response:
         try:
-            if self.runtime == "cli":
-                self.session_manager_engine = self.engines.cli_session_engine
-            else:
-                self.session_manager_engine = self.engines.wsgi_engine.session_manager
             registration_exists = self.engines.database_engine.registrations_client.read(cnpj)
             if registration_exists:
                 return Response(success=False, message="❌ Tentativa de inclusão de cadastro já existente ({new_registration.cnpj}).", data=[])
@@ -142,8 +134,6 @@ class CreateRegistrationTask:
             if registration_data.bank_doc:
                 doc_list.append(registration_data.bank_doc)
             self.engines.registrations_docs_engine.save_docs(cnpj=registration_data.cnpj, docs=doc_list)
-            self.engines.log_engine.write_text("tasks/create_registration_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Novo cadastro incluído com sucesso ({registration_data.cnpj}).")
             return Response(success=True, message=f"✅ Novo cadastro incluído com sucesso ({registration_data.cnpj}).", data=[])
         except Exception as error:
-            self.engines.log_engine.write_error("tasks/create_registration_task", f"❌ Error in (CreateRegistrationTask) task in (main) method: {error}")
-            raise Exception("❌ Erro interno ao incluir novo cadastro. Contate o administrador.")
+            raise Exception(f"❌ Error in (CreateRegistrationTask) in (main) method: {error}")

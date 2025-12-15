@@ -43,7 +43,7 @@ class LoginRoute:
                 permissions_list.append({"module": user_permission.module, "description": modules_descriptions[user_permission.module]})
             self.engines.wsgi_engine.session_manager.save_in_session("user", user)
             self.engines.wsgi_engine.session_manager.save_in_session("session_modules", permissions_list)
-            self.engines.log_engine.write_text("tasks/login_task", f"👤 Usuário ({self.engines.wsgi_engine.session_manager.get_session_user()}): ✅ Login realizado com sucesso.")
+            self.engines.log_engine.write_text("api/login_route", f"👤 Usuário ({self.engines.wsgi_engine.session_manager.get_session_user()}): ✅ Login realizado com sucesso.")
             return {"success": True, "message": f"✅ Login realizado com sucesso."}, 200
         except Exception as error:
             self.engines.log_engine.write_error("api/login_route", f"❌ Error in (LoginRoute) in (validate_login) method: {error}")
@@ -65,8 +65,8 @@ class LoginRoute:
                 return {"success": False, "message": "❌ Usuário não está logado."}, 401
             user = self.engines.wsgi_engine.session_manager.get_session_user()
             self.engines.wsgi_engine.session_manager.clear_session()
-            self.engines.log_engine.write_text("tasks/logout_task", f"👤 Usuário ({user}): ✅ Logout realizado.")
+            self.engines.log_engine.write_text("api/login_route", f"👤 Usuário ({user}): ✅ Logout realizado.")
             return {"success": True, "message": "✅ Logout realizado."}, 200
         except Exception as error:
-            self.engines.log_engine.write_error("tasks/logout_task", f"❌ Error in (LoginRoute) in (logout) method: {error}")
-            return {"success": False, "message": f"{error}"}, 500
+            self.engines.log_engine.write_error("api/login_route", f"❌ Error in (LoginRoute) in (logout) method: {error}")
+            return {"success": False, "message": f"❌ Erro interno ao deslogar. Contate o administrador."}, 500

@@ -44,7 +44,6 @@ class UpdateRegistrationTask:
     
     def __init__(self, engines: Engines) -> None:
         self.engines = engines
-        self.runtime = "cli"
     
     def _verify_data(self, registration_data: RegistrationData) -> Response | None:
         registration_data.cnpj = "".join(number for number in registration_data.cnpj if number.isdigit())
@@ -82,9 +81,6 @@ class UpdateRegistrationTask:
         registration_data.cpf_person = registration_data.cpf_person.upper()
         return registration_data
     
-    def set_runtime(self, runtime: str) -> None:
-        self.runtime = runtime
-    
     def main(self,
         cnpj: str,
         opening: str,
@@ -114,10 +110,6 @@ class UpdateRegistrationTask:
         article_association_doc: FileStorage | None,
     ) -> Response:
         try:
-            if self.runtime == "cli":
-                self.session_manager_engine = self.engines.cli_session_engine
-            else:
-                self.session_manager_engine = self.engines.wsgi_engine.session_manager
             registration_exists = self.engines.database_engine.registrations_client.read(cnpj)
             if not registration_exists:
                 return Response(success=False, message="❌ Cadastro não existe.", data=[])
@@ -209,8 +201,6 @@ class UpdateRegistrationTask:
             if registration_data.bank_doc:
                 doc_list.append(registration_data.bank_doc)
             self.engines.registrations_docs_engine.save_docs(cnpj=registration_data.cnpj, docs=doc_list)
-            self.engines.log_engine.write_text("tasks_update_registration_task", f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ Cadastro ({registration_data.cnpj}) atualizado.")
             return Response(success=True, message="✅ Cadastro atualizado.", data=[])
         except Exception as error:
-            self.engines.log_engine.write_error("tasks_update_registration_task", f"❌ Error in (UpdateRegistrationTask) task in (main) method: {error}")
-            raise Exception("❌ Erro interno ao atualizar cadastro. Contate o administrador.")
+            raise Exception(f"❌ Error in (UpdateRegistrationTask) in (main) method: {error}")

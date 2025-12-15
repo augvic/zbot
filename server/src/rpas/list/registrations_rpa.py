@@ -13,7 +13,6 @@ class RegistrationsRpa:
     
     def __init__(self, engines: Engines) -> None:
         self.engines = engines
-        self.runtime = "cli"
         self.is_running = False
         self.stop = False
         self.memory: list[str] = []
@@ -28,7 +27,7 @@ class RegistrationsRpa:
         try:
             self.engines.event_bus_engine.emit("regrpa_notification", {"success": True, "message": "✅ RPA iniciado."})
             self.engines.event_bus_engine.emit("regrpa_status", {"message": "Em processamento..."})
-            self._message(f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ RPA iniciado.")
+            self._message(f"✅ RPA iniciado.")
             self.is_running = True
             while True:
                 if self.day != self.engines.date_engine.get_today_datetime():
@@ -37,7 +36,7 @@ class RegistrationsRpa:
                 if self.stop == True:
                     self.engines.event_bus_engine.emit("regrpa_notification", {"success": True, "message": "✅ RPA desligado."})
                     self.engines.event_bus_engine.emit("regrpa_status", {"message": "Desligado."})
-                    self._message(f"👤 Usuário ({self.session_manager_engine.get_session_user()}): ✅ RPA desligado.")
+                    self._message(f"✅ RPA desligado.")
                     self.stop = False
                     self.is_running = False
                     break
@@ -62,10 +61,6 @@ class RegistrationsRpa:
     
     def stop_rpa(self) -> Response:
         try:
-            if not self.session_manager_engine.is_user_in_session():
-                return Response(success=False, message="❌ Necessário fazer login.", data="")
-            if not self.session_manager_engine.have_user_module_access("zRegRpa"):
-                return Response(success=False, message="❌ Sem acesso.", data="")
             if self.is_running == False:
                 return Response(success=False, message="❌ RPA já está desligado.", data="")
             self.engines.event_bus_engine.emit("regrpa_status", {"message": "Desligando..."})
@@ -75,15 +70,8 @@ class RegistrationsRpa:
             self.engines.log_engine.write_error("rpas/registrations_rpa", f"❌ Error in (RegistrationsRpaTask) task in (run) method: {error}")
             raise Exception("❌ Erro interno ao desligar RPA. Contate o administrador.")
     
-    def set_runtime(self, runtime: str) -> None:
-        self.runtime = runtime
-    
     def main(self) -> Response:
         try:
-            if self.runtime == "cli":
-                self.session_manager_engine = self.engines.cli_session_engine
-            else:
-                self.session_manager_engine = self.engines.wsgi_engine.session_manager
             if self.is_running == True:
                 return Response(success=False, message="❌ RPA já está em processamento.", data="")
             self.engines.thread_engine.start_single_thread(target=self._loop)

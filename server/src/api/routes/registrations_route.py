@@ -39,6 +39,7 @@ class RegistrationsRoute:
             )
             if not response.success:
                 return {"success": False, "message": f"{response.message}"}, 400
+            cnpj = cast(str, response.data.get("cnpj"))
             response = self.tasks.create_registration_task.main(
                 cnpj=cast(str, response.data.get("cnpj")),
                 seller=cast(str, response.data.get("seller")),
@@ -52,11 +53,13 @@ class RegistrationsRoute:
                 client_type=cast(str, response.data.get("client_type"))
             )
             if response.success:
+                self.engines.log_engine.write_text("api/registrations_route", f"👤 Usuário ({self.engines.wsgi_engine.session_manager.get_session_user()}): ✅ Novo cadastro incluído com sucesso ({cnpj}).")
                 return {"success": True, "message": f"{response.message}"}, 200
             else:
                 return {"success": False, "message": f"{response.message}"}, 400
         except Exception as error:
-            return {"success": False, "message": f"{error}"}, 500
+            self.engines.log_engine.write_error("api/registrations_route", f"❌ Error in (RegistrationsRoute) in (include_registration) method: {error}")
+            return {"success": False, "message": f"❌ Erro interno ao incluir novo cadastro. Contate o administrador."}, 500
     
     def get_registration(self, cnpj: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
@@ -70,7 +73,8 @@ class RegistrationsRoute:
             else:
                 return {"success": False, "message": response.message, "data": response.data}, 400
         except Exception as error:
-            return {"success": False, "message": f"{error}"}, 500
+            self.engines.log_engine.write_error("api/registrations_route", f"❌ Error in (RegistrationsRoute) in (get_registration) method: {error}")
+            return {"success": False, "message": f"❌ Erro interno ao coletar cadastros. Contate o administrador."}, 500
     
     def delete_registration(self, cnpj: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
@@ -80,11 +84,13 @@ class RegistrationsRoute:
                 return {"success": False, "message": "❌ Sem autorização."}, 401
             response = self.tasks.delete_registration_task.main(cnpj)
             if response.success:
+                self.engines.log_engine.write_text("api/registrations_route", f"👤 Usuário ({self.engines.wsgi_engine.session_manager.get_session_user()}): ✅ Cadastro removido com sucesso ({cnpj}).")
                 return {"success": True, "message": response.message}, 200
             else:
                 return {"success": False, "message": response.message}, 400
         except Exception as error:
-            return {"success": False, "message": f"{error}"}, 500
+            self.engines.log_engine.write_error("api/registrations_route", f"❌ Error in (RegistrationsRoute) in (delete_registration) method: {error}")
+            return {"success": False, "message": f"❌ Erro interno ao remover cadastro. Contate o administrador."}, 500
     
     def update_registration(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
@@ -124,6 +130,7 @@ class RegistrationsRoute:
             )
             if not response.success:
                 return {"success": False, "message": response.message}, 400
+            cnpj = cast(str, response.data.get("cnpj"))
             response = self.tasks.update_registration_task.main(
                 cnpj=cast(str, response.data.get("cnpj")),
                 opening=cast(str, response.data.get("opening")),
@@ -153,8 +160,10 @@ class RegistrationsRoute:
                 article_association_doc=cast(FileStorage, response.data.get("article_association_doc"))
             )
             if response.success:
+                self.engines.log_engine.write_text("api/registrations_route", f"👤 Usuário ({self.engines.wsgi_engine.session_manager.get_session_user()}): ✅ Cadastro atualizado com sucesso ({cnpj}).")
                 return {"success": True, "message": response.message}, 200
             else:
                 return {"success": False, "message": response.message}, 400
         except Exception as error:
-            return {"success": False, "message": f"{error}"}, 500
+            self.engines.log_engine.write_error("api/registrations_route", f"❌ Error in (RegistrationsRoute) in (update_registration) method: {error}")
+            return {"success": False, "message": f"❌ Erro interno ao atualizar cadastro. Contate o administrador."}, 500

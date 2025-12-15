@@ -1,5 +1,3 @@
-from src.engines.engines import Engines
-
 from .list.create_module_task import CreateModuleTask
 from .list.create_order_task import CreateOrderTask
 from .list.create_permission_task import CreatePermissionTask
@@ -17,6 +15,8 @@ from .list.get_registration_task import GetRegistrationTask
 from .list.get_user_task import GetUserTask
 from .list.update_registration_task import UpdateRegistrationTask
 from .list.update_user_task import UpdateUserTask
+
+from src.engines.engines import Engines
 
 class Tasks:
     
