@@ -42,8 +42,7 @@ class RegistrationsRpa:
                     break
                 self._message("Em execução")
                 self.engines.time_engine.sleep(2)
-        except Exception as error:
-            self.engines.log_engine.write_error("rpas/registrations_rpa", f"❌ Error in (RegistrationsRpaTask) task in (loop) method: {error}")
+        except Exception:
             self.engines.event_bus_engine.emit("regrpa_status", {"message": "Desligado."})
             self.engines.event_bus_engine.emit("regrpa_notification", {"success": False, "message": "❌ Erro durante execução do RPA."})
             self.stop = False
@@ -56,8 +55,7 @@ class RegistrationsRpa:
                 memory_string += message + "\n"
             return memory_string
         except Exception as error:
-            self.engines.log_engine.write_error("rpas/registrations_rpa", f"❌ Error in (RegistrationsRpaTask) task in (memory_to_str) method: {error}")
-            raise Exception("❌ Erro interno ao coletar memória do RPA. Contate o administrador.")
+            raise Exception(f"❌ Error in (RegistrationsRpa) in (memory_to_str) method: {error}")
     
     def stop_rpa(self) -> Response:
         try:
@@ -67,8 +65,7 @@ class RegistrationsRpa:
             self.stop = True
             return Response(success=True, message="✅ Solicitação de encerramento do RPA bem sucedida.", data="")
         except Exception as error:
-            self.engines.log_engine.write_error("rpas/registrations_rpa", f"❌ Error in (RegistrationsRpaTask) task in (run) method: {error}")
-            raise Exception("❌ Erro interno ao desligar RPA. Contate o administrador.")
+            raise Exception(f"❌ Error in (RegistrationsRpa) in (stop_rpa) method: {error}")
     
     def main(self) -> Response:
         try:
@@ -77,5 +74,4 @@ class RegistrationsRpa:
             self.engines.thread_engine.start_single_thread(target=self._loop)
             return Response(success=True, message="✅ Solicitação de inicio do RPA bem sucedida.", data="")
         except Exception as error:
-            self.engines.log_engine.write_error("rpas/registrations_rpa", f"❌ Error in (RegistrationsRpaTask) task in (main) method: {error}")
-            raise Exception("❌ Erro interno ao iniciar RPA. Contate o administrador.")
+            raise Exception(f"❌ Error in (RegistrationsRpa) in (main) method: {error}")

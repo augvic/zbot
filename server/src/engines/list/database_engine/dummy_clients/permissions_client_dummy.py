@@ -14,7 +14,7 @@ class PermissionsClientDummy:
         try:
             self.permissions[user].append(PermissionDummy(user=user, module=module))
         except Exception as error:
-            raise Exception(f"❌ Error in (PermissionsClientDummy) engine in (create) method: {error}")
+            raise Exception(f"❌ Error in (PermissionsClientDummy) in (create) method: {error}")
     
     def read_all_from_user(self, user: str) -> list[PermissionDummy]:
         try:
@@ -24,7 +24,7 @@ class PermissionsClientDummy:
             else:
                 return []
         except Exception as error:
-            raise Exception(f"❌ Error in (PermissionsClientDummy) engine in (read_all_from_user) method: {error}")
+            raise Exception(f"❌ Error in (PermissionsClientDummy) in (read_all_from_user) method: {error}")
     
     def delete_from_user(self, user: str, module: str) -> None:
         try:
@@ -32,7 +32,7 @@ class PermissionsClientDummy:
                 if permission_dummy.module == module:
                     self.permissions[user].remove(permission_dummy)
         except Exception as error:
-            raise Exception(f"❌ Error in (PermissionsClientDummy) engine in (delete_from_user) method: {error}")
+            raise Exception(f"❌ Error in (PermissionsClientDummy) in (delete_from_user) method: {error}")
     
     def delete_all(self, module: str) -> None:
         try:
@@ -41,4 +41,4 @@ class PermissionsClientDummy:
                     if permission.module == module:
                         user.remove(permission)
         except Exception as error:
-            raise Exception(f"❌ Error in (PermissionsClientDummy) engine in (delete_all) method: {error}")
+            raise Exception(f"❌ Error in (PermissionsClientDummy) in (delete_all) method: {error}")

@@ -38,14 +38,14 @@ class ItemsQueueClient:
             session.refresh(to_create)
             session.close()
         except Exception as error:
-            raise Exception(f"❌ Error in (ItemsQueueClient) engine in (create) method: {error}")
+            raise Exception(f"❌ Error in (ItemsQueueClient) in (create) method: {error}")
     
     def read(self, order: str) -> list[ItemQueue]:
         try:
             session = self.session_construct()
             return session.query(ItemQueue).filter(ItemQueue.order_ref == order).all()
         except Exception as error:
-            raise Exception(f"❌ Error in (ItemsQueueClient) engine in (read) method: {error}")
+            raise Exception(f"❌ Error in (ItemsQueueClient) in (read) method: {error}")
     
     def delete(self, order: str) -> None:
         try:
@@ -55,4 +55,4 @@ class ItemsQueueClient:
                 session.delete(delete_element)
             session.commit()
         except Exception as error:
-            raise Exception(f"❌ Error in (ItemsQueueClient) engine in (delete) method: {error}")
+            raise Exception(f"❌ Error in (ItemsQueueClient) in (delete) method: {error}")

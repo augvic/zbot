@@ -50,4 +50,5 @@ class ConsultFederalRevenueData:
             if response.data:
                 self._print_federal_revenue_data(data=response.data)
         except Exception as error:
-            print(f"{error}\n")
+            self.engines.log_engine.write_error("cli/consult_federal_revenue_data", f"❌ Error in (ConsultFederalRevenueData) in (main) method: {error}")
+            print(f"❌ Erro interno ao consultar dados da receita federal. Contate o administrador.\n")

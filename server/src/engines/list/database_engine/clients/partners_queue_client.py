@@ -24,14 +24,14 @@ class PartnersQueueClient:
             session.refresh(to_create)
             session.close()
         except Exception as error:
-            raise Exception(f"❌ Error in (PartnersQueueClient) engine in (create) method: {error}")
+            raise Exception(f"❌ Error in (PartnersQueueClient) in (create) method: {error}")
     
     def read(self, order: str) -> list[PartnerQueue]:
         try:
             session = self.session_construct()
             return session.query(PartnerQueue).filter(PartnerQueue.order_ref == order).all()
         except Exception as error:
-            raise Exception(f"❌ Error in (PartnersQueueClient) engine in (read) method: {error}")
+            raise Exception(f"❌ Error in (PartnersQueueClient) in (read) method: {error}")
     
     def delete(self, order: str) -> None:
         try:
@@ -41,4 +41,4 @@ class PartnersQueueClient:
                 session.delete(delete_element)
             session.commit()
         except Exception as error:
-            raise Exception(f"❌ Error in (PartnersQueueClient) engine in (delete) method: {error}")
+            raise Exception(f"❌ Error in (PartnersQueueClient) in (delete) method: {error}")

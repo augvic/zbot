@@ -18,14 +18,14 @@ class PermissionsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"❌ Error in (PermissionsClient) engine in (create) method: {error}")
+            raise Exception(f"❌ Error in (PermissionsClient) in (create) method: {error}")
     
     def read_all_from_user(self, user: str) -> list[Permission]:
         try:
             session = self.session_construct()
             return session.query(Permission).filter(Permission.user == user).all()
         except Exception as error:
-            raise Exception(f"❌ Error in (PermissionsClient) engine in (read_all_from _user) method: {error}")
+            raise Exception(f"❌ Error in (PermissionsClient) in (read_all_from _user) method: {error}")
     
     def delete_from_user(self, user: str, module: str) -> None:
         try:
@@ -35,7 +35,7 @@ class PermissionsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"❌ Error in (PermissionsClient) engine in (delete_from_user) method: {error}")
+            raise Exception(f"❌ Error in (PermissionsClient) in (delete_from_user) method: {error}")
     
     def delete_all(self, module: str) -> None:
         try:
@@ -46,4 +46,4 @@ class PermissionsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"❌ Error in (PermissionsClient) engine in (delete_all) method: {error}")
+            raise Exception(f"❌ Error in (PermissionsClient) in (delete_all) method: {error}")

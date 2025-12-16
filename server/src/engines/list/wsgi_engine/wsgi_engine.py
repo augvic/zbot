@@ -4,6 +4,8 @@ from os import path, getenv
 from dotenv import load_dotenv
 from dataclasses import dataclass
 import sys
+import logging
+import flask.cli
 
 from .wsgi_session_manager_engine import WsgiSessionManagerEngine
 
@@ -29,20 +31,23 @@ class WsgiEngine:
         TEMPLATE = path.abspath(path.join(BASE_DIR, "../../storage/.web"))
         self.app = Flask(__name__, template_folder=TEMPLATE, static_folder=STATIC)
         self.app.secret_key = getenv("FLASK")
-        self.socketio = SocketIO(self.app)
+        self.socketio = SocketIO(self.app, async_mode="threading")
         self.session_manager = WsgiSessionManagerEngine()
+        flask.cli.show_server_banner = lambda *args: None
+        self.log = logging.getLogger('werkzeug')
+        self.log.setLevel(logging.ERROR)
     
     def run(self) -> None:
         try:
             self.socketio.run(self.app, host="127.0.0.1", debug=False, use_reloader=False)
         except Exception as error:
-            raise Exception(f"❌ Error in (WsgiEngine) engine in (run) method: {error}")
+            raise Exception(f"❌ Error in (WsgiEngine) in (run) method: {error}")
     
     def register_route(self, endpoint: str, methods: list[str], function: Callable) -> None:
         try:
             self.app.route(endpoint, methods=methods)(function)
         except Exception as error:
-            raise Exception(f"❌ Error in (WsgiEngine) engine in (register_route) method: {error}")
+            raise Exception(f"❌ Error in (WsgiEngine) in (register_route) method: {error}")
     
     def process_request(self, content_type: str, expected_data: list[str], expected_files: list[str]) -> RequestProcessed:
         try:
@@ -72,34 +77,34 @@ class WsgiEngine:
                 return RequestProcessed(success=False, message=f"❌ Endpoint ({request.endpoint}). Enviar conteúdo da requisição como ({content_type}).", data={}, files={})
             return RequestProcessed(success=True, message=f"✅ Endpoint ({request.endpoint}). Content-Type ({content_type}). Expected Data ({expected_data}). Expected Files ({expected_files}). Requisição bem sucedida.", data=data_dict, files=files_dict)
         except Exception as error:
-            raise Exception(f"❌ Error in (WsgiEngine) engine in (process) method: {error}")
+            raise Exception(f"❌ Error in (WsgiEngine) in (process) method: {error}")
     
     def get_request(self) -> Request:
         try:
             return request
         except Exception as error:
-            raise Exception(f"❌ Error in (WsgiEngine) engine in (get_request) method: {error}")
+            raise Exception(f"❌ Error in (WsgiEngine) in (get_request) method: {error}")
     
     def get_endpoint(self) -> str | None:
         try:
             return request.endpoint
         except Exception as error:
-            raise Exception(f"❌ Error in (WsgiEngine) engine in (get_endpoint) method: {error}")
+            raise Exception(f"❌ Error in (WsgiEngine) in (get_endpoint) method: {error}")
     
     def get_user_ip(self) -> str | None:
         try:
             return request.remote_addr
         except Exception as error:
-            raise Exception(f"❌ Error in (WsgiEngine) engine in (get_user_ip) method: {error}")
+            raise Exception(f"❌ Error in (WsgiEngine) in (get_user_ip) method: {error}")
     
     def render_template(self, template: str) -> str:
         try:
             return render_template(template)
         except Exception as error:
-            raise Exception(f"❌ Error in (WsgiEngine) engine in (render) method: {error}")
+            raise Exception(f"❌ Error in (WsgiEngine) in (render) method: {error}")
         
     def emit_message(self, key: str, message: str) -> None:
         try:
             self.socketio.emit(key, {"message": message})
         except Exception as error:
-            raise Exception(f"❌ Error in (WsgiEngine) engine in (emit_message) method: {error}")
+            raise Exception(f"❌ Error in (WsgiEngine) in (emit_message) method: {error}")

@@ -16,7 +16,7 @@ class LogEngine:
                 self.log.write(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n" + text + "\n\n")
                 self.log.flush()
         except Exception as error:
-            raise Exception(f"❌ Error in (LogEngine) engine in (write_text) method: {error}")
+            raise Exception(f"❌ Error in (LogEngine) in (write_text) method: {error}")
     
     def write_error(self, folder: str, error: str) -> None:
         try:
@@ -30,4 +30,4 @@ class LogEngine:
                 self.log_errors.write(f"⌚ <{datetime.now().replace(microsecond=0).strftime("%d/%m/%Y %H:%M:%S")}>\n" + error + "\n\n")
                 self.log_errors.flush()
         except Exception as exception:
-            raise Exception(f"❌ Error in (LogEngine) engine in (write_error) method: {exception}.")
+            raise Exception(f"❌ Error in (LogEngine) in (write_error) method: {exception}.")

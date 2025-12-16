@@ -2,10 +2,11 @@ from datetime import datetime
 from requests import get
 from urllib3 import disable_warnings
 from urllib3.exceptions import InsecureRequestWarning
-from os import getenv
+from os import getenv, path
 from re import sub
 from unicodedata import normalize
 from dotenv import load_dotenv
+import sys
 
 from .models import *
 from .errors import RequestError, RequestResponseError
@@ -14,7 +15,9 @@ from .types import *
 class FederalRevenueApiEngine:
     
     def _requisition_to_api(self, cnpj: str) -> ResponseData:
-        load_dotenv()
+        base_path: str = getattr(sys, "_MEIPASS", path.join(path.dirname(__file__), "..", "..", "..", ".."))
+        dotenv_path =  path.abspath(path.join(base_path, ".env"))
+        load_dotenv(dotenv_path)
         disable_warnings(InsecureRequestWarning)
         url = f"https://comercial.cnpj.ws/cnpj/{cnpj}"
         headers = {
@@ -133,4 +136,4 @@ class FederalRevenueApiEngine:
                 comission_receipt = response["recebimento_comissao"]
             )
         except Exception as error:
-            raise Exception(f"❌ Error in (FederalRevenueApiEngine) engine in (get_data) method: {error}")
+            raise Exception(f"❌ Error in (FederalRevenueApiEngine) in (get_data) method: {error}")

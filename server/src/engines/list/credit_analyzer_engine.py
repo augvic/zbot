@@ -74,4 +74,4 @@ class CreditAnalyzerEngine:
             response = self._mount_response(status=status, message=message)
             return response
         except Exception as error:
-            raise Exception(f"❌ Error in (CreditAnalyzerEngine) engine in (analyze) method: {error}")
+            raise Exception(f"❌ Error in (CreditAnalyzerEngine) in (analyze) method: {error}")

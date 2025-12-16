@@ -73,21 +73,21 @@ class RegistrationsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"❌ Error in (RegistrationsClient) engine in (create) method: {error}")
+            raise Exception(f"❌ Error in (RegistrationsClient) in (create) method: {error}")
     
     def read(self, cnpj: str) -> Registration | None:
         try:
             session = self.session_construct()
             return session.query(Registration).filter(Registration.cnpj == cnpj).first()
         except Exception as error:
-            raise Exception(f"❌ Error in (RegistrationsClient) engine in (read) method: {error}")
+            raise Exception(f"❌ Error in (RegistrationsClient) in (read) method: {error}")
         
     def read_all(self) -> list[Registration]:
         try:
             session = self.session_construct()
             return session.query(Registration).all()
         except Exception as error:
-            raise Exception(f"❌ Error in (RegistrationsClient) engine in (read_all) method: {error}")
+            raise Exception(f"❌ Error in (RegistrationsClient) in (read_all) method: {error}")
     
     def update(self,
         cnpj: str,
@@ -168,7 +168,7 @@ class RegistrationsClient:
                 session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"❌ Error in (RegistrationsClient) engine in (update) method: {error}")
+            raise Exception(f"❌ Error in (RegistrationsClient) in (update) method: {error}")
     
     def delete(self, cnpj: str) -> None:
         try:
@@ -178,4 +178,4 @@ class RegistrationsClient:
             session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"❌ Error in (RegistrationsClient) engine in (delete) method: {error}")
+            raise Exception(f"❌ Error in (RegistrationsClient) in (delete) method: {error}")

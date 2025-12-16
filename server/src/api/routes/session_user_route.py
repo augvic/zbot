@@ -17,4 +17,5 @@ class SessionUserRoute:
             user = self.engines.wsgi_engine.session_manager.get_session_user()
             return {"success": True, "message": user}, 200
         except Exception as error:
-            return {"success": False, "message": f"{error}"}, 500
+            self.engines.log_engine.write_error("api/session_user_route", f"❌ Error in (SessionUserRoute) in (get_session_user) method: {error}")
+            return {"success": False, "message": f"❌ Erro interno ao coletar usuário da sessão. Contate o administrador."}, 500

@@ -57,4 +57,5 @@ class ConsultFinancialData:
             if response.data:
                 self._print_financial_data(data=response.data)
         except Exception as error:
-            print(f"{error}\n")
+            self.engines.log_engine.write_error("cli/consult_financial_data", f"❌ Error in (ConsultFinancialData) in (main) method: {error}")
+            print(f"❌ Erro interno ao consultar dados financeiros. Contate o administrador.\n")

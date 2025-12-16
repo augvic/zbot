@@ -56,21 +56,21 @@ class OrdersQueueClient:
             session.refresh(to_create)
             session.close()
         except Exception as error:
-            raise Exception(f"❌ Error in (OrdersQueueClient) engine in (create) method: {error}")
+            raise Exception(f"❌ Error in (OrdersQueueClient) in (create) method: {error}")
     
     def read(self, order: str) -> OrderQueue | None:
         try:
             session = self.session_construct()
             return session.query(OrderQueue).filter(OrderQueue.order == order).first()
         except Exception as error:
-            raise Exception(f"❌ Error in (OrdersQueueClient) engine in (read) method: {error}")
+            raise Exception(f"❌ Error in (OrdersQueueClient) in (read) method: {error}")
     
     def read_all(self) -> list[OrderQueue]:
         try:
             session = self.session_construct()
             return session.query(OrderQueue).all()
         except Exception as error:
-            raise Exception(f"❌ Error in (OrdersQueueClient) engine in (read_all) method: {error}")
+            raise Exception(f"❌ Error in (OrdersQueueClient) in (read_all) method: {error}")
     
     def update(self,
         order: str,
@@ -127,7 +127,7 @@ class OrdersQueueClient:
                 session.commit()
             session.close()
         except Exception as error:
-            raise Exception(f"❌ Error in (OrdersQueueClient) engine in (update) method: {error}")
+            raise Exception(f"❌ Error in (OrdersQueueClient) in (update) method: {error}")
     
     def delete(self, order: str) -> None:
         try:
@@ -136,4 +136,4 @@ class OrdersQueueClient:
             session.delete(to_delete)
             session.commit()
         except Exception as error:
-            raise Exception(f"❌ Error in (OrdersQueueClient) engine in (delete) method: {error}")
+            raise Exception(f"❌ Error in (OrdersQueueClient) in (delete) method: {error}")

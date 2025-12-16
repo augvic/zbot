@@ -32,7 +32,7 @@ class SapGuiClient:
             session = con.Children(0)
             self.session = session
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (init_force) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (init_force) method: {error}.")
     
     def open_transaction(self, transaction: str) -> None:
         try:
@@ -43,7 +43,7 @@ class SapGuiClient:
             if "Sem autorização" in status_bar:
                 raise TransactionDennied(transaction)
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (open_transaction) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (open_transaction) method: {error}.")
     
     def go_home(self) -> None:
         try:
@@ -64,25 +64,25 @@ class SapGuiClient:
                     except:
                         pass
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (go_home) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (go_home) method: {error}.")
     
     def press_enter(self, index: str) -> None:
         try:
             self.session.findById(rf"wnd[{index}]").sendVKey(0)
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (press_enter) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (press_enter) method: {error}.")
     
     def press_back(self, index: str) -> None:
         try:
             self.session.findById(rf"wnd[{index}]/tbar[0]/btn[3]").press()
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (press_back) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (press_back) method: {error}.")
     
     def press_go(self, index: str) -> None:
         try:
             self.session.findById(rf"wnd[{index}]").sendVKey(2)
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (press_go) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (press_go) method: {error}.")
     
     def set_text(self, id: str, text: str) -> None:
         try:
@@ -142,40 +142,40 @@ class SapGuiClient:
         try:
             self.session.findById(f"wnd[{index}]").sendVKey(4)
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (open_search_window) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (open_search_window) method: {error}.")
     
     def get_msg_bar_log(self, index: str) -> str:
         try:
             return self.session.findById(f"wnd[{index}]/sbar").text
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (get_msg_bar_log) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (get_msg_bar_log) method: {error}.")
     
     def get_icon_name(self, id: str) -> str:
         try:
             return self.session.findById(id).IconName
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (get_icon_name) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (get_icon_name) method: {error}.")
     
     def set_selection_indexes(self, id: str, indexes: tuple[int, int]) -> None:
         try:
             self.session.findById(id).setSelectionIndexes(*indexes)
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (set_selection_indexes) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (set_selection_indexes) method: {error}.")
     
     def select_item(self, id: str, indexes: tuple[str, str]) -> None:
         try:
             self.session.findById(id).selectItem(*indexes)
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (select_item) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (select_item) method: {error}.")
     
     def ensure_visible_horizontal_item(self, id: str, indexes: tuple[str, str]) -> None:
         try:
             self.session.findById(id).ensureVisibleHorizontalItem(*indexes)
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (ensure_visible_horizontal_item) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (ensure_visible_horizontal_item) method: {error}.")
     
     def double_click_item(self, id: str, indexes: tuple[str, str]) -> None:
         try:
             self.session.findById(id).doubleClickItem(*indexes)
         except Exception as error:
-            raise Exception(f"❌ Error in (SapGuiClient) engine in (double_click_item) method: {error}.")
+            raise Exception(f"❌ Error in (SapGuiClient) in (double_click_item) method: {error}.")

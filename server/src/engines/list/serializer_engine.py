@@ -21,10 +21,10 @@ class SerializerEngine:
         try:
             return {attribute.key: getattr(object, attribute.key) for attribute in inspect(object).mapper.column_attrs}
         except Exception as error:
-            raise Exception(f"❌ Error in (SqlaSerializer) engine in (serialize) method: {error}")
+            raise Exception(f"❌ Error in (SqlaSerializer) in (serialize) method: {error}")
     
     def serialize_sqla_list(self, objects: list[Any]):
         try:
             return [self.serialize_sqla(object) for object in objects]
         except Exception as error:
-            raise Exception(f"❌ Error in (SqlaSerializer) engine in (serialize_list) method: {error}")
+            raise Exception(f"❌ Error in (SqlaSerializer) in (serialize_list) method: {error}")

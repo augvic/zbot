@@ -152,4 +152,4 @@ class SupplierEngine:
             else:
                 return Response(success=False, message=f"Erro desconhecido: {response_dict}.")
         except Exception as error:
-            raise Exception(f"❌ Error in (SupplierEngine) engine in (order_pre_authorization) method: {error}")
+            raise Exception(f"❌ Error in (SupplierEngine) in (order_pre_authorization) method: {error}")

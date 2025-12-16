@@ -15,4 +15,5 @@ class SessionModulesRoute:
             session_modules = self.engines.wsgi_engine.session_manager.get_session_modules()
             return {"success": True, "message": session_modules}, 200
         except Exception as error:
-            return {"success": False, "message": f"{error}"}, 500
+            self.engines.log_engine.write_error("api/session_modules_route", f"❌ Error in (SessionModulesRoute) in (get_session_modules) method: {error}")
+            return {"success": False, "message": f"❌ Erro interno ao coletar módulos da sessão. Contate o administrador."}, 500

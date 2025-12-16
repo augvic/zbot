@@ -25,7 +25,8 @@ class UsersRoute:
             else:
                 return {"success": False, "message": response.message, "data": response.data}, 400
         except Exception as error:
-            return {"success": False, "message": f"{error}"}, 500
+            self.engines.log_engine.write_error("api/users_route", f"❌ Error in (UsersRoute) in (get_user) method: {error}")
+            return {"success": False, "message": f"❌ Erro interno ao coletar usuário. Contate o administrador."}, 500
     
     def create_user(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
@@ -45,6 +46,7 @@ class UsersRoute:
             )
             if not response.success:
                 return {"success": False, "message": response.message}, 400
+            user = cast(str, response.data.get("user"))
             response = self.tasks.create_user_task.main(
                 user=cast(str, response.data.get("user")),
                 name=cast(str, response.data.get("name")),
@@ -52,11 +54,13 @@ class UsersRoute:
                 password=cast(str, response.data.get("password")),
             )
             if response.success:
+                self.engines.log_engine.write_text("api/users_route", f"👤 Usuário ({self.engines.wsgi_engine.session_manager.get_session_user()}): ✅ Usuário ({user}) adicionado.")
                 return {"success": True, "message": response.message}, 200
             else:
                 return {"success": False, "message": response.message}, 400
         except Exception as error:
-            return {"success": False, "message": f"{error}"}, 500
+            self.engines.log_engine.write_error("api/users_route", f"❌ Error in (UsersRoute) in (create_user) method: {error}")
+            return {"success": False, "message": f"❌ Erro interno ao criar usuário. Contate o administrador."}, 500
     
     def delete_user(self, user: str) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
@@ -66,11 +70,13 @@ class UsersRoute:
                 return {"success": False, "message": "❌ Sem autorização."}, 401
             response = self.tasks.delete_user_task.main(user)
             if response.success:
+                self.engines.log_engine.write_text("api/users_route", f"👤 Usuário ({self.engines.wsgi_engine.session_manager.get_session_user()}): ✅ Usuário ({user}) removido.")
                 return {"success": True, "message": response.message}, 200
             else:
                 return {"success": False, "message": response.message}, 400
         except Exception as error:
-            return {"success": False, "message": f"{error}"}, 500
+            self.engines.log_engine.write_error("api/users_route", f"❌ Error in (UsersRoute) in (delete_user) method: {error}")
+            return {"success": False, "message": f"❌ Erro interno ao deletar usuário. Contate o administrador."}, 500
     
     def update_user(self) -> tuple[dict[str, str | bool | list[dict[str, str]]], int]:
         try:
@@ -90,6 +96,7 @@ class UsersRoute:
             )
             if not response.success:
                 return {"success": False, "message": response.message}, 400
+            user = cast(str, response.data.get("user"))
             response = self.tasks.update_user_task.main(
                 user=cast(str, response.data.get("user")),
                 name=cast(str, response.data.get("name")),
@@ -97,8 +104,10 @@ class UsersRoute:
                 password=cast(str, response.data.get("password")),
             )
             if response.success:
+                self.engines.log_engine.write_text("api/users_route", f"👤 Usuário ({self.engines.wsgi_engine.session_manager.get_session_user()}): ✅ Usuário ({user}) atualizado.")
                 return {"success": True, "message": response.message}, 200
             else:
                 return {"success": False, "message": response.message}, 400
         except Exception as error:
-            return {"success": False, "message": f"{error}"}, 500
+            self.engines.log_engine.write_error("api/users_route", f"❌ Error in (UsersRoute) in (update_user) method: {error}")
+            return {"success": False, "message": f"❌ Erro interno ao atualizar usuário. Contate o administrador."}, 500

@@ -20,6 +20,7 @@ class Cli:
                     f"🛠️ zBot (Back Office Tools) client.",
                     f"\n|__ 🔍 1 - Consultar Dados da Receita Federal.",
                     f"\n|__ 💲 2 - Consultar Dados Financeiros de Cliente.",
+                    f"\n|"
                     f"\n|__ 🔚 Digite (SAIR) para sair."
                 ]
                 data = ""

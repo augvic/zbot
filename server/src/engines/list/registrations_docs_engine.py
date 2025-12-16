@@ -16,4 +16,4 @@ class RegistrationsDocsEngine:
             for doc in docs:
                 doc.save(f"{dir_to_create}/{doc.filename}")
         except Exception as error:
-            raise Exception(f"❌ Error in (RegistrationsDocsEngine) engine in (save_docs) method: {error}")
+            raise Exception(f"❌ Error in (RegistrationsDocsEngine) in (save_docs) method: {error}")

@@ -6,4 +6,4 @@ class TimeEngine:
         try:
             sleep(seconds)
         except Exception as error:
-            raise Exception(f"❌ Error in (TimeEngine) engine in (sleep) method: {error}")
+            raise Exception(f"❌ Error in (TimeEngine) in (sleep) method: {error}")

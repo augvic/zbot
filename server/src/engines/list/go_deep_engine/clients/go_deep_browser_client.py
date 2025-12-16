@@ -59,10 +59,10 @@ class GoDeepBrowserClient:
             self._instance_chrome(headless=headless)
             self._login()
         except Exception as error:
-            raise Exception(f"❌ Error in (GoDeepBrowserClient) engine in (init) method: {error}")
+            raise Exception(f"❌ Error in (GoDeepBrowserClient) in (init) method: {error}")
     
     def quit(self) -> None:
         try:
             self.driver.quit()
         except Exception as error:
-            raise Exception(f"❌ Error in (GoDeepBrowserClient) engine in (quit) method: {error}")
+            raise Exception(f"❌ Error in (GoDeepBrowserClient) in (quit) method: {error}")

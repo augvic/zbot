@@ -326,4 +326,4 @@ class FinancialDataClient:
                 fbl5n_table = sanitized_data["fbl5n_table"]
             )
         except Exception as error:
-            raise Exception(f"❌ Error in (FinancialDataClient) engine in (get_data) method: {error}")
+            raise Exception(f"❌ Error in (FinancialDataClient) in (get_data) method: {error}")
