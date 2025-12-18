@@ -83,7 +83,8 @@ class CreateOrderTask:
         comissions:  list[dict[str, str]]
     ) -> Response:
         try:
-            doc_number = self.engines.sap_engine.order_creator.create(
+            sap = self.engines.sap_engine.instantiate()
+            doc_number = sap.order_client.create(
                 doc_type=doc_type,
                 organization=organization,
                 channel=channel,
@@ -105,5 +106,5 @@ class CreateOrderTask:
             )
             return Response(success=True, message=f"✅ Sucesso ao criar documento no SAP ({doc_number}).", data=doc_number)
         except Exception as error:
-            self.engines.sap_engine.sap_gui.go_home()
+            sap.sap_gui.go_home()
             raise Exception(f"❌ Error in (CreateOrderTask) in (main) method: {error}")

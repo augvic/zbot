@@ -314,6 +314,76 @@ class OrderClient:
         self._fill_out_items_values_guarantee(order)
         self._fill_out_comission(order)
     
+    def _enter_in_order(self, order: str) -> None:
+        self.sap_gui.open_transaction("VA02")
+        self.sap_gui.set_text(r"wnd[0]/usr/ctxtVBAK-VBELN", order)
+        self.sap_gui.press_enter("0")
+        self.sap_gui.press_enter("0")
+    
+    def _set_office(self) -> None:
+        self.sap_gui.select_tab(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\01")
+        self.sap_gui.set_text(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\01/ssubSUBSCREEN_BODY:SAPMV45A:4301/ctxtVBAK-VKBUR", "1148")
+        self.sap_gui.set_text(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\01/ssubSUBSCREEN_BODY:SAPMV45A:4301/ctxtVBAK-VKGRP", "058")
+    
+    def _set_partner_za(self, partner_code: str) -> None:
+        for row in range(0, 20):
+            key = self.sap_gui.get_key(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\08/ssubSUBSCREEN_BODY:SAPMV45A:4352/subSUBSCREEN_PARTNER_OVERVIEW:SAPLV09C:1000/tblSAPLV09CGV_TC_PARTNER_OVERVIEW/cmbGVS_TC_DATA-REC-PARVW[0,{row}]")
+            if key == "ZA":
+                self.sap_gui.set_text(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\08/ssubSUBSCREEN_BODY:SAPMV45A:4352/subSUBSCREEN_PARTNER_OVERVIEW:SAPLV09C:1000/tblSAPLV09CGV_TC_PARTNER_OVERVIEW/ctxtGVS_TC_DATA-REC-PARTNER[1,{row}]", partner_code)
+                break
+    
+    def _set_partner(self, partner_code: str) -> None:
+        self.sap_gui.select_tab(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\08")
+        self._set_partner_za(partner_code)
+        self.sap_gui.press_enter("0")
+    
+    def _find_libe_row(self) -> None:
+        row = 1
+        while True:
+            text = self.sap_gui.get_text(fr"wnd[0]/usr/tabsTABSTRIP_0300/tabpANWS/ssubSUBSCREEN:SAPLBSVA:0302/tblSAPLBSVATC_EO/txtJEST_BUF_EO-ETX04[1,0]")
+            if text == "LIBE":
+                break
+            else:
+                self.sap_gui.session.findById(r"wnd[0]/usr/tabsTABSTRIP_0300/tabpANWS/ssubSUBSCREEN:SAPLBSVA:0302/tblSAPLBSVATC_EO").verticalScrollbar.position = row + 1
+    
+    def _set_libe(self) -> None:
+        self.sap_gui.select_tab(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\11")
+        self.sap_gui.press_button(r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\11/ssubSUBSCREEN_BODY:SAPMV45A:4305/btnBT_KSTC")
+        self._find_libe_row()
+        self.sap_gui.flag_element(r"wnd[0]/usr/tabsTABSTRIP_0300/tabpANWS/ssubSUBSCREEN:SAPLBSVA:0302/tblSAPLBSVATC_EO/chkJ_STMAINT-ANWSO[0,0]", True)
+    
+    def _access_item_level(self) -> None:
+        self.sap_gui.focus(r"wnd[0]/usr/tabsTAXI_TABSTRIP_OVERVIEW/tabpT\01/ssubSUBSCREEN_BODY:SAPMV45A:4400/subSUBSCREEN_TC:SAPMV45A:4900/tblSAPMV45ATCTRL_U_ERF_AUFTRAG/ctxtRV45A-MABNR[1,0]")
+        self.sap_gui.press_go("0")
+    
+    def _fill_out_comission_pe(self, comission_code: str) -> None:
+        self.sap_gui.press_button(r"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/btnPB_ADD")
+        self.sap_gui.set_key(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/cmbTG_TABCOM-PARVW[0,0]", "Z2")
+        self.sap_gui.set_text(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/ctxtTG_TABCOM-LIFNR[1,0]", "2000006653")
+        self.sap_gui.set_text(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/txtTG_TABCOM-KBETR[3,0]", "0,22")
+        self.sap_gui.press_button(r"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/btnPB_ADD")
+        self.sap_gui.set_key(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/cmbTG_TABCOM-PARVW[0,1]", "Z3")
+        self.sap_gui.set_text(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/ctxtTG_TABCOM-LIFNR[1,1]", "5000002513")
+        self.sap_gui.set_text(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/txtTG_TABCOM-KBETR[3,1]", "0,30")
+        self.sap_gui.press_button(r"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/btnPB_ADD")
+        self.sap_gui.set_key(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/cmbTG_TABCOM-PARVW[0,2]", "Z5")
+        self.sap_gui.set_text(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/ctxtTG_TABCOM-LIFNR[1,2]", "2000005674")
+        self.sap_gui.set_text(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/txtTG_TABCOM-KBETR[3,2]", "0,22")
+        self.sap_gui.press_button(r"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/btnPB_ADD")
+        self.sap_gui.set_key(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/cmbTG_TABCOM-PARVW[0,3]", "Z6")
+        self.sap_gui.set_text(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/ctxtTG_TABCOM-LIFNR[1,3]", comission_code)
+        self.sap_gui.set_text(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/txtTG_TABCOM-KBETR[3,3]", "0,40")
+        self.sap_gui.press_button(r"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/btnPB_ADD")
+        self.sap_gui.set_key(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/cmbTG_TABCOM-PARVW[0,4]", "Z7")
+        self.sap_gui.set_text(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/ctxtTG_TABCOM-LIFNR[1,4]", "COMPROV")
+        self.sap_gui.set_text(rf"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15/ssubSUBSCREEN_BODY:SAPMV45A:4462/subKUNDEN-SUBSCREEN_8459:SAPMV45A:8459/tblSAPMV45ATC_TABCOMISS/txtTG_TABCOM-KBETR[3,4]", "0,30")
+        self.sap_gui.press_enter("0")
+        self._reply_comission()
+    
+    def _set_comission(self, comission_code: str) -> None:
+        self.sap_gui.select_tab(r"wnd[0]/usr/tabsTAXI_TABSTRIP_ITEM/tabpT\15")
+        self._fill_out_comission_pe(comission_code)
+    
     def create(self,
         doc_type: str,
         organization: str,
@@ -366,3 +436,20 @@ class OrderClient:
             return id
         except Exception as error:
             raise Exception(f"❌ Error in (OrderClient) in (create) method: {error}")
+        
+    def update_order_pe(self, order: str, partner_code: str, comission_code: str) -> None:
+        try:
+            self.sap_gui.init()
+            self._enter_in_order(order)
+            self._go_to_header()
+            self._set_office()
+            self._set_partner(partner_code)
+            self._set_libe()
+            self.sap_gui.press_back("0")
+            self.sap_gui.press_back("0")
+            self._access_item_level()
+            self._set_comission(comission_code)
+            self._save_order()
+            self.sap_gui.go_home()
+        except Exception as error:
+            raise Exception(f"❌ Error in (OrderClient) in (update_order) method: {error}")

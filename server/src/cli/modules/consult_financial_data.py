@@ -45,7 +45,7 @@ class ConsultFinancialData:
         try:
             print(f"✅ Selecionado o módulo: 2 - Consultar Dados Financeiros de Cliente.\n")
             print(f"⌚ <{self.engines.date_engine.get_today_str_with_time()}>")
-            print('↩️ Digite "VOLTAR" para retornar.')
+            print("↩️ Digite (VOLTAR) para retornar.")
             cnpj_root = input("Informe a raiz do CNPJ: ")
             if cnpj_root == "VOLTAR":
                 print("")

@@ -3,6 +3,7 @@ from src.engines.engines import Engines
 
 from .modules.consult_federal_revenue_data import ConsultFederalRevenueData
 from .modules.consult_financial_data import ConsultFinancialData
+from .modules.update_orders_pme import UpdateOrdersPme
 
 class Cli:
     
@@ -11,6 +12,7 @@ class Cli:
         self.engines = engines
         self.consult_federal_revenue_data = ConsultFederalRevenueData(self.engines, self.tasks)
         self.consult_financial_data = ConsultFinancialData(self.engines, self.tasks)
+        self.update_orders_pme = UpdateOrdersPme(self.engines, self.tasks)
     
     def main(self) -> None:
         self.engines.cli_session_engine.save_in_session("user", self.engines.environ_engine.get_os_user())
@@ -20,8 +22,9 @@ class Cli:
                     f"🛠️ zBot (Back Office Tools) client.",
                     f"\n|__ 🔍 1 - Consultar Dados da Receita Federal.",
                     f"\n|__ 💲 2 - Consultar Dados Financeiros de Cliente.",
+                    f"\n|__ 🔄️ 3 - Atualizar Ordens PME.",
                     f"\n|"
-                    f"\n|__ 🔚 Digite (SAIR) para sair."
+                    f"\n|__ 🔚 Digite (SAIR) para encerrar."
                 ]
                 data = ""
                 for print_element in list_to_print:
@@ -34,6 +37,8 @@ class Cli:
                     self.consult_federal_revenue_data.main()
                 elif module == "2":
                     self.consult_financial_data.main()
+                elif module == "3":
+                    self.update_orders_pme.main()
                 else:
                     print(f"❗ Selecione um módulo válido.\n")
         except Exception as error:

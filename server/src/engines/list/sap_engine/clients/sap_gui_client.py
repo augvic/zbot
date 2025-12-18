@@ -179,3 +179,9 @@ class SapGuiClient:
             self.session.findById(id).doubleClickItem(*indexes)
         except Exception as error:
             raise Exception(f"❌ Error in (SapGuiClient) in (double_click_item) method: {error}.")
+    
+    def flag_element(self, id: str, true_false: bool) -> None:
+        try:
+            self.session.findById(id).selected = true_false
+        except Exception as error:
+            raise Exception(f"❌ Error in (SapGuiClient) in (flag_element) method: {error}.")

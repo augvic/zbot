@@ -38,7 +38,7 @@ class ConsultFederalRevenueData:
         try:
             print(f"✅ Selecionado o módulo: 1 - Consultar Dados da Receita Federal.\n")
             print(f"⌚ <{self.engines.date_engine.get_today_str_with_time()}>")
-            print('↩️ Digite "VOLTAR" para retornar.')
+            print("↩️ Digite (VOLTAR) para retornar.")
             cnpj = input("🏪 Informe o CNPJ: ")
             if cnpj == "VOLTAR":
                 print("")

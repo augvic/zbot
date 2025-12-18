@@ -15,6 +15,7 @@ from .list.registrations_docs_engine import RegistrationsDocsEngine
 from .list.serializer_engine import SerializerEngine
 from .list.thread_engine import ThreadEngine
 from .list.time_engine import TimeEngine
+from .list.csv_handler import CsvHandler
 
 class Engines:
     
@@ -36,3 +37,4 @@ class Engines:
         self.serializer_engine = SerializerEngine()
         self.thread_engine = ThreadEngine()
         self.time_engine = TimeEngine()
+        self.csv_handler = CsvHandler()

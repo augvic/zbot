@@ -19,7 +19,8 @@ class GetFinancialDataTask:
         try:
             if len(cnpj_root) != 8:
                 return Response(success=False, message=f"❌ Raiz do CNPJ ({cnpj_root}) não possui 8 dígitos.", data=None)
-            data = self.engines.sap_engine.financial_data_getter.get_data(cnpj_root=cnpj_root)
+            sap = self.engines.sap_engine.instantiate()
+            data = sap.financial_data_client.get_data(cnpj_root=cnpj_root)
             return Response(success=True, message="✅ Dados financeiros coletados.", data=data)
         except Exception as error:
             raise Exception(f"❌ Error in (GetFinancialDataTask) in (main) method: {error}")

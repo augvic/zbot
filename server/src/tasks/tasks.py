@@ -15,6 +15,7 @@ from .list.get_registration_task import GetRegistrationTask
 from .list.get_user_task import GetUserTask
 from .list.update_registration_task import UpdateRegistrationTask
 from .list.update_user_task import UpdateUserTask
+from .list.update_orders_pme_task import UpdateOrdersPmeTask
 
 from src.engines.engines import Engines
 
@@ -38,3 +39,4 @@ class Tasks:
         self.get_user_task = GetUserTask(engines)
         self.update_registration_task = UpdateRegistrationTask(engines)
         self.update_user_task = UpdateUserTask(engines)
+        self.update_orders_pme_task = UpdateOrdersPmeTask(engines)
