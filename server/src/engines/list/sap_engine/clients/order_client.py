@@ -434,6 +434,8 @@ class OrderClient:
             id = self._get_order_id(order)
             self.sap_gui.go_home()
             return id
+        except SapGuiErrors as error:
+            raise error
         except Exception as error:
             raise Exception(f"❌ Error in (OrderClient) in (create) method: {error}")
         
@@ -451,5 +453,7 @@ class OrderClient:
             self._set_comission(comission_code)
             self._save_order()
             self.sap_gui.go_home()
+        except SapGuiErrors as error:
+            raise error
         except Exception as error:
             raise Exception(f"❌ Error in (OrderClient) in (update_order) method: {error}")

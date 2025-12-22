@@ -1,5 +1,6 @@
 from src.engines.engines import Engines
 from src.tasks.tasks import Tasks
+from src.engines.list.sap_engine.errors import *
 
 from pandas import DataFrame
 from datetime import datetime
@@ -56,6 +57,8 @@ class ConsultFinancialData:
                 return
             if response.data:
                 self._print_financial_data(data=response.data)
+        except SapGuiErrors:
+            print(f"❌ Verifique sua conexão com o SAP.\n")
         except Exception as error:
             self.engines.log_engine.write_error("cli/consult_financial_data", f"❌ Error in (ConsultFinancialData) in (main) method: {error}")
             print(f"❌ Erro interno ao consultar dados financeiros. Contate o administrador.\n")

@@ -5,6 +5,7 @@ from pandas import DataFrame, concat
 from .sap_gui_client import SapGuiClient
 from ..models import *
 from ..types import *
+from ..errors import *
 
 class FinancialDataClient:
 
@@ -325,5 +326,7 @@ class FinancialDataClient:
                 overdue_nfs = sanitized_data["overdue_nfs"],
                 fbl5n_table = sanitized_data["fbl5n_table"]
             )
+        except SapGuiErrors as error:
+            raise error
         except Exception as error:
             raise Exception(f"❌ Error in (FinancialDataClient) in (get_data) method: {error}")

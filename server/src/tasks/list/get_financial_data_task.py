@@ -1,4 +1,5 @@
 from src.engines.engines import Engines
+from src.engines.list.sap_engine.errors import *
 
 from src.engines.list.sap_engine.models import FinancialData
 from dataclasses import dataclass
@@ -22,5 +23,7 @@ class GetFinancialDataTask:
             sap = self.engines.sap_engine.instantiate()
             data = sap.financial_data_client.get_data(cnpj_root=cnpj_root)
             return Response(success=True, message="✅ Dados financeiros coletados.", data=data)
+        except SapGuiErrors as error:
+            raise error
         except Exception as error:
             raise Exception(f"❌ Error in (GetFinancialDataTask) in (main) method: {error}")
