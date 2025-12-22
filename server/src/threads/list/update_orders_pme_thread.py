@@ -1,6 +1,7 @@
 from src.engines.engines import Engines
+from src.engines.list.sap_engine.errors import *
 
-class UpdateOrdersPmeTask:
+class UpdateOrdersPmeThread:
     
     def __init__(self, engines: Engines) -> None:
         self.engines = engines
@@ -34,7 +35,9 @@ class UpdateOrdersPmeTask:
                             sap.order_client.update_order_pe(order, seller_df_row["Partner Code"], seller_df_row["Comission Code"])
                             self.engines.csv_handler.save_order_modified(order)
                 self.engines.time_engine.sleep(1800)
+        except SapGuiErrors:
+            self.status = "SAP"
         except Exception as error:
-            self.engines.log_engine.write_error("tasks/update_orders_pme_task", f"❌ Error in (UpdateOrdersPmeTask) in (main) method: {error}")
+            self.engines.log_engine.write_error("threads/update_orders_pme_thread", f"❌ Error in (UpdateOrdersThread) in (main) method: {error}")
             self.stop = False
             self.status = "ERRO"

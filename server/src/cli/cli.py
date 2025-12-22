@@ -1,5 +1,6 @@
 from src.tasks.tasks import Tasks
 from src.engines.engines import Engines
+from src.threads.threads import Threads
 
 from .modules.consult_federal_revenue_data import ConsultFederalRevenueData
 from .modules.consult_financial_data import ConsultFinancialData
@@ -7,12 +8,13 @@ from .modules.update_orders_pme import UpdateOrdersPme
 
 class Cli:
     
-    def __init__(self, tasks: Tasks, engines: Engines) -> None:
+    def __init__(self, tasks: Tasks, engines: Engines, threads: Threads) -> None:
         self.tasks = tasks
         self.engines = engines
+        self.threads = threads
         self.consult_federal_revenue_data = ConsultFederalRevenueData(self.engines, self.tasks)
         self.consult_financial_data = ConsultFinancialData(self.engines, self.tasks)
-        self.update_orders_pme = UpdateOrdersPme(self.engines, self.tasks)
+        self.update_orders_pme = UpdateOrdersPme(self.engines, self.threads)
     
     def main(self) -> None:
         self.engines.cli_session_engine.save_in_session("user", self.engines.environ_engine.get_os_user())

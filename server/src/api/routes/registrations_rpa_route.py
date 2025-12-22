@@ -1,11 +1,11 @@
-from src.rpas.rpas import Rpas
+from src.threads.threads import Threads
 from src.engines.engines import Engines
 
 class RegistrationsRpaRoute:
     
-    def __init__(self, engines: Engines, rpas: Rpas) -> None:
+    def __init__(self, engines: Engines, threads: Threads) -> None:
         self.engines = engines
-        self.rpas = rpas
+        self.threads = threads
         self.engines.wsgi_engine.register_route("/registrations-rpa", ["GET"], self.refresh)
         self.engines.wsgi_engine.register_route("/registrations-rpa", ["POST"], self.turn_on)
         self.engines.wsgi_engine.register_route("/registrations-rpa", ["DELETE"], self.turn_off)
@@ -16,8 +16,8 @@ class RegistrationsRpaRoute:
                 return {"success": False, "message": "❌ Usuário não está na sessão."}, 401
             if not self.engines.wsgi_engine.session_manager.have_user_module_access("zRegRpa"):
                 return {"success": False, "message": "❌ Sem autorização."}, 401
-            memory = self.rpas.registrations_rpa.memory_to_str()
-            if self.rpas.registrations_rpa.is_running == True:
+            memory = self.threads.registrations_rpa_thread.memory_to_str()
+            if self.threads.registrations_rpa_thread.is_running == True:
                 return {"success": True, "status": "Em processamento...", "memory": memory}, 200
             else:
                 return {"success": True, "status": "Desligado.", "memory": memory}, 200
@@ -31,7 +31,7 @@ class RegistrationsRpaRoute:
                 return {"success": False, "message": "❌ Usuário não está na sessão."}, 401
             if not self.engines.wsgi_engine.session_manager.have_user_module_access("zRegRpa"):
                 return {"success": False, "message": "❌ Sem autorização."}, 401
-            response = self.rpas.registrations_rpa.main()
+            response = self.threads.registrations_rpa_thread.main()
             if response.success:
                 return {"success": True, "message": response.message}, 200
             else:
@@ -46,7 +46,7 @@ class RegistrationsRpaRoute:
                 return {"success": False, "message": "❌ Usuário não está na sessão."}, 401
             if not self.engines.wsgi_engine.session_manager.have_user_module_access("zRegRpa"):
                 return {"success": False, "message": "❌ Sem autorização."}, 401
-            response = self.rpas.registrations_rpa.stop_rpa()
+            response = self.threads.registrations_rpa_thread.stop_rpa()
             if response.success:
                 return {"success": True, "message": response.message}, 200
             else:

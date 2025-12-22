@@ -1,31 +1,42 @@
-from src.tasks.tasks import Tasks
+from src.threads.threads import Threads
 from src.engines.engines import Engines
 
 class UpdateOrdersPme:
     
-    def __init__(self, engines: Engines, tasks: Tasks) -> None:
+    def __init__(self, engines: Engines, threads: Threads) -> None:
         self.engines = engines
-        self.tasks = tasks
+        self.threads = threads
     
     def main(self) -> None:
         try:
             print(f"✅ Selecionado o módulo: 3 - Atualizar Ordens PME (1148).\n")
             print(f"⌚ <{self.engines.date_engine.get_today_str_with_time()}>")
-            if self.tasks.update_orders_pme_task.status == "ATIVO":
+            if self.threads.update_orders_pme_thread.status == "ATIVO":
                 print("Status: 🟢 ATIVO")
                 print("|__ ⏹️ Digite (PARAR) para encerrar.")
                 print("|__ ↩️ Digite (VOLTAR) para retornar.")
                 print("")
-            elif self.tasks.update_orders_pme_task.status == "INATIVO":
+            elif self.threads.update_orders_pme_thread.status == "INATIVO":
                 print("Status: 🔴 INATIVO")
                 print("|__ ▶️ Digite (INICIAR) para ativar.")
                 print("|__ ↩️ Digite (VOLTAR) para retornar.")
                 print("")
-            elif self.tasks.update_orders_pme_task.status == "ERRO":
+            elif self.threads.update_orders_pme_thread.status == "ERRO":
                 print("Status: ⚠️ ERRO")
                 print("|__ ❌ Erro interno ao atualizar ordens do PME. Contate o administrador.")
                 print("")
                 return
+            elif self.threads.update_orders_pme_thread.status == "PREPARANDO ENCERRAMENTO":
+                print("Status: ⏳ PREPARANDO ENCERRAMENTO")
+                print("|__ ▶️ Digite (REINICIAR) para reativar.")
+                print("|__ ↩️ Digite (VOLTAR) para retornar.")
+                print("")
+            elif self.threads.update_orders_pme_thread.status == "SAP":
+                print("Status: ⚠️ ERRO")
+                print("|__ ❌ Verifique sua conexão com o SAP.")
+                print("|__ ▶️ Digite (INICIAR) para ativar.")
+                print("|__ ↩️ Digite (VOLTAR) para retornar.")
+                print("")
             else:
                 print("Status: ⚠️ NÃO IDENTIFICADO")
                 print("|__ ❌ Erro interno ao atualizar ordens do PME. Contate o administrador.")
@@ -36,17 +47,29 @@ class UpdateOrdersPme:
                 print("")
                 return
             elif response == "INICIAR":
-                if self.tasks.update_orders_pme_task.status == "ATIVO":
+                if self.threads.update_orders_pme_thread.status == "ATIVO":
                     print("⚠️ Processo já está ativo.")
                     print("")
                     return
-                self.engines.thread_engine.start_single_thread(self.tasks.update_orders_pme_task.main)
+                self.engines.thread_engine.start_single_thread(self.threads.update_orders_pme_thread.main)
             elif response == "PARAR":
-                if self.tasks.update_orders_pme_task.status == "INATIVO":
+                if self.threads.update_orders_pme_thread.status == "INATIVO":
                     print("⚠️ Processo já está parado.")
                     print("")
                     return
-                self.tasks.update_orders_pme_task.stop = True
+                self.threads.update_orders_pme_thread.stop = True
+                self.threads.update_orders_pme_thread.status = "PREPARANDO ENCERRAMENTO"
+            elif response == "REINICIAR":
+                if self.threads.update_orders_pme_thread.status == "ATIVO":
+                    print("⚠️ Processo já está ativo.")
+                    print("")
+                    return
+                if self.threads.update_orders_pme_thread.status == "INATIVO":
+                    print("⚠️ Processo já está parado.")
+                    print("")
+                    return
+                self.threads.update_orders_pme_thread.stop = False
+                self.threads.update_orders_pme_thread.status = "ATIVO"
             else:
                 print("❌ Selecione uma opção válida.")
                 print("")
